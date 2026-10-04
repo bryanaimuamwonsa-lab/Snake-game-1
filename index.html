@@ -14,37 +14,42 @@
             background: black;
             border: 3px solid lime;
         }
-
-        h1 {
-            color: lime;
-        }
     </style>
 </head>
 
 <body>
 
 <h1>🐍 Snake Game</h1>
-<p>Score: <span id="score">0</span></p>
+<h2>Score: <span id="score">0</span></h2>
 
 <canvas id="game" width="400" height="400"></canvas>
 
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+const scoreText = document.getElementById("score");
 
-let snake = [{x: 200, y: 200}];
-let food = {
-    x: Math.floor(Math.random() * 20) * 20,
-    y: Math.floor(Math.random() * 20) * 20
-};
+let snake = [
+    { x: 200, y: 200 },
+    { x: 180, y: 200 },
+    { x: 160, y: 200 }
+];
 
 let dx = 20;
 let dy = 0;
 let score = 0;
 
-document.addEventListener("keydown", changeDirection);
+let food = makeFood();
 
-function changeDirection(event) {
+function makeFood() {
+    return {
+        x: Math.floor(Math.random() * 20) * 20,
+        y: Math.floor(Math.random() * 20) * 20
+    };
+}
+
+document.addEventListener("keydown", function(event) {
+
     if (event.key === "ArrowUp" && dy === 0) {
         dx = 0;
         dy = -20;
@@ -64,22 +69,22 @@ function changeDirection(event) {
         dx = 20;
         dy = 0;
     }
-}
+
+});
 
 function gameLoop() {
-    ctx.clearRect(0, 0, 400, 400);
 
     let head = {
         x: snake[0].x + dx,
         y: snake[0].y + dy
     };
 
-    // Game over
+    // Game over if wall is hit
     if (
         head.x < 0 ||
-        head.x >= 400 ||
+        head.x >= canvas.width ||
         head.y < 0 ||
-        head.y >= 400
+        head.y >= canvas.height
     ) {
         alert("Game Over! Score: " + score);
         location.reload();
@@ -88,25 +93,24 @@ function gameLoop() {
 
     snake.unshift(head);
 
-    // Eat food
+    // Food eaten
     if (head.x === food.x && head.y === food.y) {
         score++;
-        document.getElementById("score").textContent = score;
-
-        food = {
-            x: Math.floor(Math.random() * 20) * 20,
-            y: Math.floor(Math.random() * 20) * 20
-        };
+        scoreText.textContent = score;
+        food = makeFood();
     } else {
         snake.pop();
     }
 
+    // Clear screen
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     // Draw snake
     ctx.fillStyle = "lime";
 
-    snake.forEach(part => {
+    for (let part of snake) {
         ctx.fillRect(part.x, part.y, 18, 18);
-    });
+    }
 
     // Draw food
     ctx.fillStyle = "red";
@@ -114,6 +118,7 @@ function gameLoop() {
 }
 
 setInterval(gameLoop, 120);
+
 </script>
 
 </body>
