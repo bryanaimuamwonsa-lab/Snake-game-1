@@ -2,17 +2,53 @@
 <html>
 <head>
     <title>Snake Game 🐍</title>
+
     <style>
         body {
             background: #111;
             color: white;
             text-align: center;
-            font-family: Arial;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: lime;
         }
 
         canvas {
             background: black;
             border: 3px solid lime;
+            display: block;
+            margin: 20px auto;
+        }
+
+        #gameOver {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            border: 3px solid red;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        #gameOver h2 {
+            color: red;
+        }
+
+        button {
+            background: lime;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        button:hover {
+            background: white;
         }
     </style>
 </head>
@@ -20,52 +56,90 @@
 <body>
 
 <h1>🐍 Snake Game</h1>
+
 <h2>Score: <span id="score">0</span></h2>
+
+<p>Use Arrow Keys or WASD to move</p>
 
 <canvas id="game" width="400" height="400"></canvas>
 
+<div id="gameOver">
+    <h2>💥 GAME OVER!</h2>
+    <p>Your Score: <span id="finalScore">0</span></p>
+    <button onclick="restartGame()">Play Again</button>
+</div>
+
 <script>
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
+
 const scoreText = document.getElementById("score");
+const finalScore = document.getElementById("finalScore");
+const gameOverScreen = document.getElementById("gameOver");
 
-let snake = [
-    { x: 200, y: 200 },
-    { x: 180, y: 200 },
-    { x: 160, y: 200 }
-];
+let snake;
+let food;
+let dx;
+let dy;
+let score;
+let gameRunning;
 
-let dx = 20;
-let dy = 0;
-let score = 0;
+function startGame() {
 
-let food = makeFood();
+    snake = [
+        { x: 200, y: 200 },
+        { x: 180, y: 200 },
+        { x: 160, y: 200 }
+    ];
+
+    dx = 20;
+    dy = 0;
+
+    score = 0;
+
+    scoreText.textContent = score;
+
+    food = makeFood();
+
+    gameRunning = true;
+
+    gameOverScreen.style.display = "none";
+}
 
 function makeFood() {
+
     return {
         x: Math.floor(Math.random() * 20) * 20,
         y: Math.floor(Math.random() * 20) * 20
     };
+
 }
 
 document.addEventListener("keydown", function(event) {
 
-    if (event.key === "ArrowUp" && dy === 0) {
+    let key = event.key.toLowerCase();
+
+    // UP
+    if ((event.key === "ArrowUp" || key === "w") && dy === 0) {
         dx = 0;
         dy = -20;
     }
 
-    if (event.key === "ArrowDown" && dy === 0) {
+    // DOWN
+    if ((event.key === "ArrowDown" || key === "s") && dy === 0) {
         dx = 0;
         dy = 20;
     }
 
-    if (event.key === "ArrowLeft" && dx === 0) {
+    // LEFT
+    if ((event.key === "ArrowLeft" || key === "a") && dx === 0) {
         dx = -20;
         dy = 0;
     }
 
-    if (event.key === "ArrowRight" && dx === 0) {
+    // RIGHT
+    if ((event.key === "ArrowRight" || key === "d") && dx === 0) {
         dx = 20;
         dy = 0;
     }
@@ -74,48 +148,108 @@ document.addEventListener("keydown", function(event) {
 
 function gameLoop() {
 
+    if (!gameRunning) {
+        return;
+    }
+
     let head = {
         x: snake[0].x + dx,
         y: snake[0].y + dy
     };
 
-    // Game over if wall is hit
+    // WALL COLLISION
     if (
         head.x < 0 ||
         head.x >= canvas.width ||
         head.y < 0 ||
         head.y >= canvas.height
     ) {
-        alert("Game Over! Score: " + score);
-        location.reload();
+
+        endGame();
         return;
+    }
+
+    // BODY COLLISION
+    for (let i = 0; i < snake.length; i++) {
+
+        if (
+            head.x === snake[i].x &&
+            head.y === snake[i].y
+        ) {
+
+            endGame();
+            return;
+        }
     }
 
     snake.unshift(head);
 
-    // Food eaten
+    // FOOD
     if (head.x === food.x && head.y === food.y) {
+
         score++;
+
         scoreText.textContent = score;
+
         food = makeFood();
+
     } else {
+
         snake.pop();
+
     }
 
-    // Clear screen
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // CLEAR SCREEN
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
 
-    // Draw snake
+    // DRAW SNAKE
     ctx.fillStyle = "lime";
 
     for (let part of snake) {
-        ctx.fillRect(part.x, part.y, 18, 18);
+
+        ctx.fillRect(
+            part.x,
+            part.y,
+            18,
+            18
+        );
+
     }
 
-    // Draw food
+    // DRAW FOOD
     ctx.fillStyle = "red";
-    ctx.fillRect(food.x, food.y, 18, 18);
+
+    ctx.fillRect(
+        food.x,
+        food.y,
+        18,
+        18
+    );
+
 }
+
+function endGame() {
+
+    gameRunning = false;
+
+    finalScore.textContent = score;
+
+    gameOverScreen.style.display = "block";
+
+}
+
+function restartGame() {
+
+    startGame();
+
+}
+
+startGame();
 
 setInterval(gameLoop, 120);
 
