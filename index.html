@@ -2,28 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Snake Chaos</title>
 
 <style>
+
 *{
   box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
 }
 
 body{
   margin:0;
   background:
-    radial-gradient(circle at top,#123b69 0%,#07101d 45%,#02050a 100%);
+    radial-gradient(circle at top,#123b69,#07101d 45%,#02050a);
   color:white;
   font-family:Arial,sans-serif;
   text-align:center;
   min-height:100vh;
+  overflow-x:hidden;
 }
 
 h1{
   color:#00bfff;
   text-shadow:0 0 15px #008cff;
-  margin:15px 0 5px;
+}
+
+.screen{
+  display:none;
+}
+
+.active{
+  display:block;
+}
+
+.panel{
+  width:92%;
+  max-width:850px;
+  margin:15px auto;
+  padding:20px;
+  background:rgba(3,15,30,.92);
+  border:2px solid #008cff;
+  border-radius:18px;
+  box-shadow:
+    0 0 20px #006eff,
+    inset 0 0 20px rgba(0,150,255,.12);
 }
 
 button{
@@ -37,55 +61,19 @@ button{
   font-weight:bold;
   cursor:pointer;
   box-shadow:0 0 10px #006cff;
+  touch-action:manipulation;
 }
 
-button:hover{
-  background:linear-gradient(135deg,#00bfff,#003b80);
-  transform:scale(1.04);
-}
-
-.screen{
-  display:none;
-}
-
-.active{
-  display:block;
-}
-
-#menu{
-  padding-top:35px;
-}
-
-.panel{
-  width:92%;
-  max-width:850px;
-  margin:15px auto;
-  padding:20px;
-  background:rgba(3,15,30,.88);
-  border:2px solid #008cff;
-  border-radius:18px;
-  box-shadow:
-    0 0 20px #006eff,
-    inset 0 0 20px rgba(0,150,255,.12);
-}
-
-canvas{
-  width:min(92vw,700px);
-  height:auto;
-  background:#06111f;
-  border:4px solid #00aaff;
-  border-radius:12px;
-  box-shadow:
-    0 0 25px #0077ff,
-    inset 0 0 30px #001b38;
-  image-rendering:auto;
+button:active{
+  transform:scale(.94);
+  background:#008cff;
 }
 
 .info{
   display:flex;
   justify-content:center;
   flex-wrap:wrap;
-  gap:10px;
+  gap:8px;
   margin:10px;
 }
 
@@ -93,15 +81,71 @@ canvas{
   background:#061a32;
   border:1px solid #008cff;
   border-radius:8px;
-  padding:8px 12px;
+  padding:8px 10px;
   box-shadow:0 0 8px #004cff;
+}
+
+canvas{
+  width:min(94vw,700px);
+  height:auto;
+  background:#06111f;
+  border:4px solid #00aaff;
+  border-radius:12px;
+  box-shadow:
+    0 0 25px #0077ff,
+    inset 0 0 30px #001b38;
+  display:block;
+  margin:auto;
+}
+
+/* =========================
+   PHONE CONTROLS
+========================= */
+
+.mobileControls{
+  width:210px;
+  margin:12px auto;
+  display:grid;
+  grid-template-columns:70px 70px 70px;
+  grid-template-rows:65px 65px 65px;
+  gap:4px;
+}
+
+.mobileControls button{
+  width:65px;
+  height:60px;
+  padding:0;
+  margin:0;
+  font-size:28px;
+  border-radius:15px;
+  user-select:none;
+  -webkit-user-select:none;
+}
+
+.up{
+  grid-column:2;
+  grid-row:1;
+}
+
+.left{
+  grid-column:1;
+  grid-row:2;
+}
+
+.down{
+  grid-column:2;
+  grid-row:2;
+}
+
+.right{
+  grid-column:3;
+  grid-row:2;
 }
 
 .shop-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
   gap:15px;
-  margin-top:15px;
 }
 
 .skin{
@@ -116,16 +160,6 @@ canvas{
   width:120px;
   height:80px;
   border:2px solid #008cff;
-  border-radius:8px;
-}
-
-.locked{
-  opacity:.65;
-}
-
-.small{
-  color:#9bdcff;
-  font-size:13px;
 }
 
 .big{
@@ -134,546 +168,646 @@ canvas{
   color:#00c8ff;
 }
 
-.warning{
-  color:#ff5555;
+.small{
+  color:#9bdcff;
 }
 
-.good{
-  color:#39ff9b;
+@media(max-width:500px){
+
+  h1{
+    font-size:27px;
+  }
+
+  .panel{
+    padding:14px;
+  }
+
+  button{
+    font-size:14px;
+    padding:10px 16px;
+  }
+
+  .info span{
+    font-size:13px;
+    padding:6px 8px;
+  }
+
 }
+
 </style>
 </head>
 
 <body>
 
+
+<!-- =========================
+     MENU
+========================= -->
+
 <div id="menu" class="screen active">
-  <h1>🐍 SNAKE CHAOS</h1>
 
-  <div class="panel">
-    <p class="big">BLUE × BLACK EDITION</p>
-    <p>Survive monsters, collect coins and reach Level 200!</p>
+<h1>🐍 SNAKE CHAOS</h1>
 
-    <button onclick="showScreen('game');startGame()">▶ PLAY</button>
-    <button onclick="showScreen('rules')">📜 RULES</button>
-    <button onclick="showScreen('shop');drawShop()">🛍 SHOP</button>
-    <button onclick="showScreen('help')">❓ HELP</button>
-  </div>
+<div class="panel">
+
+<p class="big">🔵⚫ BLUE × BLACK</p>
+
+<p>Survive the monsters and reach Level 200!</p>
+
+<button onclick="startGame()">▶ PLAY</button>
+
+<button onclick="showScreen('rules')">
+📜 RULES
+</button>
+
+<button onclick="showScreen('shop');drawShop()">
+🛍 SHOP
+</button>
+
+<button onclick="showScreen('help')">
+❓ HELP
+</button>
+
 </div>
 
+</div>
+
+
+<!-- =========================
+     RULES
+========================= -->
 
 <div id="rules" class="screen">
-  <div class="panel">
-    <h1>📜 RULES</h1>
 
-    <p>🍎 🍌 🍊 🍇 normal fruits = <b>1 point</b></p>
-    <p>❓ rare mystery fruit = <b>5 points</b></p>
-    <p>₦ coin = <b>2 coins</b></p>
-    <p>👾 Black monsters will chase you.</p>
-    <p>💥 Touching a monster costs one life.</p>
-    <p>❤️ You start with 3 lives.</p>
-    <p>🎯 Reach the level goal to continue.</p>
+<div class="panel">
 
-    <button onclick="showScreen('menu')">⬅ BACK</button>
-  </div>
+<h1>📜 RULES</h1>
+
+<p>🍎 🍌 🍊 🍇 = <b>1 point</b></p>
+
+<p>❓ Mystery fruit = <b>5 points</b></p>
+
+<p>₦ Naira coin = <b>2 coins</b></p>
+
+<p>🪙 There is only ONE coin at a time.</p>
+
+<p>🍎 There is only ONE fruit at a time.</p>
+
+<p>👾 Black monsters chase you.</p>
+
+<p>❤️ You have 3 lives.</p>
+
+<p>🎯 Reach the level goal to advance.</p>
+
+<button onclick="showScreen('menu')">
+⬅ BACK
+</button>
+
 </div>
 
+</div>
+
+
+<!-- =========================
+     HELP
+========================= -->
 
 <div id="help" class="screen">
-  <div class="panel">
-    <h1>❓ HELP</h1>
 
-    <p>⬆️⬇️⬅️➡️ Arrow keys = Move</p>
-    <p>W A S D = Move</p>
-    <p>SPACE = Pause</p>
-    <p>Eat fruit to gain points.</p>
-    <p>Collect ₦ coins to earn 2 coins.</p>
-    <p>Avoid the black monsters!</p>
+<div class="panel">
 
-    <button onclick="showScreen('menu')">⬅ BACK</button>
-  </div>
+<h1>❓ HELP</h1>
+
+<p>📱 Use the buttons to move on phone.</p>
+
+<p>⬆️⬇️⬅️➡️ Arrow keys also work.</p>
+
+<p>W A S D also work.</p>
+
+<p>SPACE = Pause.</p>
+
+<p>🍎 Eat fruit for points.</p>
+
+<p>₦ Collect the coin for 2 coins.</p>
+
+<p>👾 Avoid the monsters!</p>
+
+<button onclick="showScreen('menu')">
+⬅ BACK
+</button>
+
 </div>
 
+</div>
+
+
+<!-- =========================
+     SHOP
+========================= -->
 
 <div id="shop" class="screen">
-  <div class="panel">
-    <h1>🛍 SNAKE SHOP</h1>
 
-    <p>💰 Your coins: <span id="shopCoins">0</span></p>
+<div class="panel">
 
-    <div id="shopGrid" class="shop-grid"></div>
+<h1>🛍 SNAKE SHOP</h1>
 
-    <button onclick="showScreen('menu')">⬅ BACK</button>
-  </div>
+<p>💰 Coins:
+<b id="shopCoins">0</b>
+</p>
+
+<div id="shopGrid" class="shop-grid"></div>
+
+<button onclick="showScreen('menu')">
+⬅ BACK
+</button>
+
 </div>
 
+</div>
+
+
+<!-- =========================
+     GAME
+========================= -->
 
 <div id="game" class="screen">
 
-  <h1>🐍 SNAKE CHAOS</h1>
+<h1>🐍 SNAKE CHAOS</h1>
 
-  <div class="info">
-    <span>⭐ Score: <b id="score">0</b></span>
-    <span>🎯 Goal: <b id="goal">5</b></span>
-    <span>❤️ Lives: <b id="lives">3</b></span>
-    <span>💰 Coins: <b id="coins">0</b></span>
-    <span>🏆 Level: <b id="level">1</b></span>
-  </div>
+<div class="info">
 
-  <canvas id="gameCanvas" width="700" height="500"></canvas>
+<span>
+⭐ Score:
+<b id="score">0</b>
+</span>
 
-  <br>
+<span>
+🎯 Goal:
+<b id="goal">5</b>
+</span>
 
-  <button onclick="togglePause()">⏸ PAUSE</button>
-  <button onclick="leaveGame()">🚪 LEAVE GAME</button>
+<span>
+❤️ Lives:
+<b id="lives">3</b>
+</span>
+
+<span>
+💰 Coins:
+<b id="coins">0</b>
+</span>
+
+<span>
+🏆 Level:
+<b id="level">1</b>
+</span>
 
 </div>
 
+
+<canvas
+id="gameCanvas"
+width="700"
+height="500">
+</canvas>
+
+
+<!-- PHONE CONTROLS -->
+
+<div class="mobileControls">
+
+<button
+class="up"
+ontouchstart="moveUp(event)"
+onclick="moveUp(event)">
+⬆️
+</button>
+
+<button
+class="left"
+ontouchstart="moveLeft(event)"
+onclick="moveLeft(event)">
+⬅️
+</button>
+
+<button
+class="down"
+ontouchstart="moveDown(event)"
+onclick="moveDown(event)">
+⬇️
+</button>
+
+<button
+class="right"
+ontouchstart="moveRight(event)"
+onclick="moveRight(event)">
+➡️
+</button>
+
+</div>
+
+
+<button onclick="togglePause()">
+⏸ PAUSE
+</button>
+
+<button onclick="leaveGame()">
+🚪 LEAVE
+</button>
+
+</div>
+
+
+<!-- =========================
+     PAUSE
+========================= -->
 
 <div id="pause" class="screen">
-  <div class="panel">
-    <h1>⏸ PAUSED</h1>
-    <button onclick="resumeGame()">▶ RESUME</button>
-    <button onclick="leaveGame()">🚪 LEAVE GAME</button>
-  </div>
+
+<div class="panel">
+
+<h1>⏸ PAUSED</h1>
+
+<button onclick="resumeGame()">
+▶ RESUME
+</button>
+
+<button onclick="leaveGame()">
+🚪 LEAVE
+</button>
+
 </div>
 
+</div>
+
+
+<!-- =========================
+     GAME OVER
+========================= -->
 
 <div id="gameover" class="screen">
-  <div class="panel">
-    <h1>💀 GAME OVER</h1>
 
-    <p>Score: <span id="finalScore">0</span></p>
-    <p>Level: <span id="finalLevel">1</span></p>
+<div class="panel">
 
-    <button onclick="showScreen('game');startGame()">🔄 TRY AGAIN</button>
-    <button onclick="showScreen('menu')">🏠 MENU</button>
-  </div>
+<h1>💀 GAME OVER</h1>
+
+<p>
+Score:
+<b id="finalScore">0</b>
+</p>
+
+<p>
+Level:
+<b id="finalLevel">1</b>
+</p>
+
+<button onclick="startGame()">
+🔄 TRY AGAIN
+</button>
+
+<button onclick="showScreen('menu')">
+🏠 MENU
+</button>
+
+</div>
+
 </div>
 
 
+<!-- =========================
+     LEVEL COMPLETE
+========================= -->
+
 <div id="levelComplete" class="screen">
-  <div class="panel">
-    <h1>🎉 LEVEL COMPLETE!</h1>
 
-    <p>You reached the goal!</p>
-    <p>Get ready for the next level...</p>
+<div class="panel">
 
-    <button onclick="nextLevel()">➡ NEXT LEVEL</button>
-  </div>
+<h1>🎉 LEVEL COMPLETE!</h1>
+
+<p>You reached the goal!</p>
+
+<button onclick="nextLevel()">
+➡ NEXT LEVEL
+</button>
+
+</div>
+
 </div>
 
 
 <script>
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+
+/* =========================
+   GAME VARIABLES
+========================= */
+
+const canvas =
+document.getElementById("gameCanvas");
+
+const ctx =
+canvas.getContext("2d");
 
 const GRID = 25;
 
+
+/* Snake */
+
 let snake = [];
-let direction = {x:1,y:0};
-let nextDirection = {x:1,y:0};
+
+let direction = {
+  x:1,
+  y:0
+};
+
+let nextDirection = {
+  x:1,
+  y:0
+};
+
+
+/* ONE FRUIT */
 
 let fruit = null;
-let coinsList = [];
+
+
+/* ONE COIN */
+
+let coin = null;
+
+
+/* Monsters */
+
 let monsters = [];
 
+
+/* Game */
+
 let score = 0;
+
 let level = 1;
+
 let lives = 3;
-let coins = Number(localStorage.getItem("snakeCoins") || 0);
+
+let coins =
+Number(
+  localStorage.getItem("snakeCoins") || 0
+);
 
 let running = false;
+
 let paused = false;
 
 let lastMove = 0;
 
-/* LOWER = FASTER
-   HIGHER = SLOWER */
+
+/* Snake speed */
+
 const MOVE_DELAY = 180;
 
 
 /* =========================
-   SNAKE SKINS
+   SKINS
 ========================= */
 
 const skins = [
-  {name:"Green Snake",price:0,type:"green"},
-  {name:"Fire Snake",price:50,type:"fire"},
-  {name:"Big Eyes Snake",price:100,type:"eyes"},
-  {name:"Ice Snake",price:150,type:"ice"},
-  {name:"Golden King",price:250,type:"gold"},
-  {name:"Shadow Snake",price:400,type:"shadow"},
-  {name:"Rainbow Legend",price:600,type:"rainbow"},
-  {name:"Beast Snake",price:800,type:"beast"},
-  {name:"Ultra Snake",price:1000,type:"ultra"},
-  {name:"God Snake",price:2000,type:"god"}
+
+{
+name:"Green Snake",
+price:0,
+type:"green"
+},
+
+{
+name:"Fire Snake",
+price:50,
+type:"fire"
+},
+
+{
+name:"Big Eyes Snake",
+price:100,
+type:"eyes"
+},
+
+{
+name:"Ice Snake",
+price:150,
+type:"ice"
+},
+
+{
+name:"Golden King",
+price:250,
+type:"gold"
+},
+
+{
+name:"Shadow Snake",
+price:400,
+type:"shadow"
+},
+
+{
+name:"Rainbow Legend",
+price:600,
+type:"rainbow"
+},
+
+{
+name:"Beast Snake",
+price:800,
+type:"beast"
+},
+
+{
+name:"Ultra Snake",
+price:1000,
+type:"ultra"
+},
+
+{
+name:"God Snake",
+price:2000,
+type:"god"
+}
+
 ];
 
+
 let selectedSkin =
-  localStorage.getItem("selectedSkin") || "Green Snake";
+localStorage.getItem("selectedSkin")
+|| "Green Snake";
+
 
 let owned;
 
 try{
-  owned = JSON.parse(
-    localStorage.getItem("ownedSkins") ||
-    '["Green Snake"]'
-  );
+
+owned =
+JSON.parse(
+localStorage.getItem("ownedSkins")
+|| '["Green Snake"]'
+);
+
 }catch{
-  owned = ["Green Snake"];
+
+owned =
+["Green Snake"];
+
 }
 
 
 /* =========================
-   SCREEN SYSTEM
+   SCREENS
 ========================= */
 
 function showScreen(id){
 
-  document.querySelectorAll(".screen")
-    .forEach(s=>s.classList.remove("active"));
+document
+.querySelectorAll(".screen")
+.forEach(
+s=>s.classList.remove("active")
+);
 
-  document.getElementById(id)
-    .classList.add("active");
-
-}
-
-
-/* =========================
-   SHOP
-========================= */
-
-function drawShop(){
-
-  document.getElementById("shopCoins").textContent = coins;
-
-  const grid = document.getElementById("shopGrid");
-
-  grid.innerHTML = "";
-
-  skins.forEach((skin,index)=>{
-
-    const box = document.createElement("div");
-
-    box.className = "skin";
-
-    if(!owned.includes(skin.name)){
-      box.classList.add("locked");
-    }
-
-    const preview = document.createElement("canvas");
-
-    preview.width = 120;
-    preview.height = 80;
-
-    box.appendChild(preview);
-
-    const pc = preview.getContext("2d");
-
-    drawSnakePreview(
-      pc,
-      skin.type
-    );
-
-    const title = document.createElement("h3");
-
-    title.textContent = skin.name;
-
-    box.appendChild(title);
-
-    const price = document.createElement("p");
-
-    if(skin.price === 0){
-      price.textContent = "FREE";
-    }else{
-      price.textContent = "₦ " + skin.price;
-    }
-
-    box.appendChild(price);
-
-    const button = document.createElement("button");
-
-    if(owned.includes(skin.name)){
-
-      if(selectedSkin === skin.name){
-        button.textContent = "SELECTED";
-      }else{
-        button.textContent = "USE";
-      }
-
-      button.onclick = ()=>{
-        selectedSkin = skin.name;
-
-        localStorage.setItem(
-          "selectedSkin",
-          selectedSkin
-        );
-
-        drawShop();
-      };
-
-    }else{
-
-      button.textContent = "BUY";
-
-      button.onclick = ()=>{
-
-        if(coins >= skin.price){
-
-          coins -= skin.price;
-
-          owned.push(skin.name);
-
-          localStorage.setItem(
-            "snakeCoins",
-            coins
-          );
-
-          localStorage.setItem(
-            "ownedSkins",
-            JSON.stringify(owned)
-          );
-
-          drawShop();
-
-        }else{
-
-          alert(
-            "Not enough coins!"
-          );
-
-        }
-
-      };
-
-    }
-
-    box.appendChild(button);
-
-    grid.appendChild(box);
-
-  });
+document
+.getElementById(id)
+.classList.add("active");
 
 }
 
 
 /* =========================
-   SHOP PREVIEWS
-========================= */
-
-function drawSnakePreview(c,type){
-
-  c.clearRect(
-    0,0,120,80
-  );
-
-  c.fillStyle = "#030914";
-
-  c.fillRect(
-    0,0,120,80
-  );
-
-  let colors;
-
-  if(type === "green"){
-    colors = ["#00ff66","#009944"];
-  }
-
-  if(type === "fire"){
-    colors = ["#ff4b00","#ffb000"];
-  }
-
-  if(type === "eyes"){
-    colors = ["#00aaff","#0055ff"];
-  }
-
-  if(type === "ice"){
-    colors = ["#bdf5ff","#00bfff"];
-  }
-
-  if(type === "gold"){
-    colors = ["#fff000","#ff9900"];
-  }
-
-  if(type === "shadow"){
-    colors = ["#222222","#000000"];
-  }
-
-  if(type === "rainbow"){
-    colors = ["#ff00ff","#00ffff"];
-  }
-
-  if(type === "beast"){
-    colors = ["#4400ff","#09001c"];
-  }
-
-  if(type === "ultra"){
-    colors = ["#00ffff","#0044ff"];
-  }
-
-  if(type === "god"){
-    colors = ["#ffffff","#0077ff"];
-  }
-
-  for(let i=0;i<5;i++){
-
-    c.fillStyle =
-      colors[i%2];
-
-    c.fillRect(
-      25 + i*15,
-      40,
-      14,
-      14
-    );
-
-  }
-
-  c.fillStyle =
-    colors[0];
-
-  c.fillRect(
-    80,
-    25,
-    18,
-    18
-  );
-
-  c.fillStyle =
-    "white";
-
-  c.fillRect(
-    86,
-    29,
-    4,
-    4
-  );
-
-  c.fillRect(
-    94,
-    29,
-    4,
-    4
-  );
-
-}
-
-
-/* =========================
-   GAME START
+   START GAME
 ========================= */
 
 function startGame(){
 
-  score = 0;
-  level = 1;
-  lives = 3;
+score = 0;
 
-  direction = {
-    x:1,
-    y:0
-  };
+level = 1;
 
-  nextDirection = {
-    x:1,
-    y:0
-  };
+lives = 3;
 
-  snake = [
-    {x:10,y:10},
-    {x:9,y:10},
-    {x:8,y:10}
-  ];
 
-  makeFruit();
+direction = {
+x:1,
+y:0
+};
 
-  makeCoins();
+nextDirection = {
+x:1,
+y:0
+};
 
-  makeMonsters();
 
-  running = true;
-  paused = false;
+snake = [
 
-  lastMove = performance.now();
+{x:10,y:10},
 
-  updateUI();
+{x:9,y:10},
 
-  showScreen("game");
+{x:8,y:10}
+
+];
+
+
+makeFruit();
+
+makeCoin();
+
+makeMonsters();
+
+
+running = true;
+
+paused = false;
+
+lastMove =
+performance.now();
+
+
+updateUI();
+
+showScreen("game");
 
 }
 
 
 /* =========================
-   FRUIT
+   ONE FRUIT
 ========================= */
 
 const normalFruits = [
-  "🍎",
-  "🍌",
-  "🍊",
-  "🍇"
+
+"🍎",
+"🍌",
+"🍊",
+"🍇"
+
 ];
+
 
 function makeFruit(){
 
-  let rare =
-    Math.random() < 0.08;
+let rare =
+Math.random() < 0.08;
 
-  let symbol =
-    rare
-    ? "❓"
-    : normalFruits[
-        Math.floor(
-          Math.random()*normalFruits.length
-        )
-      ];
 
-  fruit = {
+let symbol =
+rare
+? "❓"
+: normalFruits[
+Math.floor(
+Math.random() *
+normalFruits.length
+)
+];
 
-    x:Math.floor(
-      Math.random()*
-      (canvas.width/GRID)
-    ),
 
-    y:Math.floor(
-      Math.random()*
-      (canvas.height/GRID)
-    ),
+fruit = {
 
-    rare:rare,
-    symbol:symbol
+x:
+Math.floor(
+Math.random() *
+(canvas.width / GRID)
+),
 
-  };
+y:
+Math.floor(
+Math.random() *
+(canvas.height / GRID)
+),
+
+rare:rare,
+
+symbol:symbol
+
+};
 
 }
 
 
 /* =========================
-   COINS
+   ONE COIN
 ========================= */
 
-function makeCoins(){
+function makeCoin(){
 
-  coinsList = [];
+coin = {
 
-  for(let i=0;i<3;i++){
+x:
+Math.floor(
+Math.random() *
+(canvas.width / GRID)
+),
 
-    coinsList.push({
+y:
+Math.floor(
+Math.random() *
+(canvas.height / GRID)
+)
 
-      x:Math.floor(
-        Math.random()*
-        (canvas.width/GRID)
-      ),
-
-      y:Math.floor(
-        Math.random()*
-        (canvas.height/GRID)
-      )
-
-    });
-
-  }
+};
 
 }
 
@@ -684,31 +818,38 @@ function makeCoins(){
 
 function makeMonsters(){
 
-  monsters = [];
+monsters = [];
 
-  let amount =
-    Math.min(
-      1 + Math.floor(level/5),
-      8
-    );
+let amount =
+Math.min(
+1 + Math.floor(level / 5),
+8
+);
 
-  for(let i=0;i<amount;i++){
 
-    monsters.push({
+for(
+let i=0;
+i<amount;
+i++
+){
 
-      x:Math.floor(
-        Math.random()*
-        (canvas.width/GRID)
-      ),
+monsters.push({
 
-      y:Math.floor(
-        Math.random()*
-        (canvas.height/GRID)
-      )
+x:
+Math.floor(
+Math.random() *
+(canvas.width / GRID)
+),
 
-    });
+y:
+Math.floor(
+Math.random() *
+(canvas.height / GRID)
+)
 
-  }
+});
+
+}
 
 }
 
@@ -719,172 +860,202 @@ function makeMonsters(){
 
 function update(){
 
-  direction = nextDirection;
+direction =
+nextDirection;
 
-  const head = {
 
-    x:snake[0].x + direction.x,
-    y:snake[0].y + direction.y
+const head = {
 
-  };
+x:
+snake[0].x + direction.x,
 
+y:
+snake[0].y + direction.y
 
-  /* WALL WRAP */
+};
 
-  const maxX =
-    canvas.width/GRID;
 
-  const maxY =
-    canvas.height/GRID;
+/* WALL WRAP */
 
-  if(head.x < 0)
-    head.x = maxX-1;
+const maxX =
+canvas.width / GRID;
 
-  if(head.x >= maxX)
-    head.x = 0;
+const maxY =
+canvas.height / GRID;
 
-  if(head.y < 0)
-    head.y = maxY-1;
 
-  if(head.y >= maxY)
-    head.y = 0;
+if(head.x < 0)
+head.x = maxX - 1;
 
+if(head.x >= maxX)
+head.x = 0;
 
-  /* SELF COLLISION */
+if(head.y < 0)
+head.y = maxY - 1;
 
-  for(let i=0;i<snake.length;i++){
+if(head.y >= maxY)
+head.y = 0;
 
-    if(
-      head.x === snake[i].x &&
-      head.y === snake[i].y
-    ){
 
-      loseLife();
-      return;
+/* SELF COLLISION */
 
-    }
+for(
+let i=0;
+i<snake.length;
+i++
+){
 
-  }
+if(
+head.x === snake[i].x &&
+head.y === snake[i].y
+){
 
+loseLife();
 
-  snake.unshift(head);
+return;
 
+}
 
-  /* FRUIT */
+}
 
-  if(
-    fruit &&
-    head.x === fruit.x &&
-    head.y === fruit.y
-  ){
 
-    if(fruit.rare){
+snake.unshift(head);
 
-      score += 5;
 
-    }else{
+/* =========================
+   FRUIT
+========================= */
 
-      score += 1;
+if(
+fruit &&
+head.x === fruit.x &&
+head.y === fruit.y
+){
 
-    }
+if(fruit.rare){
 
-    /* NEW FRUIT IMMEDIATELY */
+score += 5;
 
-    makeFruit();
+}else{
 
-  }else{
+score += 1;
 
-    snake.pop();
+}
 
-  }
 
+/* IMMEDIATELY MAKE
+   ONE NEW FRUIT */
 
-  /* COINS */
+makeFruit();
 
-  for(let i=coinsList.length-1;i>=0;i--){
+}else{
 
-    if(
-      head.x === coinsList[i].x &&
-      head.y === coinsList[i].y
-    ){
+snake.pop();
 
-      /* ONE NAIRA COIN = 2 COINS */
+}
 
-      coins += 2;
 
-      localStorage.setItem(
-        "snakeCoins",
-        coins
-      );
+/* =========================
+   COIN
+========================= */
 
-      coinsList.splice(i,1);
+if(
+coin &&
+head.x === coin.x &&
+head.y === coin.y
+){
 
-      coinsList.push({
+/*
+ ONE NAIRA COIN
+ = 2 GAME COINS
+*/
 
-        x:Math.floor(
-          Math.random()*
-          (canvas.width/GRID)
-        ),
+coins += 2;
 
-        y:Math.floor(
-          Math.random()*
-          (canvas.height/GRID)
-        )
 
-      });
+localStorage.setItem(
+"snakeCoins",
+coins
+);
 
-    }
 
-  }
+/*
+ THE OLD COIN IS REMOVED
+ AND ONE NEW COIN APPEARS
+*/
 
+makeCoin();
 
-  /* MONSTERS */
+}
 
-  monsters.forEach(monster=>{
 
-    let dx =
-      head.x - monster.x;
+/* =========================
+   MONSTERS
+========================= */
 
-    let dy =
-      head.y - monster.y;
+for(
+let monster of monsters
+){
 
+let dx =
+head.x - monster.x;
 
-    if(Math.abs(dx) > Math.abs(dy)){
+let dy =
+head.y - monster.y;
 
-      monster.x +=
-        dx > 0 ? 1 : dx < 0 ? -1 : 0;
 
-    }else{
+if(
+Math.abs(dx) >
+Math.abs(dy)
+){
 
-      monster.y +=
-        dy > 0 ? 1 : dy < 0 ? -1 : 0;
+if(dx > 0)
+monster.x++;
 
-    }
+else if(dx < 0)
+monster.x--;
 
+}else{
 
-    if(
-      monster.x === head.x &&
-      monster.y === head.y
-    ){
+if(dy > 0)
+monster.y++;
 
-      loseLife();
+else if(dy < 0)
+monster.y--;
 
-    }
+}
 
-  });
 
+if(
+monster.x === head.x &&
+monster.y === head.y
+){
 
-  if(score >= level*5){
+loseLife();
 
-    running = false;
+return;
 
-    showScreen(
-      "levelComplete"
-    );
+}
 
-  }
+}
 
-  updateUI();
+
+/* LEVEL */
+
+if(
+score >= level * 5
+){
+
+running = false;
+
+showScreen(
+"levelComplete"
+);
+
+}
+
+
+updateUI();
 
 }
 
@@ -895,35 +1066,40 @@ function update(){
 
 function loseLife(){
 
-  lives--;
+lives--;
 
-  updateUI();
+updateUI();
 
-  if(lives <= 0){
 
-    gameOver();
+if(lives <= 0){
 
-    return;
+gameOver();
 
-  }
+return;
 
-  snake = [
+}
 
-    {x:10,y:10},
-    {x:9,y:10},
-    {x:8,y:10}
 
-  ];
+snake = [
 
-  direction = {
-    x:1,
-    y:0
-  };
+{x:10,y:10},
 
-  nextDirection = {
-    x:1,
-    y:0
-  };
+{x:9,y:10},
+
+{x:8,y:10}
+
+];
+
+
+direction = {
+x:1,
+y:0
+};
+
+nextDirection = {
+x:1,
+y:0
+};
 
 }
 
@@ -934,39 +1110,46 @@ function loseLife(){
 
 function nextLevel(){
 
-  level++;
+level++;
 
-  running = true;
+running = true;
 
-  snake = [
+snake = [
 
-    {x:10,y:10},
-    {x:9,y:10},
-    {x:8,y:10}
+{x:10,y:10},
 
-  ];
+{x:9,y:10},
 
-  direction = {
-    x:1,
-    y:0
-  };
+{x:8,y:10}
 
-  nextDirection = {
-    x:1,
-    y:0
-  };
+];
 
-  makeFruit();
 
-  makeCoins();
+direction = {
+x:1,
+y:0
+};
 
-  makeMonsters();
+nextDirection = {
+x:1,
+y:0
+};
 
-  lastMove = performance.now();
 
-  updateUI();
+makeFruit();
 
-  showScreen("game");
+makeCoin();
+
+makeMonsters();
+
+
+lastMove =
+performance.now();
+
+
+updateUI();
+
+showScreen("game");
 
 }
 
@@ -977,17 +1160,17 @@ function nextLevel(){
 
 function gameOver(){
 
-  running = false;
+running = false;
 
-  document.getElementById(
-    "finalScore"
-  ).textContent = score;
+document
+.getElementById("finalScore")
+.textContent = score;
 
-  document.getElementById(
-    "finalLevel"
-  ).textContent = level;
+document
+.getElementById("finalLevel")
+.textContent = level;
 
-  showScreen("gameover");
+showScreen("gameover");
 
 }
 
@@ -998,495 +1181,174 @@ function gameOver(){
 
 function updateUI(){
 
-  document.getElementById(
-    "score"
-  ).textContent = score;
+document
+.getElementById("score")
+.textContent = score;
 
-  document.getElementById(
-    "goal"
-  ).textContent = level*5;
+document
+.getElementById("goal")
+.textContent =
+level * 5;
 
-  document.getElementById(
-    "lives"
-  ).textContent = lives;
+document
+.getElementById("lives")
+.textContent = lives;
 
-  document.getElementById(
-    "coins"
-  ).textContent = coins;
+document
+.getElementById("coins")
+.textContent = coins;
 
-  document.getElementById(
-    "level"
-  ).textContent = level;
+document
+.getElementById("level")
+.textContent = level;
 
 }
 
 
 /* =========================
-   DRAW
+   PHONE MOVEMENT
 ========================= */
 
-function draw(){
+function moveUp(e){
 
-  /* BLUE / BLACK BACKGROUND */
+if(e)
+e.preventDefault();
 
-  const gradient =
-    ctx.createLinearGradient(
-      0,0,
-      canvas.width,
-      canvas.height
-    );
+if(direction.y !== 1){
 
-  gradient.addColorStop(
-    0,
-    "#071b36"
-  );
+nextDirection = {
+x:0,
+y:-1
+};
 
-  gradient.addColorStop(
-    .5,
-    "#020814"
-  );
+}
 
-  gradient.addColorStop(
-    1,
-    "#001a32"
-  );
+}
 
-  ctx.fillStyle =
-    gradient;
 
-  ctx.fillRect(
-    0,0,
-    canvas.width,
-    canvas.height
-  );
+function moveDown(e){
 
+if(e)
+e.preventDefault();
 
-  /* GLOW GRID */
+if(direction.y !== -1){
 
-  ctx.strokeStyle =
-    "rgba(0,150,255,.13)";
+nextDirection = {
+x:0,
+y:1
+};
 
-  ctx.lineWidth = 1;
+}
 
-  for(
-    let x=0;
-    x<canvas.width;
-    x+=GRID
-  ){
+}
 
-    ctx.beginPath();
 
-    ctx.moveTo(x,0);
+function moveLeft(e){
 
-    ctx.lineTo(
-      x,
-      canvas.height
-    );
+if(e)
+e.preventDefault();
 
-    ctx.stroke();
+if(direction.x !== 1){
 
-  }
+nextDirection = {
+x:-1,
+y:0
+};
 
-  for(
-    let y=0;
-    y<canvas.height;
-    y+=GRID
-  ){
+}
 
-    ctx.beginPath();
+}
 
-    ctx.moveTo(0,y);
 
-    ctx.lineTo(
-      canvas.width,
-      y
-    );
+function moveRight(e){
 
-    ctx.stroke();
+if(e)
+e.preventDefault();
 
-  }
+if(direction.x !== -1){
 
+nextDirection = {
+x:1,
+y:0
+};
 
-  /* FRUIT */
-
-  if(fruit){
-
-    ctx.fillStyle =
-      fruit.rare
-      ? "#1820ff"
-      : "#08101c";
-
-    ctx.shadowColor =
-      fruit.rare
-      ? "#0077ff"
-      : "#00bfff";
-
-    ctx.shadowBlur = 12;
-
-    ctx.fillRect(
-      fruit.x*GRID+2,
-      fruit.y*GRID+2,
-      GRID-4,
-      GRID-4
-    );
-
-    ctx.shadowBlur = 0;
-
-    ctx.font =
-      "19px 'Segoe UI Emoji', Arial";
-
-    ctx.textAlign =
-      "center";
-
-    ctx.textBaseline =
-      "middle";
-
-    ctx.fillText(
-      fruit.symbol,
-      fruit.x*GRID+GRID/2,
-      fruit.y*GRID+GRID/2+1
-    );
-
-  }
-
-
-  /* COINS */
-
-  coinsList.forEach(c=>{
-
-    ctx.shadowColor =
-      "#00aaff";
-
-    ctx.shadowBlur = 12;
-
-    ctx.fillStyle =
-      "#07192d";
-
-    ctx.fillRect(
-      c.x*GRID+3,
-      c.y*GRID+3,
-      GRID-6,
-      GRID-6
-    );
-
-    ctx.shadowBlur = 0;
-
-    ctx.fillStyle =
-      "#00d9ff";
-
-    ctx.font =
-      "bold 15px Arial";
-
-    ctx.textAlign =
-      "center";
-
-    ctx.textBaseline =
-      "middle";
-
-    ctx.fillText(
-      "₦",
-      c.x*GRID+GRID/2,
-      c.y*GRID+GRID/2
-    );
-
-  });
-
-
-  /* MONSTERS */
-
-  monsters.forEach(m=>{
-
-    const x =
-      m.x*GRID;
-
-    const y =
-      m.y*GRID;
-
-
-    /* BLACK BODY */
-
-    ctx.shadowColor =
-      "#008cff";
-
-    ctx.shadowBlur = 10;
-
-    ctx.fillStyle =
-      "#020305";
-
-    ctx.fillRect(
-      x+1,
-      y+1,
-      GRID-2,
-      GRID-2
-    );
-
-    ctx.shadowBlur = 0;
-
-
-    /* BLUE BORDER */
-
-    ctx.strokeStyle =
-      "#0077ff";
-
-    ctx.lineWidth = 2;
-
-    ctx.strokeRect(
-      x+2,
-      y+2,
-      GRID-4,
-      GRID-4
-    );
-
-
-    /* EYES */
-
-    ctx.fillStyle =
-      "white";
-
-    ctx.fillRect(
-      x+5,
-      y+5,
-      5,
-      5
-    );
-
-    ctx.fillRect(
-      x+15,
-      y+5,
-      5,
-      5
-    );
-
-
-    /* RED PUPILS */
-
-    ctx.fillStyle =
-      "#ff1744";
-
-    ctx.fillRect(
-      x+7,
-      y+6,
-      3,
-      3
-    );
-
-    ctx.fillRect(
-      x+17,
-      y+6,
-      3,
-      3
-    );
-
-
-    /* MOUTH */
-
-    ctx.fillStyle =
-      "#ffffff";
-
-    ctx.fillRect(
-      x+6,
-      y+16,
-      14,
-      3
-    );
-
-  });
-
-
-  /* SNAKE */
-
-  snake.forEach((part,i)=>{
-
-    drawSnakePart(
-      part.x*GRID,
-      part.y*GRID,
-      i
-    );
-
-  });
+}
 
 }
 
 
 /* =========================
-   SNAKE GRAPHICS
+   KEYBOARD
 ========================= */
 
-function drawSnakePart(x,y,index){
+document.addEventListener(
+"keydown",
+function(e){
 
-  let type =
-    skins.find(
-      s=>s.name===selectedSkin
-    )?.type || "green";
-
-
-  let main =
-    "#00aaff";
-
-  let second =
-    "#001f4d";
+let key =
+e.key.toLowerCase();
 
 
-  if(type === "green"){
-    main="#00e676";
-    second="#006633";
-  }
+if(
+key === "arrowup" ||
+key === "w"
+){
 
-  if(type === "fire"){
-    main="#ff4d00";
-    second="#ffcc00";
-  }
-
-  if(type === "eyes"){
-    main="#008cff";
-    second="#001c55";
-  }
-
-  if(type === "ice"){
-    main="#8eeaff";
-    second="#008cff";
-  }
-
-  if(type === "gold"){
-    main="#ffd700";
-    second="#8a5d00";
-  }
-
-  if(type === "shadow"){
-    main="#202020";
-    second="#000000";
-  }
-
-  if(type === "rainbow"){
-
-    const colors=[
-      "#ff004c",
-      "#ff8a00",
-      "#ffee00",
-      "#00ff66",
-      "#00c8ff",
-      "#7a00ff"
-    ];
-
-    main =
-      colors[index %
-      colors.length];
-
-    second =
-      "#050505";
-
-  }
-
-  if(type === "beast"){
-    main="#6200ff";
-    second="#090018";
-  }
-
-  if(type === "ultra"){
-    main="#00eaff";
-    second="#003cff";
-  }
-
-  if(type === "god"){
-    main="#ffffff";
-    second="#0077ff";
-  }
-
-
-  /* OUTER GLOW */
-
-  ctx.shadowColor =
-    main;
-
-  ctx.shadowBlur =
-    index===0 ? 15 : 7;
-
-
-  /* BODY */
-
-  const gradient =
-    ctx.createLinearGradient(
-      x,y,
-      x+GRID,y+GRID
-    );
-
-  gradient.addColorStop(
-    0,
-    main
-  );
-
-  gradient.addColorStop(
-    1,
-    second
-  );
-
-  ctx.fillStyle =
-    gradient;
-
-  ctx.fillRect(
-    x+2,
-    y+2,
-    GRID-4,
-    GRID-4
-  );
-
-  ctx.shadowBlur = 0;
-
-
-  /* BLUE HIGHLIGHT */
-
-  ctx.fillStyle =
-    "rgba(255,255,255,.25)";
-
-  ctx.fillRect(
-    x+4,
-    y+4,
-    GRID-10,
-    3
-  );
-
-
-  /* HEAD */
-
-  if(index === 0){
-
-    ctx.fillStyle =
-      "white";
-
-    ctx.fillRect(
-      x+5,
-      y+6,
-      5,
-      5
-    );
-
-    ctx.fillRect(
-      x+15,
-      y+6,
-      5,
-      5
-    );
-
-    ctx.fillStyle =
-      "#001020";
-
-    ctx.fillRect(
-      x+7,
-      y+7,
-      2,
-      3
-    );
-
-    ctx.fillRect(
-      x+17,
-      y+7,
-      2,
-      3
-    );
-
-  }
+moveUp(e);
 
 }
+
+
+if(
+key === "arrowdown" ||
+key === "s"
+){
+
+moveDown(e);
+
+}
+
+
+if(
+key === "arrowleft" ||
+key === "a"
+){
+
+moveLeft(e);
+
+}
+
+
+if(
+key === "arrowright" ||
+key === "d"
+){
+
+moveRight(e);
+
+}
+
+
+if(
+key === " " &&
+running
+){
+
+if(paused){
+
+resumeGame();
+
+}else{
+
+togglePause();
+
+}
+
+e.preventDefault();
+
+}
+
+});
 
 
 /* =========================
@@ -1495,24 +1357,24 @@ function drawSnakePart(x,y,index){
 
 function togglePause(){
 
-  if(!running)
-    return;
+if(!running)
+return;
 
-  paused = true;
+paused = true;
 
-  showScreen("pause");
+showScreen("pause");
 
 }
 
 
 function resumeGame(){
 
-  paused = false;
+paused = false;
 
-  lastMove =
-    performance.now();
+lastMove =
+performance.now();
 
-  showScreen("game");
+showScreen("game");
 
 }
 
@@ -1523,160 +1385,730 @@ function resumeGame(){
 
 function leaveGame(){
 
-  running = false;
+running = false;
 
-  paused = false;
+paused = false;
 
-  showScreen("menu");
+showScreen("menu");
 
 }
 
 
 /* =========================
-   KEYBOARD
+   DRAW
 ========================= */
 
-document.addEventListener(
-  "keydown",
-  e=>{
+function draw(){
 
-    const key =
-      e.key.toLowerCase();
+/* BACKGROUND */
 
+const gradient =
+ctx.createLinearGradient(
+0,0,
+canvas.width,
+canvas.height
+);
 
-    if(
-      key === "arrowup" ||
-      key === "w"
-    ){
+gradient.addColorStop(
+0,
+"#071b36"
+);
 
-      if(direction.y !== 1){
+gradient.addColorStop(
+0.5,
+"#020814"
+);
 
-        nextDirection={
-          x:0,
-          y:-1
-        };
+gradient.addColorStop(
+1,
+"#001a32"
+);
 
-      }
+ctx.fillStyle =
+gradient;
 
-      e.preventDefault();
-
-    }
-
-
-    if(
-      key === "arrowdown" ||
-      key === "s"
-    ){
-
-      if(direction.y !== -1){
-
-        nextDirection={
-          x:0,
-          y:1
-        };
-
-      }
-
-      e.preventDefault();
-
-    }
-
-
-    if(
-      key === "arrowleft" ||
-      key === "a"
-    ){
-
-      if(direction.x !== 1){
-
-        nextDirection={
-          x:-1,
-          y:0
-        };
-
-      }
-
-      e.preventDefault();
-
-    }
-
-
-    if(
-      key === "arrowright" ||
-      key === "d"
-    ){
-
-      if(direction.x !== -1){
-
-        nextDirection={
-          x:1,
-          y:0
-        };
-
-      }
-
-      e.preventDefault();
-
-    }
-
-
-    if(key === " " && running){
-
-      if(paused){
-
-        resumeGame();
-
-      }else{
-
-        togglePause();
-
-      }
-
-      e.preventDefault();
-
-    }
-
-  }
+ctx.fillRect(
+0,0,
+canvas.width,
+canvas.height
 );
 
 
-/* =========================
-   GAME LOOP
-========================= */
+/* GRID */
 
-function loop(time){
+ctx.strokeStyle =
+"rgba(0,150,255,.13)";
 
-  if(
-    running &&
-    !paused &&
-    time-lastMove >= MOVE_DELAY
-  ){
+ctx.lineWidth = 1;
 
-    update();
 
-    lastMove =
-      time;
+for(
+let x=0;
+x<canvas.width;
+x+=GRID
+){
 
-  }
+ctx.beginPath();
 
-  draw();
+ctx.moveTo(x,0);
 
-  requestAnimationFrame(
-    loop
-  );
+ctx.lineTo(
+x,
+canvas.height
+);
+
+ctx.stroke();
 
 }
 
-requestAnimationFrame(
-  loop
+
+for(
+let y=0;
+y<canvas.height;
+y+=GRID
+){
+
+ctx.beginPath();
+
+ctx.moveTo(0,y);
+
+ctx.lineTo(
+canvas.width,
+y
+);
+
+ctx.stroke();
+
+}
+
+
+/* =========================
+   FRUIT
+========================= */
+
+if(fruit){
+
+ctx.fillStyle =
+fruit.rare
+? "#1720ff"
+: "#08101c";
+
+ctx.shadowColor =
+fruit.rare
+? "#0055ff"
+: "#00bfff";
+
+ctx.shadowBlur = 14;
+
+ctx.fillRect(
+
+fruit.x * GRID + 2,
+
+fruit.y * GRID + 2,
+
+GRID - 4,
+
+GRID - 4
+
+);
+
+ctx.shadowBlur = 0;
+
+
+ctx.font =
+"19px 'Segoe UI Emoji', Arial";
+
+ctx.textAlign =
+"center";
+
+ctx.textBaseline =
+"middle";
+
+
+ctx.fillText(
+
+fruit.symbol,
+
+fruit.x * GRID + GRID/2,
+
+fruit.y * GRID + GRID/2
+
+);
+
+}
+
+
+/* =========================
+   ONE COIN
+========================= */
+
+if(coin){
+
+ctx.shadowColor =
+"#00aaff";
+
+ctx.shadowBlur = 15;
+
+ctx.fillStyle =
+"#06182d";
+
+ctx.fillRect(
+
+coin.x * GRID + 2,
+
+coin.y * GRID + 2,
+
+GRID - 4,
+
+GRID - 4
+
+);
+
+ctx.shadowBlur = 0;
+
+
+ctx.fillStyle =
+"#00d9ff";
+
+ctx.font =
+"bold 15px Arial";
+
+ctx.textAlign =
+"center";
+
+ctx.textBaseline =
+"middle";
+
+
+ctx.fillText(
+
+"₦",
+
+coin.x * GRID + GRID/2,
+
+coin.y * GRID + GRID/2
+
+);
+
+}
+
+
+/* =========================
+   MONSTERS
+========================= */
+
+monsters.forEach(m=>{
+
+const x =
+m.x * GRID;
+
+const y =
+m.y * GRID;
+
+
+/* BLACK BODY */
+
+ctx.shadowColor =
+"#008cff";
+
+ctx.shadowBlur = 12;
+
+ctx.fillStyle =
+"#020305";
+
+ctx.fillRect(
+x+1,
+y+1,
+GRID-2,
+GRID-2
+);
+
+ctx.shadowBlur = 0;
+
+
+/* BLUE BORDER */
+
+ctx.strokeStyle =
+"#0077ff";
+
+ctx.lineWidth = 2;
+
+ctx.strokeRect(
+x+2,
+y+2,
+GRID-4,
+GRID-4
 );
 
 
-/* INITIAL SHOP */
+/* EYES */
+
+ctx.fillStyle =
+"white";
+
+ctx.fillRect(
+x+5,
+y+5,
+5,
+5
+);
+
+ctx.fillRect(
+x+15,
+y+5,
+5,
+5
+);
+
+
+/* RED EYES */
+
+ctx.fillStyle =
+"#ff1744";
+
+ctx.fillRect(
+x+7,
+y+6,
+3,
+3
+);
+
+ctx.fillRect(
+x+17,
+y+6,
+3,
+3
+);
+
+
+/* MOUTH */
+
+ctx.fillStyle =
+"white";
+
+ctx.fillRect(
+x+6,
+y+16,
+14,
+3
+);
+
+});
+
+
+/* =========================
+   SNAKE
+========================= */
+
+snake.forEach(
+(part,index)=>{
+
+drawSnakePart(
+part.x * GRID,
+part.y * GRID,
+index
+);
+
+});
+
+}
+
+
+/* =========================
+   SNAKE DRAWING
+========================= */
+
+function drawSnakePart(
+x,
+y,
+index
+){
+
+let skin =
+skins.find(
+s=>s.name === selectedSkin
+);
+
+
+let type =
+skin
+? skin.type
+: "green";
+
+
+let main =
+"#00aaff";
+
+let second =
+"#001f4d";
+
+
+if(type==="green"){
+
+main="#00e676";
+second="#006633";
+
+}
+
+if(type==="fire"){
+
+main="#ff4d00";
+second="#ffcc00";
+
+}
+
+if(type==="eyes"){
+
+main="#008cff";
+second="#001c55";
+
+}
+
+if(type==="ice"){
+
+main="#8eeaff";
+second="#008cff";
+
+}
+
+if(type==="gold"){
+
+main="#ffd700";
+second="#8a5d00";
+
+}
+
+if(type==="shadow"){
+
+main="#202020";
+second="#000000";
+
+}
+
+if(type==="beast"){
+
+main="#6200ff";
+second="#090018";
+
+}
+
+if(type==="ultra"){
+
+main="#00eaff";
+second="#003cff";
+
+}
+
+if(type==="god"){
+
+main="#ffffff";
+second="#0077ff";
+
+}
+
+
+/* RAINBOW */
+
+if(type==="rainbow"){
+
+const colors=[
+
+"#ff004c",
+"#ff8a00",
+"#ffee00",
+"#00ff66",
+"#00c8ff",
+"#7a00ff"
+
+];
+
+main =
+colors[
+index % colors.length
+];
+
+second="#050505";
+
+}
+
+
+/* GLOW */
+
+ctx.shadowColor =
+main;
+
+ctx.shadowBlur =
+index===0 ? 16 : 8;
+
+
+/* GRADIENT */
+
+const gradient =
+ctx.createLinearGradient(
+x,y,
+x+GRID,
+y+GRID
+);
+
+gradient.addColorStop(
+0,
+main
+);
+
+gradient.addColorStop(
+1,
+second
+);
+
+ctx.fillStyle =
+gradient;
+
+
+ctx.fillRect(
+x+2,
+y+2,
+GRID-4,
+GRID-4
+);
+
+
+ctx.shadowBlur = 0;
+
+
+/* HIGHLIGHT */
+
+ctx.fillStyle =
+"rgba(255,255,255,.25)";
+
+ctx.fillRect(
+x+4,
+y+4,
+GRID-10,
+3
+);
+
+
+/* HEAD */
+
+if(index===0){
+
+ctx.fillStyle =
+"white";
+
+ctx.fillRect(
+x+5,
+y+6,
+5,
+5
+);
+
+ctx.fillRect(
+x+15,
+y+6,
+5,
+5
+);
+
+
+ctx.fillStyle =
+"#001020";
+
+ctx.fillRect(
+x+7,
+y+7,
+2,
+3
+);
+
+ctx.fillRect(
+x+17,
+y+7,
+2,
+3
+);
+
+}
+
+}
+
+
+/* =========================
+   SHOP
+========================= */
+
+function drawShop(){
+
+document
+.getElementById("shopCoins")
+.textContent = coins;
+
+
+const grid =
+document.getElementById("shopGrid");
+
+grid.innerHTML = "";
+
+
+skins.forEach(skin=>{
+
+const box =
+document.createElement("div");
+
+box.className = "skin";
+
+
+const preview =
+document.createElement("canvas");
+
+preview.width = 120;
+
+preview.height = 80;
+
+box.appendChild(preview);
+
+
+drawSnakePreview(
+preview.getContext("2d"),
+skin.type
+);
+
+
+const title =
+document.createElement("h3");
+
+title.textContent =
+skin.name;
+
+box.appendChild(title);
+
+
+const price =
+document.createElement("p");
+
+price.textContent =
+skin.price === 0
+? "FREE"
+: "₦ " + skin.price;
+
+box.appendChild(price);
+
+
+const button =
+document.createElement("button");
+
+
+if(
+owned.includes(skin.name)
+){
+
+button.textContent =
+selectedSkin === skin.name
+? "SELECTED"
+: "USE";
+
+
+button.onclick = ()=>{
+
+selectedSkin =
+skin.name;
+
+localStorage.setItem(
+"selectedSkin",
+selectedSkin
+);
 
 drawShop();
 
-</script>
+};
 
-</body>
-</html>
+}else{
+
+button.textContent =
+"BUY";
+
+
+button.onclick = ()=>{
+
+if(coins >= skin.price){
+
+coins -=
+skin.price;
+
+owned.push(
+skin.name
+);
+
+
+localStorage.setItem(
+"snakeCoins",
+coins
+);
+
+localStorage.setItem(
+"ownedSkins",
+JSON.stringify(owned)
+);
+
+drawShop();
+
+}else{
+
+alert(
+"Not enough coins!"
+);
+
+}
+
+};
+
+}
+
+
+box.appendChild(button);
+
+grid.appendChild(box);
+
+});
+
+}
+
+
+/* =========================
+   SHOP PREVIEW
+========================= */
+
+function drawSnakePreview(
+c,
+type
+){
+
+c.clearRect(
+0,0,120,80
+);
+
+c.fillStyle =
+"#030914";
+
+c.fillRect(
+0,0,120,80
+);
+
+
+let main =
+"#00aaff";
+
+let second =
+"#001f4d";
+
+
+if(type==="green"){
+main="#00e676";
+second="#006633";
+}
+
+if(type==="fire"){
+main="#ff4d00";
+second="#ffcc00";
+}
+
+if(type===
