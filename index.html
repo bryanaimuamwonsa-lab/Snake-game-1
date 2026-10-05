@@ -2,2409 +2,356 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>Snake Chaos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Presido Snake</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  min-height:100%;
-}
-
-body{
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
   background:
-    radial-gradient(circle at top,#123b69,#07101d 45%,#02050a);
-  color:white;
-  font-family:Arial,sans-serif;
-  text-align:center;
-  overflow-x:hidden;
+    radial-gradient(circle at top, #123b68, #050914 60%, #000);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-h1{
-  color:#00c8ff;
-  text-shadow:0 0 15px #008cff;
+.screen {
+  width: 100%;
+  max-width: 800px;
+  min-height: 100vh;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-.screen{
-  display:none;
-  min-height:100vh;
-  padding-top:10px;
+.screen.active {
+  display: flex;
 }
 
-.screen.active{
-  display:block;
+.panel {
+  width: 100%;
+  max-width: 650px;
+  padding: 30px;
+  border: 2px solid #168cff;
+  border-radius: 20px;
+  background: rgba(3, 10, 25, .95);
+  box-shadow: 0 0 30px #006eff55;
+  text-align: center;
 }
 
-.panel{
-  width:92%;
-  max-width:850px;
-  margin:15px auto;
-  padding:20px;
-  background:rgba(3,15,30,.96);
-  border:2px solid #008cff;
-  border-radius:18px;
-  box-shadow:0 0 20px #006eff;
+h1 {
+  font-size: 42px;
+  color: #42b9ff;
+  text-shadow: 0 0 15px #008cff;
 }
 
-button{
-  display:inline-block;
-  background:linear-gradient(135deg,#087cff,#001b3d);
-  color:white;
-  border:2px solid #00bfff;
-  border-radius:12px;
-  padding:13px 22px;
-  margin:7px;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
-
-  touch-action:manipulation;
-  -webkit-user-select:none;
-  user-select:none;
-
-  box-shadow:0 0 10px #006cff;
+h2 {
+  color: #42b9ff;
 }
 
-button:active{
-  transform:scale(.94);
-  background:#008cff;
+button {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 12px auto;
+  padding: 16px;
+  border: 2px solid #168cff;
+  border-radius: 12px;
+  background: #071a32;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.info{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:7px;
-  margin:10px;
+button:hover {
+  background: #0b3158;
 }
 
-.info span{
-  background:#061a32;
-  border:1px solid #008cff;
-  border-radius:8px;
-  padding:8px;
+button:active {
+  transform: scale(.96);
+  background: #104a80;
 }
 
-canvas{
-  display:block;
-  width:min(94vw,700px);
-  height:auto;
-  margin:10px auto;
-  background:#06111f;
-  border:4px solid #00aaff;
-  border-radius:12px;
-  box-shadow:0 0 25px #0077ff;
+#gameScreen {
+  padding: 8px;
+  flex-direction: column;
 }
 
-/* PHONE CONTROLS */
-
-.mobileControls{
-  width:210px;
-  margin:12px auto;
-  display:grid;
-  grid-template-columns:70px 70px 70px;
-  grid-template-rows:65px 65px;
-  gap:4px;
+.gameTop {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
 }
 
-.mobileControls button{
-  width:65px;
-  height:60px;
-  padding:0;
-  margin:0;
-  font-size:28px;
+.gameTop span {
+  font-size: 14px;
+  font-weight: bold;
 }
 
-.up{
-  grid-column:2;
-  grid-row:1;
+#gameCanvas {
+  width: min(94vw, 700px);
+  height: auto;
+  border: 3px solid #168cff;
+  border-radius: 12px;
+  background: #020712;
+  box-shadow: 0 0 20px #0077ff66;
+  display: block;
 }
 
-.left{
-  grid-column:1;
-  grid-row:2;
+.pauseSmall {
+  width: auto;
+  margin: 0;
+  padding: 9px 15px;
+  font-size: 14px;
 }
 
-.down{
-  grid-column:2;
-  grid-row:2;
+.controls {
+  margin-top: 8px;
+  width: 210px;
+  display: grid;
+  grid-template-columns: repeat(3, 65px);
+  grid-template-rows: repeat(2, 58px);
+  gap: 6px;
+  justify-content: center;
 }
 
-.right{
-  grid-column:3;
-  grid-row:2;
+.controls button {
+  width: 65px;
+  height: 58px;
+  margin: 0;
+  padding: 0;
+  font-size: 25px;
 }
 
-.shop-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-  gap:15px;
+.up {
+  grid-column: 2;
 }
 
-.skin{
-  background:linear-gradient(145deg,#071a30,#020810);
-  border:2px solid #007cff;
-  border-radius:15px;
-  padding:12px;
-  box-shadow:0 0 12px rgba(0,120,255,.45);
+.left {
+  grid-column: 1;
+  grid-row: 2;
 }
 
-.skin canvas{
-  width:120px;
-  height:80px;
-  border:2px solid #008cff;
+.down {
+  grid-column: 2;
+  grid-row: 2;
 }
 
-.big{
-  font-size:25px;
-  font-weight:bold;
-  color:#00c8ff;
+.right {
+  grid-column: 3;
+  grid-row: 2;
 }
 
-.small{
-  color:#9bdcff;
+.info {
+  margin: 5px;
+  color: #a9d9ff;
 }
 
-@media(max-width:500px){
+.shopGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
 
-  h1{
-    font-size:27px;
-  }
+.skin {
+  border: 1px solid #168cff;
+  border-radius: 12px;
+  padding: 12px;
+  background: #061326;
+}
 
-  .panel{
-    padding:14px;
-  }
+.skin button {
+  font-size: 14px;
+  padding: 10px;
+}
 
-  button{
-    font-size:15px;
-    padding:12px 18px;
-  }
-
-  .info span{
-    font-size:13px;
-    padding:6px 8px;
-  }
+.small {
+  color: #9bcfff;
+  font-size: 13px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= MENU ================= -->
-
-<div id="menu" class="screen active">
-
-  <h1>🐍 SNAKE CHAOS</h1>
-
+<!-- MENU -->
+<div id="menuScreen" class="screen active">
   <div class="panel">
-
-    <p class="big">🔵⚫ BLUE × BLACK</p>
-
-    <p>Survive the monsters and reach Level 200!</p>
+    <h1>🐍 PRESIDO SNAKE</h1>
+    <p class="info">The Ultimate Snake Challenge</p>
 
     <button id="playBtn">▶ PLAY</button>
-
     <button id="rulesBtn">📜 RULES</button>
-
-    <button id="shopBtn">🛍 SHOP</button>
-
+    <button id="shopBtn">🛒 SHOP</button>
     <button id="helpBtn">❓ HELP</button>
 
+    <p>🪙 Coins: <span id="menuCoins">0</span></p>
   </div>
-
 </div>
 
-
-<!-- ================= RULES ================= -->
-
-<div id="rules" class="screen">
-
+<!-- RULES -->
+<div id="rulesScreen" class="screen">
   <div class="panel">
-
-    <h1>📜 RULES</h1>
-
-    <p>🍎 🍌 🍊 🍇 = <b>1 point</b></p>
-    <p>❓ Mystery fruit = <b>5 points</b></p>
-    <p>₦ Naira coin = <b>2 game coins</b></p>
-    <p>🍎 Only ONE fruit exists at a time.</p>
-    <p>₦ Only ONE coin exists at a time.</p>
-    <p>👾 Black monsters chase you.</p>
+    <h2>📜 RULES</h2>
+    <p>🍎 Normal fruit = 1 point</p>
+    <p>❓ Rare fruit = 5 points</p>
+    <p>🪙 ₦1 coin = 2 game coins</p>
+    <p>👾 Avoid the black monsters!</p>
     <p>❤️ You have 3 lives.</p>
-    <p>🎯 Reach the goal to advance.</p>
-
+    <p>🎯 Reach the level goal to advance.</p>
     <button id="rulesBackBtn">⬅ BACK</button>
-
   </div>
-
 </div>
 
-
-<!-- ================= HELP ================= -->
-
-<div id="help" class="screen">
-
+<!-- HELP -->
+<div id="helpScreen" class="screen">
   <div class="panel">
-
-    <h1>❓ HELP</h1>
-
-    <p>📱 Use the buttons to move.</p>
-    <p>⬆️⬇️⬅️➡️ Arrow keys work too.</p>
-    <p>W A S D also work.</p>
-    <p>SPACE = Pause.</p>
-    <p>🍎 Eat fruit for points.</p>
-    <p>₦ Collect the coin for 2 coins.</p>
-    <p>👾 Avoid the monsters.</p>
-
+    <h2>❓ HELP</h2>
+    <p>📱 On phone: use the buttons below the game.</p>
+    <p>💻 On laptop: use Arrow Keys or W A S D.</p>
+    <p>⏸ Press SPACE to pause.</p>
+    <p>🪙 Collect Naira coins to buy skins.</p>
     <button id="helpBackBtn">⬅ BACK</button>
-
   </div>
-
 </div>
 
-
-<!-- ================= SHOP ================= -->
-
-<div id="shop" class="screen">
-
+<!-- SHOP -->
+<div id="shopScreen" class="screen">
   <div class="panel">
+    <h2>🛒 SNAKE SHOP</h2>
+    <p>🪙 Coins: <span id="shopCoins">0</span></p>
 
-    <h1>🛍 SNAKE SHOP</h1>
-
-    <p>
-      💰 Coins:
-      <b id="shopCoins">0</b>
-    </p>
-
-    <div id="shopGrid" class="shop-grid"></div>
+    <div id="shopGrid" class="shopGrid"></div>
 
     <button id="shopBackBtn">⬅ BACK</button>
-
   </div>
-
 </div>
 
+<!-- GAME -->
+<div id="gameScreen" class="screen">
 
-<!-- ================= GAME ================= -->
-
-<div id="game" class="screen">
-
-  <h1>🐍 SNAKE CHAOS</h1>
-
-  <div class="info">
-
-    <span>
-      ⭐ Score:
-      <b id="score">0</b>
-    </span>
-
-    <span>
-      🎯 Goal:
-      <b id="goal">5</b>
-    </span>
-
-    <span>
-      ❤️ Lives:
-      <b id="lives">3</b>
-    </span>
-
-    <span>
-      💰 Coins:
-      <b id="coins">0</b>
-    </span>
-
-    <span>
-      🏆 Level:
-      <b id="level">1</b>
-    </span>
-
+  <div class="gameTop">
+    <span>⭐ Score: <b id="scoreText">0</b></span>
+    <span>🎯 Goal: <b id="goalText">5</b></span>
+    <span>❤️ <b id="livesText">3</b></span>
+    <span>🪙 <b id="coinsText">0</b></span>
+    <button id="pauseBtn" class="pauseSmall">⏸</button>
   </div>
 
-  <canvas
-    id="gameCanvas"
-    width="700"
-    height="500">
-  </canvas>
+  <canvas id="gameCanvas" width="700" height="500"></canvas>
 
-
-  <!-- PHONE D-PAD -->
-
-  <div class="mobileControls">
-
-    <button
-      class="up"
-      id="upBtn">
-      ⬆️
-    </button>
-
-    <button
-      class="left"
-      id="leftBtn">
-      ⬅️
-    </button>
-
-    <button
-      class="down"
-      id="downBtn">
-      ⬇️
-    </button>
-
-    <button
-      class="right"
-      id="rightBtn">
-      ➡️
-    </button>
-
+  <div class="controls">
+    <button id="upBtn" class="up">⬆️</button>
+    <button id="leftBtn" class="left">⬅️</button>
+    <button id="downBtn" class="down">⬇️</button>
+    <button id="rightBtn" class="right">➡️</button>
   </div>
-
-
-  <button id="pauseBtn">
-    ⏸ PAUSE
-  </button>
-
-  <button id="leaveBtn">
-    🚪 LEAVE
-  </button>
-
 </div>
 
-
-<!-- ================= PAUSE ================= -->
-
-<div id="pause" class="screen">
-
+<!-- PAUSE -->
+<div id="pauseScreen" class="screen">
   <div class="panel">
-
-    <h1>⏸ PAUSED</h1>
-
-    <button id="resumeBtn">
-      ▶ RESUME
-    </button>
-
-    <button id="pauseLeaveBtn">
-      🚪 LEAVE
-    </button>
-
+    <h2>⏸ GAME PAUSED</h2>
+    <button id="resumeBtn">▶ RESUME</button>
+    <button id="pauseLeaveBtn">🏠 MENU</button>
   </div>
-
 </div>
 
-
-<!-- ================= GAME OVER ================= -->
-
-<div id="gameover" class="screen">
-
+<!-- GAME OVER -->
+<div id="gameOverScreen" class="screen">
   <div class="panel">
-
     <h1>💀 GAME OVER</h1>
+    <p>Score: <b id="finalScore">0</b></p>
 
-    <p>
-      Score:
-      <b id="finalScore">0</b>
-    </p>
-
-    <p>
-      Level:
-      <b id="finalLevel">1</b>
-    </p>
-
-    <button id="retryBtn">
-      🔄 TRY AGAIN
-    </button>
-
-    <button id="gameoverMenuBtn">
-      🏠 MENU
-    </button>
-
+    <button id="retryBtn">🔄 RETRY</button>
+    <button id="gameoverMenuBtn">🏠 MENU</button>
   </div>
-
 </div>
 
-
-<!-- ================= LEVEL COMPLETE ================= -->
-
-<div id="levelComplete" class="screen">
-
+<!-- LEVEL COMPLETE -->
+<div id="levelScreen" class="screen">
   <div class="panel">
-
     <h1>🎉 LEVEL COMPLETE!</h1>
-
     <p>You reached the goal!</p>
 
-    <button id="nextLevelBtn">
-      ➡ NEXT LEVEL
-    </button>
-
+    <button id="nextLevelBtn">➡ NEXT LEVEL</button>
+    <button id="levelMenuBtn">🏠 MENU</button>
   </div>
-
 </div>
 
 
 <script>
 
-/* =====================================================
-   SNAKE CHAOS
-   ===================================================== */
+/* =========================
+   GAME SETUP
+========================= */
+
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const GRID = 25;
+
+let snake = [];
+let fruit = null;
+let coin = null;
+let monsters = [];
+
+let direction = "right";
+let nextDirection = "right";
+
+let score = 0;
+let lives = 3;
+let level = 1;
+
+let running = false;
+let paused = false;
+
+let lastMove = 0;
+const MOVE_DELAY = 180;
 
 
-/* ================= BASIC SETTINGS ================= */
+/* =========================
+   COINS
+========================= */
 
-const canvas =
-document.getElementById("gameCanvas");
-
-const ctx =
-canvas.getContext("2d");
-
-const GRID=25;
-
-const MOVE_DELAY=180;
+let gameCoins = Number(localStorage.getItem("snakeCoins") || 0);
 
 
-/* ================= GAME VARIABLES ================= */
+/* =========================
+   SKINS
+========================= */
 
-let snake=[];
-
-let direction={
-  x:1,
-  y:0
-};
-
-let nextDirection={
-  x:1,
-  y:0
-};
-
-let fruit=null;
-
-let coin=null;
-
-let monsters=[];
-
-let score=0;
-
-let level=1;
-
-let lives=3;
-
-let coins=
-Number(
-  localStorage.getItem("snakeCoins") || 0
-);
-
-let running=false;
-
-let paused=false;
-
-let lastMove=0;
-
-
-/* ================= SKINS ================= */
-
-const skins=[
-
- {
-  name:"Green Snake",
-  price:0,
-  type:"green"
- },
-
- {
-  name:"Fire Snake",
-  price:50,
-  type:"fire"
- },
-
- {
-  name:"Big Eyes Snake",
-  price:100,
-  type:"eyes"
- },
-
- {
-  name:"Ice Snake",
-  price:150,
-  type:"ice"
- },
-
- {
-  name:"Golden King",
-  price:250,
-  type:"gold"
- },
-
- {
-  name:"Shadow Snake",
-  price:400,
-  type:"shadow"
- },
-
- {
-  name:"Rainbow Legend",
-  price:600,
-  type:"rainbow"
- },
-
- {
-  name:"Beast Snake",
-  price:800,
-  type:"beast"
- },
-
- {
-  name:"Ultra Snake",
-  price:1000,
-  type:"ultra"
- },
-
- {
-  name:"God Snake",
-  price:2000,
-  type:"god"
- }
-
+const skins = [
+  {name:"Green Snake", price:0, color:"#21ff55"},
+  {name:"Fire Snake", price:50, color:"#ff4b1f"},
+  {name:"Blue Snake", price:100, color:"#26aaff"},
+  {name:"Ice Snake", price:150, color:"#a9f6ff"},
+  {name:"Golden King", price:250, color:"#ffd700"},
+  {name:"Shadow Snake", price:400, color:"#777"},
+  {name:"Rainbow Legend", price:600, color:"#ff55ff"},
+  {name:"Beast Snake", price:800, color:"#ff2277"},
+  {name:"Ultra Snake", price:1000, color:"#00ffff"},
+  {name:"God Snake", price:2000, color:"#ffffff"}
 ];
 
+let selectedSkin =
+  Number(localStorage.getItem("selectedSkin") || 0);
 
-let selectedSkin=
-localStorage.getItem("selectedSkin")
-||"Green Snake";
-
-
-let owned;
-
-try{
-
- owned=
- JSON.parse(
-  localStorage.getItem("ownedSkins")
-  || '["Green Snake"]'
- );
-
-}catch(error){
-
- owned=["Green Snake"];
-
-}
-
-
-/* ================= SCREEN FUNCTION ================= */
-
-function showScreen(id){
-
- document
- .querySelectorAll(".screen")
- .forEach(function(screen){
-
-  screen.classList.remove("active");
-
- });
-
- const screen=
- document.getElementById(id);
-
- if(screen){
-  screen.classList.add("active");
- }
-
-}
-
-
-/* ================= SOUND ================= */
-
-let audioContext=null;
-
-let musicTimer=null;
-
-let musicStep=0;
-
-
-function startMusic(){
-
- try{
-
-  if(audioContext){
-
-   if(audioContext.state==="suspended"){
-    audioContext.resume();
-   }
-
-   return;
-  }
-
-
-  const AudioClass=
-  window.AudioContext ||
-  window.webkitAudioContext;
-
-  if(!AudioClass){
-   return;
-  }
-
-
-  audioContext=
-  new AudioClass();
-
-  musicStep=0;
-
-  musicTimer=
-  setInterval(
-   playBeat,
-   250
-  );
-
- }catch(error){
-
-  console.log("Music unavailable");
-
- }
-
-}
-
-
-function playBeat(){
-
- if(!audioContext){
-  return;
- }
-
- try{
-
-  const notes=[
-   110,
-   110,
-   165,
-   110,
-   130,
-   130,
-   196,
-   130
-  ];
-
-  const frequency=
-  notes[
-   musicStep % notes.length
-  ];
-
-
-  const osc=
-  audioContext.createOscillator();
-
-  const gain=
-  audioContext.createGain();
-
-
-  osc.type="square";
-
-  osc.frequency.value=
-  frequency;
-
-
-  gain.gain.setValueAtTime(
-   0.0001,
-   audioContext.currentTime
-  );
-
-
-  gain.gain.exponentialRampToValueAtTime(
-   0.035,
-   audioContext.currentTime+0.01
-  );
-
-
-  gain.gain.exponentialRampToValueAtTime(
-   0.0001,
-   audioContext.currentTime+0.16
-  );
-
-
-  osc.connect(gain);
-
-  gain.connect(
-   audioContext.destination
-  );
-
-
-  osc.start();
-
-  osc.stop(
-   audioContext.currentTime+0.17
-  );
-
-
-  musicStep++;
-
- }catch(error){}
-
-}
-
-
-/* ================= START GAME ================= */
-
-function startGame(){
-
- startMusic();
-
-
- score=0;
-
- level=1;
-
- lives=3;
-
-
- direction={
-  x:1,
-  y:0
- };
-
- nextDirection={
-  x:1,
-  y:0
- };
-
-
- snake=[
-
-  {x:10,y:10},
-
-  {x:9,y:10},
-
-  {x:8,y:10}
-
- ];
-
-
- makeFruit();
-
- makeCoin();
-
- makeMonsters();
-
-
- running=true;
-
- paused=false;
-
- lastMove=
- performance.now();
-
-
- updateUI();
-
- showScreen("game");
-
-}
-
-
-/* ================= FRUIT ================= */
-
-const normalFruits=[
- "🍎",
- "🍌",
- "🍊",
- "🍇"
-];
-
-
-function makeFruit(){
-
- const rare=
- Math.random()<0.08;
-
-
- const symbol=
- rare
- ? "❓"
- : normalFruits[
-   Math.floor(
-    Math.random()*
-    normalFruits.length
-   )
- ];
-
-
- fruit={
-
-  x:Math.floor(
-   Math.random()*
-   (canvas.width/GRID)
-  ),
-
-  y:Math.floor(
-   Math.random()*
-   (canvas.height/GRID)
-  ),
-
-  rare:rare,
-
-  symbol:symbol
-
- };
-
-}
-
-
-/* ================= COIN ================= */
-
-function makeCoin(){
-
- coin={
-
-  x:Math.floor(
-   Math.random()*
-   (canvas.width/GRID)
-  ),
-
-  y:Math.floor(
-   Math.random()*
-   (canvas.height/GRID)
-  )
-
- };
-
-}
-
-
-/* ================= MONSTERS ================= */
-
-function makeMonsters(){
-
- monsters=[];
-
-
- const amount=
- Math.min(
-  1+Math.floor(level/5),
-  8
- );
-
-
- for(
-  let i=0;
-  i<amount;
-  i++
- ){
-
-  monsters.push({
-
-   x:Math.floor(
-    Math.random()*
-    (canvas.width/GRID)
-   ),
-
-   y:Math.floor(
-    Math.random()*
-    (canvas.height/GRID)
-   )
-
-  });
-
- }
-
-}
-
-
-/* ================= UPDATE ================= */
-
-function update(){
-
- direction=nextDirection;
-
-
- const head={
-
-  x:
-  snake[0].x+
-  direction.x,
-
-  y:
-  snake[0].y+
-  direction.y
-
- };
-
-
- const maxX=
- canvas.width/GRID;
-
- const maxY=
- canvas.height/GRID;
-
-
- /* WRAP */
-
- if(head.x<0){
-  head.x=maxX-1;
- }
-
- if(head.x>=maxX){
-  head.x=0;
- }
-
- if(head.y<0){
-  head.y=maxY-1;
- }
-
- if(head.y>=maxY){
-  head.y=0;
- }
-
-
- /* SELF COLLISION */
-
- for(
-  let i=0;
-  i<snake.length;
-  i++
- ){
-
-  if(
-   head.x===snake[i].x &&
-   head.y===snake[i].y
-  ){
-
-   loseLife();
-
-   return;
-  }
-
- }
-
-
- snake.unshift(head);
-
-
- /* FRUIT */
-
- if(
-  fruit &&
-  head.x===fruit.x &&
-  head.y===fruit.y
- ){
-
-  if(fruit.rare){
-
-   score+=5;
-
-  }else{
-
-   score+=1;
-
-  }
-
-
-  /* ONE NEW FRUIT */
-
-  makeFruit();
-
- }else{
-
-  snake.pop();
-
- }
-
-
- /* COIN */
-
- if(
-  coin &&
-  head.x===coin.x &&
-  head.y===coin.y
- ){
-
-  /* ₦1 = 2 GAME COINS */
-
-  coins+=2;
-
-
-  localStorage.setItem(
-   "snakeCoins",
-   String(coins)
-  );
-
-
-  /* ONE NEW COIN */
-
-  makeCoin();
-
- }
-
-
- /* MONSTERS */
-
- for(
-  let i=0;
-  i<monsters.length;
-  i++
- ){
-
-  const monster=
-  monsters[i];
-
-
-  const dx=
-  head.x-monster.x;
-
-  const dy=
-  head.y-monster.y;
-
-
-  if(
-   Math.abs(dx)>
-   Math.abs(dy)
-  ){
-
-   if(dx>0){
-    monster.x++;
-   }
-   else if(dx<0){
-    monster.x--;
-   }
-
-  }else{
-
-   if(dy>0){
-    monster.y++;
-   }
-   else if(dy<0){
-    monster.y--;
-   }
-
-  }
-
-
-  /* MONSTER COLLISION */
-
-  if(
-   monster.x===head.x &&
-   monster.y===head.y
-  ){
-
-   loseLife();
-
-   return;
-  }
-
- }
-
-
- /* LEVEL COMPLETE */
-
- if(
-  score>=level*5
- ){
-
-  running=false;
-
-  showScreen(
-   "levelComplete"
-  );
-
- }
-
-
- updateUI();
-
-}
-
-
-/* ================= LOSE LIFE ================= */
-
-function loseLife(){
-
- lives--;
-
- updateUI();
-
-
- if(lives<=0){
-
-  gameOver();
-
-  return;
-
- }
-
-
- snake=[
-
-  {x:10,y:10},
-  {x:9,y:10},
-  {x:8,y:10}
-
- ];
-
-
- direction={
-  x:1,
-  y:0
- };
-
- nextDirection={
-  x:1,
-  y:0
- };
-
-}
-
-
-/* ================= NEXT LEVEL ================= */
-
-function nextLevel(){
-
- level++;
-
- snake=[
-
-  {x:10,y:10},
-  {x:9,y:10},
-  {x:8,y:10}
-
- ];
-
-
- direction={
-  x:1,
-  y:0
- };
-
- nextDirection={
-  x:1,
-  y:0
- };
-
-
- makeFruit();
-
- makeCoin();
-
- makeMonsters();
-
-
- running=true;
-
- paused=false;
-
- lastMove=
- performance.now();
-
-
- updateUI();
-
- showScreen("game");
-
-}
-
-
-/* ================= GAME OVER ================= */
-
-function gameOver(){
-
- running=false;
-
- document.getElementById(
-  "finalScore"
- ).textContent=score;
-
- document.getElementById(
-  "finalLevel"
- ).textContent=level;
-
-
- showScreen("gameover");
-
-}
-
-
-/* ================= MOVEMENT ================= */
-
-function changeDirection(x,y){
-
- /* Prevent instant reverse */
-
- if(
-  x===-direction.x &&
-  y===-direction.y
- ){
-
-  return;
-
- }
-
-
- nextDirection={
-  x:x,
-  y:y
- };
-
-}
-
-
-/* ================= PAUSE ================= */
-
-function togglePause(){
-
- if(!running){
-  return;
- }
-
-
- paused=true;
-
- showScreen("pause");
-
-}
-
-
-function resumeGame(){
-
- paused=false;
-
- lastMove=
- performance.now();
-
- showScreen("game");
-
-}
-
-
-function leaveGame(){
-
- running=false;
-
- paused=false;
-
- showScreen("menu");
-
-}
-
-
-/* ================= KEYBOARD ================= */
-
-document.addEventListener(
- "keydown",
- function(event){
-
-  const key=
-  event.key.toLowerCase();
-
-
-  if(
-   key==="arrowup" ||
-   key==="w"
-  ){
-
-   changeDirection(0,-1);
-
-  }
-
-
-  if(
-   key==="arrowdown" ||
-   key==="s"
-  ){
-
-   changeDirection(0,1);
-
-  }
-
-
-  if(
-   key==="arrowleft" ||
-   key==="a"
-  ){
-
-   changeDirection(-1,0);
-
-  }
-
-
-  if(
-   key==="arrowright" ||
-   key==="d"
-  ){
-
-   changeDirection(1,0);
-
-  }
-
-
-  if(
-   key===" " &&
-   running
-  ){
-
-   event.preventDefault();
-
-
-   if(paused){
-
-    resumeGame();
-
-   }else{
-
-    togglePause();
-
-   }
-
-  }
-
- });
-
-
-/* =====================================================
-   DRAW GAME
-===================================================== */
-
-function draw(){
-
- /* BACKGROUND */
-
- const gradient=
- ctx.createLinearGradient(
-  0,
-  0,
-  canvas.width,
-  canvas.height
- );
-
-
- gradient.addColorStop(
-  0,
-  "#071b36"
- );
-
- gradient.addColorStop(
-  .5,
-  "#020814"
- );
-
- gradient.addColorStop(
-  1,
-  "#001a32"
- );
-
-
- ctx.fillStyle=gradient;
-
- ctx.fillRect(
-  0,
-  0,
-  canvas.width,
-  canvas.height
- );
-
-
- /* GRID */
-
- ctx.strokeStyle=
- "rgba(0,150,255,.13)";
-
- ctx.lineWidth=1;
-
-
- for(
-  let x=0;
-  x<canvas.width;
-  x+=GRID
- ){
-
-  ctx.beginPath();
-
-  ctx.moveTo(x,0);
-
-  ctx.lineTo(
-   x,
-   canvas.height
-  );
-
-  ctx.stroke();
-
- }
-
-
- for(
-  let y=0;
-  y<canvas.height;
-  y+=GRID
- ){
-
-  ctx.beginPath();
-
-  ctx.moveTo(0,y);
-
-  ctx.lineTo(
-   canvas.width,
-   y
-  );
-
-  ctx.stroke();
-
- }
-
-
- /* FRUIT */
-
- if(fruit){
-
-  ctx.fillStyle=
-  fruit.rare
-  ? "#1720ff"
-  : "#08101c";
-
-
-  ctx.shadowColor=
-  fruit.rare
-  ? "#0055ff"
-  : "#00bfff";
-
-
-  ctx.shadowBlur=14;
-
-
-  ctx.fillRect(
-
-   fruit.x*GRID+2,
-
-   fruit.y*GRID+2,
-
-   GRID-4,
-
-   GRID-4
-
-  );
-
-
-  ctx.shadowBlur=0;
-
-
-  ctx.font=
-  "19px 'Segoe UI Emoji',Arial";
-
-  ctx.textAlign="center";
-
-  ctx.textBaseline="middle";
-
-
-  ctx.fillText(
-
-   fruit.symbol,
-
-   fruit.x*GRID+
-   GRID/2,
-
-   fruit.y*GRID+
-   GRID/2
-
-  );
-
- }
-
-
- /* COIN */
-
- if(coin){
-
-  ctx.shadowColor="#00aaff";
-
-  ctx.shadowBlur=15;
-
-  ctx.fillStyle="#06182d";
-
-
-  ctx.fillRect(
-
-   coin.x*GRID+2,
-
-   coin.y*GRID+2,
-
-   GRID-4,
-
-   GRID-4
-
-  );
-
-
-  ctx.shadowBlur=0;
-
-  ctx.fillStyle="#00d9ff";
-
-  ctx.font="bold 15px Arial";
-
-  ctx.textAlign="center";
-
-  ctx.textBaseline="middle";
-
-
-  ctx.fillText(
-
-   "₦",
-
-   coin.x*GRID+
-   GRID/2,
-
-   coin.y*GRID+
-   GRID/2
-
-  );
-
- }
-
-
- /* MONSTERS */
-
- monsters.forEach(
- function(monster){
-
-  const x=
-  monster.x*GRID;
-
-  const y=
-  monster.y*GRID;
-
-
-  ctx.shadowColor="#008cff";
-
-  ctx.shadowBlur=12;
-
-  ctx.fillStyle="#020305";
-
-
-  ctx.fillRect(
-
-   x+1,
-   y+1,
-   GRID-2,
-   GRID-2
-
-  );
-
-
-  ctx.shadowBlur=0;
-
-
-  ctx.strokeStyle="#0077ff";
-
-  ctx.lineWidth=2;
-
-
-  ctx.strokeRect(
-
-   x+2,
-   y+2,
-   GRID-4,
-   GRID-4
-
-  );
-
-
-  /* EYES */
-
-  ctx.fillStyle="white";
-
-  ctx.fillRect(
-   x+5,
-   y+5,
-   5,
-   5
-  );
-
-  ctx.fillRect(
-   x+15,
-   y+5,
-   5,
-   5
-  );
-
-
-  ctx.fillStyle="#ff1744";
-
-  ctx.fillRect(
-   x+7,
-   y+6,
-   3,
-   3
-  );
-
-  ctx.fillRect(
-   x+17,
-   y+6,
-   3,
-   3
-  );
-
-
-  /* MOUTH */
-
-  ctx.fillStyle="white";
-
-  ctx.fillRect(
-   x+6,
-   y+16,
-   14,
-   3
-  );
-
- });
-
-
- /* SNAKE */
-
- snake.forEach(
-  function(part,index){
-
-   drawSnakePart(
-    part.x*GRID,
-    part.y*GRID,
-    index
-   );
-
-  }
- );
-
-}
-
-
-/* ================= SNAKE DRAWING ================= */
-
-function drawSnakePart(
- x,
- y,
- index
-){
-
- const skin=
- skins.find(
-  function(s){
-   return s.name===selectedSkin;
-  }
- );
-
-
- const type=
- skin
- ? skin.type
- : "green";
-
-
- let main="#00aaff";
-
- let second="#001f4d";
-
-
- if(type==="green"){
-  main="#00e676";
-  second="#006633";
- }
-
- if(type==="fire"){
-  main="#ff4d00";
-  second="#ffcc00";
- }
-
- if(type==="eyes"){
-  main="#008cff";
-  second="#001c55";
- }
-
- if(type==="ice"){
-  main="#8eeaff";
-  second="#008cff";
- }
-
- if(type==="gold"){
-  main="#ffd700";
-  second="#8a5d00";
- }
-
- if(type==="shadow"){
-  main="#202020";
-  second="#000000";
- }
-
- if(type==="beast"){
-  main="#6200ff";
-  second="#090018";
- }
-
- if(type==="ultra"){
-  main="#00eaff";
-  second="#003cff";
- }
-
- if(type==="god"){
-  main="#ffffff";
-  second="#0077ff";
- }
-
-
- if(type==="rainbow"){
-
-  const colors=[
-
-   "#ff004c",
-   "#ff8a00",
-   "#ffee00",
-   "#00ff66",
-   "#00c8ff",
-   "#7a00ff"
-
-  ];
-
-  main=
-  colors[
-   index%colors.length
-  ];
-
-  second="#050505";
-
- }
-
-
- ctx.shadowColor=main;
-
- ctx.shadowBlur=
- index===0
- ?16
- :8;
-
-
- const gradient=
- ctx.createLinearGradient(
-  x,
-  y,
-  x+GRID,
-  y+GRID
- );
-
-
- gradient.addColorStop(
-  0,
-  main
- );
-
- gradient.addColorStop(
-  1,
-  second
- );
-
-
- ctx.fillStyle=gradient;
-
-
- ctx.fillRect(
-
-  x+2,
-  y+2,
-  GRID-4,
-  GRID-4
-
- );
-
-
- ctx.shadowBlur=0;
-
-
- /* SHINE */
-
- ctx.fillStyle=
- "rgba(255,255,255,.25)";
-
-
- ctx.fillRect(
-  x+4,
-  y+4,
-  GRID-10,
-  3
- );
-
-
- /* HEAD EYES */
-
- if(index===0){
-
-  ctx.fillStyle="white";
-
-
-  ctx.fillRect(
-   x+5,
-   y+6,
-   5,
-   5
-  );
-
-
-  ctx.fillRect(
-   x+15,
-   y+6,
-   5,
-   5
-  );
-
-
-  ctx.fillStyle="#001020";
-
-
-  ctx.fillRect(
-   x+7,
-   y+7,
-   2,
-   3
-  );
-
-
-  ctx.fillRect(
-   x+17,
-   y+7,
-   2,
-   3
-  );
-
- }
-
-}
-
-
-/* ================= SHOP ================= */
-
-function openShop(){
-
- drawShop();
-
- showScreen("shop");
-
-}
-
-
-function drawShop(){
-
- document.getElementById(
-  "shopCoins"
- ).textContent=coins;
-
-
- const grid=
- document.getElementById(
-  "shopGrid"
- );
-
-
- grid.innerHTML="";
-
-
- skins.forEach(
- function(skin){
-
-  const box=
-  document.createElement("div");
-
-  box.className="skin";
-
-
-  const preview=
-  document.createElement("canvas");
-
-  preview.width=120;
-
-  preview.height=80;
-
-
-  box.appendChild(
-   preview
-  );
-
-
-  drawSnakePreview(
-   preview.getContext("2d"),
-   skin.type
-  );
-
-
-  const title=
-  document.createElement("h3");
-
-  title.textContent=
-  skin.name;
-
-
-  box.appendChild(title);
-
-
-  const price=
-  document.createElement("p");
-
-
-  price.textContent=
-  skin.price===0
-  ? "FREE"
-  : "₦ "+skin.price;
-
-
-  box.appendChild(price);
-
-
-  const button=
-  document.createElement("button");
-
-
-  if(
-   owned.includes(
-    skin.name
-   )
-  ){
-
-   button.textContent=
-   selectedSkin===skin.name
-   ? "SELECTED"
-   : "USE";
-
-
-   button.addEventListener(
-    "click",
-    function(){
-
-     selectedSkin=
-     skin.name;
-
-
-     localStorage.setItem(
-      "selectedSkin",
-      selectedSkin
-     );
-
-
-     drawShop();
-
-    }
-   );
-
-
-  }else{
-
-   button.textContent="BUY";
-
-
-   button.addEventListener(
-    "click",
-    function(){
-
-     if(coins>=skin.price){
-
-      coins-=skin.price;
-
-      owned.push(
-       skin.name
-      );
-
-
-      localStorage.setItem(
-       "snakeCoins",
-       String(coins)
-      );
-
-
-      localStorage.setItem(
-       "ownedSkins",
-       JSON.stringify(owned)
-      );
-
-
-      drawShop();
-
-     }else{
-
-      alert(
-       "Not enough coins!"
-      );
-
-     }
-
-    }
-   );
-
-  }
-
-
-  box.appendChild(button);
-
-  grid.appendChild(box);
-
- }
- );
-
-}
-
-
-/* ================= SHOP PREVIEW ================= */
-
-function drawSnakePreview(
- c,
- type
-){
-
- c.clearRect(
-  0,
-  0,
-  120,
-  80
- );
-
-
- c.fillStyle="#030914";
-
- c.fillRect(
-  0,
-  0,
-  120,
-  80
- );
-
-
- let main="#00aaff";
-
- let second="#001f4d";
-
-
- if(type==="green"){
-  main="#00e676";
-  second="#006633";
- }
-
- if(type==="fire"){
-  main="#ff4d00";
-  second="#ffcc00";
- }
-
- if(type==="eyes"){
-  main="#008cff";
-  second="#001c55";
- }
-
- if(type==="ice"){
-  main="#8eeaff";
-  second="#008cff";
- }
-
- if(type==="gold"){
-  main="#ffd700";
-  second="#8a5d00";
- }
-
- if(type==="shadow"){
-  main="#202020";
-  second="#000000";
- }
-
- if(type==="rainbow"){
-  main="#ff00ff";
-  second="#00ffff";
- }
-
- if(type==="beast"){
-  main="#6200ff";
-  second="#090018";
- }
-
- if(type==="ultra"){
-  main="#00eaff";
-  second="#003cff";
- }
-
- if(type==="god"){
-  main="#ffffff";
-  second="#0077ff";
- }
-
-
- for(
-  let i=0;
-  i<5;
-  i++
- ){
-
-  c.fillStyle=
-  i%2===0
-  ?main
-  :second;
-
-
-  c.fillRect(
-   20+i*15,
-   40,
-   14,
-   14
-  );
-
- }
-
-
- c.fillStyle=main;
-
- c.fillRect(
-  80,
-  25,
-  18,
-  18
- );
-
-
- c.fillStyle="white";
-
-
- c.fillRect(
-  86,
-  29,
-  4,
-  4
- );
-
-
- c.fillRect(
-  94,
-  29,
-  4,
-  4
- );
-
-}
-
-
-/* ================= UI ================= */
-
-function updateUI(){
-
- document.getElementById(
-  "score"
- ).textContent=score;
-
-
- document.getElementById(
-  "goal"
- ).textContent=
- level*5;
-
-
- document.getElementById(
-  "lives"
- ).textContent=lives;
-
-
- document.getElementById(
-  "coins"
- ).textContent=coins;
-
-
- document.getElementById(
-  "level"
- ).textContent=level;
-
-}
-
-
-/* =====================================================
-   IMPORTANT: BUTTON SETUP
-   No inline onclick is used.
-===================================================== */
-
-function setupButton(
- id,
- action
-){
-
- const button=
- document.getElementById(id);
-
-
- if(!button){
-  return;
- }
-
-
- button.addEventListener(
-  "click",
-  function(event){
-
-   event.preventDefault();
-
-   action();
-
-  }
- );
-
-
- /* Extra phone support */
-
- button.addEventListener(
-  "pointerdown",
-  function(event){
-
-   event.preventDefault();
-
-  }
- );
-
-}
-
-
-/* ================= ALL BUTTONS ================= */
-
-setupButton(
- "playBtn",
- startGame
-);
-
-setupButton(
- "rulesBtn",
- function(){
-  showScreen("rules");
- }
-);
-
-setupButton(
- "shopBtn",
- openShop
-);
-
-setupButton(
- "helpBtn",
- function(){
-  showScreen("help");
- }
-);
-
-setupButton(
- "rulesBackBtn",
- function(){
-  showScreen("menu");
- }
-);
-
-setupButton(
- "helpBackBtn",
- function(){
-  showScreen("menu");
- }
-);
-
-setupButton(
- "shopBackBtn",
- function(){
-  showScreen("menu");
- }
-);
-
-setupButton(
- "pauseBtn",
- togglePause
-);
-
-setupButton(
- "leaveBtn",
- leaveGame
-);
-
-setupButton(
- "resumeBtn",
- resumeGame
-);
-
-setupButton(
- "pauseLeaveBtn",
- leaveGame
-);
-
-setupButton(
- "retryBtn",
- startGame
-);
-
-setupButton(
- "gameoverMenuBtn",
- function(){
-  showScreen("menu");
- }
-);
-
-setupButton(
- "nextLevelBtn",
- nextLevel
-);
-
-
-/* ================= PHONE CONTROLS ================= */
-
-setupButton(
- "upBtn",
- function(){
-  changeDirection(0,-1);
- }
-);
-
-setupButton(
- "downBtn",
- function(){
-  changeDirection(0,1);
- }
-);
-
-setupButton(
- "leftBtn",
- function(){
-  changeDirection(-1,0);
- }
-);
-
-setupButton(
- "rightBtn",
- function(){
-  changeDirection(1,0);
- }
-);
-
-
-/* ================= GAME LOOP ================= */
-
-function gameLoop(time){
-
- if(
-  running &&
-  !paused &&
-  time-lastMove>=MOVE_DELAY
- ){
-
-  update();
-
-  lastMove=time;
-
- }
-
-
- draw();
-
-
- requestAnimationFrame(
-  gameLoop
- );
-
-}
-
-
-/* ================= START ================= */
-
-drawShop();
-
-requestAnimationFrame(
- gameLoop
-);
-
-</script>
-
-</body>
-</html>
+let
