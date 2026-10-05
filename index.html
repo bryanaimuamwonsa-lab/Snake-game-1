@@ -17,8 +17,7 @@ body {
   min-height: 100vh;
   font-family: Arial, sans-serif;
   color: white;
-  background:
-    radial-gradient(circle at top, #123b68, #050914 60%, #000);
+  background: radial-gradient(circle at top, #123b68, #050914 60%, #000);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -115,13 +114,6 @@ button:active {
   display: block;
 }
 
-.pauseSmall {
-  width: auto;
-  margin: 0;
-  padding: 9px 15px;
-  font-size: 14px;
-}
-
 .controls {
   margin-top: 8px;
   width: 210px;
@@ -159,6 +151,13 @@ button:active {
   grid-row: 2;
 }
 
+.pauseSmall {
+  width: auto;
+  margin: 0;
+  padding: 9px 15px;
+  font-size: 14px;
+}
+
 .info {
   margin: 5px;
   color: #a9d9ff;
@@ -194,164 +193,214 @@ button:active {
 <!-- MENU -->
 <div id="menuScreen" class="screen active">
   <div class="panel">
+
     <h1>🐍 PRESIDO SNAKE</h1>
-    <p class="info">The Ultimate Snake Challenge</p>
+
+    <p class="info">
+      The Ultimate Snake Challenge
+    </p>
 
     <button id="playBtn">▶ PLAY</button>
     <button id="rulesBtn">📜 RULES</button>
     <button id="shopBtn">🛒 SHOP</button>
     <button id="helpBtn">❓ HELP</button>
 
-    <p>🪙 Coins: <span id="menuCoins">0</span></p>
+    <p>
+      🪙 Coins:
+      <span id="menuCoins">0</span>
+    </p>
+
   </div>
 </div>
+
 
 <!-- RULES -->
 <div id="rulesScreen" class="screen">
   <div class="panel">
+
     <h2>📜 RULES</h2>
+
     <p>🍎 Normal fruit = 1 point</p>
     <p>❓ Rare fruit = 5 points</p>
     <p>🪙 ₦1 coin = 2 game coins</p>
     <p>👾 Avoid the black monsters!</p>
     <p>❤️ You have 3 lives.</p>
     <p>🎯 Reach the level goal to advance.</p>
-    <button id="rulesBackBtn">⬅ BACK</button>
+
+    <button id="rulesBackBtn">
+      ⬅ BACK
+    </button>
+
   </div>
 </div>
+
 
 <!-- HELP -->
 <div id="helpScreen" class="screen">
   <div class="panel">
+
     <h2>❓ HELP</h2>
-    <p>📱 On phone: use the buttons below the game.</p>
-    <p>💻 On laptop: use Arrow Keys or W A S D.</p>
-    <p>⏸ Press SPACE to pause.</p>
-    <p>🪙 Collect Naira coins to buy skins.</p>
-    <button id="helpBackBtn">⬅ BACK</button>
+
+    <p>
+      📱 On phone: use the buttons below the game.
+    </p>
+
+    <p>
+      💻 On laptop: use Arrow Keys or W A S D.
+    </p>
+
+    <p>
+      ⏸ Press SPACE to pause.
+    </p>
+
+    <p>
+      🪙 Collect Naira coins to buy skins.
+    </p>
+
+    <button id="helpBackBtn">
+      ⬅ BACK
+    </button>
+
   </div>
 </div>
+
 
 <!-- SHOP -->
 <div id="shopScreen" class="screen">
   <div class="panel">
+
     <h2>🛒 SNAKE SHOP</h2>
-    <p>🪙 Coins: <span id="shopCoins">0</span></p>
+
+    <p>
+      🪙 Coins:
+      <span id="shopCoins">0</span>
+    </p>
 
     <div id="shopGrid" class="shopGrid"></div>
 
-    <button id="shopBackBtn">⬅ BACK</button>
+    <button id="shopBackBtn">
+      ⬅ BACK
+    </button>
+
   </div>
 </div>
+
 
 <!-- GAME -->
 <div id="gameScreen" class="screen">
 
   <div class="gameTop">
-    <span>⭐ Score: <b id="scoreText">0</b></span>
-    <span>🎯 Goal: <b id="goalText">5</b></span>
-    <span>❤️ <b id="livesText">3</b></span>
-    <span>🪙 <b id="coinsText">0</b></span>
-    <button id="pauseBtn" class="pauseSmall">⏸</button>
+
+    <span>
+      ⭐ Score:
+      <b id="scoreText">0</b>
+    </span>
+
+    <span>
+      🎯 Goal:
+      <b id="goalText">5</b>
+    </span>
+
+    <span>
+      ❤️
+      <b id="livesText">3</b>
+    </span>
+
+    <span>
+      🪙
+      <b id="coinsText">0</b>
+    </span>
+
+    <button id="pauseBtn" class="pauseSmall">
+      ⏸
+    </button>
+
   </div>
 
-  <canvas id="gameCanvas" width="700" height="500"></canvas>
+
+  <canvas
+    id="gameCanvas"
+    width="700"
+    height="500">
+  </canvas>
+
 
   <div class="controls">
-    <button id="upBtn" class="up">⬆️</button>
-    <button id="leftBtn" class="left">⬅️</button>
-    <button id="downBtn" class="down">⬇️</button>
-    <button id="rightBtn" class="right">➡️</button>
+
+    <button id="upBtn" class="up">
+      ⬆️
+    </button>
+
+    <button id="leftBtn" class="left">
+      ⬅️
+    </button>
+
+    <button id="downBtn" class="down">
+      ⬇️
+    </button>
+
+    <button id="rightBtn" class="right">
+      ➡️
+    </button>
+
   </div>
+
 </div>
+
 
 <!-- PAUSE -->
 <div id="pauseScreen" class="screen">
   <div class="panel">
+
     <h2>⏸ GAME PAUSED</h2>
-    <button id="resumeBtn">▶ RESUME</button>
-    <button id="pauseLeaveBtn">🏠 MENU</button>
+
+    <button id="resumeBtn">
+      ▶ RESUME
+    </button>
+
+    <button id="pauseLeaveBtn">
+      🏠 MENU
+    </button>
+
   </div>
 </div>
+
 
 <!-- GAME OVER -->
 <div id="gameOverScreen" class="screen">
   <div class="panel">
-    <h1>💀 GAME OVER</h1>
-    <p>Score: <b id="finalScore">0</b></p>
 
-    <button id="retryBtn">🔄 RETRY</button>
-    <button id="gameoverMenuBtn">🏠 MENU</button>
+    <h1>💀 GAME OVER</h1>
+
+    <p>
+      Score:
+      <b id="finalScore">0</b>
+    </p>
+
+    <button id="retryBtn">
+      🔄 RETRY
+    </button>
+
+    <button id="gameoverMenuBtn">
+      🏠 MENU
+    </button>
+
   </div>
 </div>
+
 
 <!-- LEVEL COMPLETE -->
 <div id="levelScreen" class="screen">
   <div class="panel">
+
     <h1>🎉 LEVEL COMPLETE!</h1>
-    <p>You reached the goal!</p>
 
-    <button id="nextLevelBtn">➡ NEXT LEVEL</button>
-    <button id="levelMenuBtn">🏠 MENU</button>
-  </div>
-</div>
+    <p>
+      You reached the goal!
+    </p>
 
+    <button id="nextLevelBtn">
+      ➡ NEXT LEVEL
+    </button>
 
-<script>
-
-/* =========================
-   GAME SETUP
-========================= */
-
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-
-const GRID = 25;
-
-let snake = [];
-let fruit = null;
-let coin = null;
-let monsters = [];
-
-let direction = "right";
-let nextDirection = "right";
-
-let score = 0;
-let lives = 3;
-let level = 1;
-
-let running = false;
-let paused = false;
-
-let lastMove = 0;
-const MOVE_DELAY = 180;
-
-
-/* =========================
-   COINS
-========================= */
-
-let gameCoins = Number(localStorage.getItem("snakeCoins") || 0);
-
-
-/* =========================
-   SKINS
-========================= */
-
-const skins = [
-  {name:"Green Snake", price:0, color:"#21ff55"},
-  {name:"Fire Snake", price:50, color:"#ff4b1f"},
-  {name:"Blue Snake", price:100, color:"#26aaff"},
-  {name:"Ice Snake", price:150, color:"#a9f6ff"},
-  {name:"Golden King", price:250, color:"#ffd700"},
-  {name:"Shadow Snake", price:400, color:"#777"},
-  {name:"Rainbow Legend", price:600, color:"#ff55ff"},
-  {name:"Beast Snake", price:800, color:"#ff2277"},
-  {name:"Ultra Snake", price:1000, color:"#00ffff"},
-  {name:"God Snake", price:2000, color:"#ffffff"}
-];
-
-let selectedSkin =
-  Number(localStorage.getItem("selectedSkin") || 0);
-
-let
+    <button id="levelMenuBtn">
