@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snake Game</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Snake Chaos</title>
 
 <style>
 *{
@@ -21,7 +21,7 @@ body{
 .screen{
   display:none;
   min-height:100vh;
-  padding:20px;
+  padding:18px;
 }
 
 .active{
@@ -41,10 +41,10 @@ button{
   border:2px solid #00aaff;
   background:linear-gradient(135deg,#071a32,#00345c);
   color:white;
-  padding:12px 20px;
-  margin:7px;
+  padding:11px 17px;
+  margin:6px;
   border-radius:10px;
-  font-size:17px;
+  font-size:16px;
   cursor:pointer;
   touch-action:manipulation;
   box-shadow:0 0 10px rgba(0,170,255,.35);
@@ -55,39 +55,38 @@ button:hover{
 }
 
 button:disabled{
-  opacity:.45;
+  opacity:.4;
   cursor:not-allowed;
 }
 
 .small{
+  color:#9bdcff;
   font-size:14px;
-  color:#a8dfff;
 }
 
-/* LEVEL LIST */
+/* LEVELS */
 
 #levelsContainer{
-  max-width:650px;
+  max-width:700px;
   height:65vh;
   overflow-y:auto;
   margin:15px auto;
-  padding:12px;
+  padding:10px;
+  background:#020914;
   border:2px solid #008cff;
   border-radius:15px;
-  background:#020914;
-  box-shadow:0 0 20px rgba(0,140,255,.25);
 }
 
 .levelGrid{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:8px;
+  gap:7px;
 }
 
 .levelBtn{
   margin:0;
-  padding:10px 4px;
-  font-size:14px;
+  padding:9px 3px;
+  font-size:13px;
 }
 
 .levelUnlocked{
@@ -95,29 +94,29 @@ button:disabled{
 }
 
 .levelLocked{
+  background:#111;
   border-color:#444;
-  background:#101010;
 }
 
 /* GAME */
 
+.stats{
+  margin:8px;
+  color:#8cddff;
+  font-size:17px;
+}
+
 #gameCanvas{
   background:#020812;
   border:3px solid #008cff;
-  box-shadow:0 0 25px rgba(0,150,255,.45);
+  box-shadow:0 0 25px rgba(0,150,255,.4);
   max-width:95vw;
   height:auto;
 }
 
-.stats{
-  margin:8px;
-  color:#7edcff;
-  font-size:18px;
-}
-
 .controls{
-  margin:10px auto;
-  width:220px;
+  width:225px;
+  margin:9px auto;
   display:grid;
   grid-template-columns:repeat(3,70px);
   gap:5px;
@@ -125,11 +124,11 @@ button:disabled{
 }
 
 .controls button{
-  width:65px;
-  height:55px;
+  width:67px;
+  height:52px;
   padding:0;
   margin:0;
-  font-size:25px;
+  font-size:23px;
 }
 
 .up{
@@ -151,34 +150,40 @@ button:disabled{
   grid-row:2;
 }
 
-/* SHOP */
+/* SHOPS */
+
+.shopTabs{
+  margin-bottom:10px;
+}
 
 .shopGrid{
-  max-width:800px;
+  max-width:900px;
   margin:auto;
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  gap:12px;
+  gap:11px;
 }
 
-.skinCard{
+.card{
   background:#061426;
   border:2px solid #087fca;
   border-radius:15px;
-  padding:15px;
+  padding:13px;
 }
 
-.skinPreview{
-  font-size:55px;
-  height:70px;
+.preview{
+  font-size:48px;
+  height:65px;
 }
 
-.skinCard h3{
+.card h3{
   color:#35caff;
+  margin:7px;
 }
 
 .price{
-  color:#ffd84a;
+  color:#ffd700;
+  font-weight:bold;
 }
 
 .power{
@@ -190,23 +195,38 @@ button:disabled{
   font-size:13px;
 }
 
-#shopInfo{
-  margin:15px auto;
-  max-width:650px;
-  padding:12px;
+.infoBox{
+  max-width:700px;
+  margin:10px auto 15px;
+  padding:11px;
   background:#041020;
   border:1px solid #008cff;
   border-radius:12px;
 }
 
+.souvenirTitle{
+  margin-top:22px;
+  color:#00d9ff;
+  text-shadow:0 0 10px #008cff;
+}
+
+/* HELPER */
+
+.helperInfo{
+  color:#c6f3ff;
+}
+
+/* MOBILE */
+
 @media(max-width:500px){
+
   .levelGrid{
     grid-template-columns:repeat(3,1fr);
   }
 
   button{
-    font-size:15px;
-    padding:10px 14px;
+    font-size:14px;
+    padding:9px 12px;
   }
 }
 </style>
@@ -214,29 +234,38 @@ button:disabled{
 
 <body>
 
-<!-- MENU -->
+<!-- ================= MENU ================= -->
+
 <div id="menuScreen" class="screen active">
+
   <h1>🐍 SNAKE CHAOS</h1>
+
   <p>Blue • Black • Monsters • Powers • 200 Levels</p>
 
   <button onclick="startSelectedLevel()">▶ PLAY</button>
   <button onclick="openLevels()">📋 LEVELS</button>
+  <button onclick="openSkinShop()">🐍 SNAKE SHOP</button>
+  <button onclick="openSouvenirShop()">🎁 SOUVENIR SHOP</button>
   <button onclick="showScreen('rulesScreen')">📜 RULES</button>
-  <button onclick="openShop()">🛒 SHOP</button>
   <button onclick="showScreen('helpScreen')">❓ HELP</button>
 
   <p class="small">
-    Unlocked Level: <span id="menuUnlocked">1</span>/200
+    Unlocked Level:
+    <span id="menuUnlocked">1</span>/200
   </p>
+
 </div>
 
 
-<!-- LEVELS -->
+<!-- ================= LEVELS ================= -->
+
 <div id="levelsScreen" class="screen">
+
   <h1>📋 LEVEL LIST</h1>
 
   <p>
-    🔓 Unlocked: <span id="unlockedText">1</span>/200
+    🔓 Unlocked:
+    <span id="unlockedText">1</span>/200
   </p>
 
   <p class="small">
@@ -248,57 +277,111 @@ button:disabled{
   </div>
 
   <button onclick="showScreen('menuScreen')">⬅ MENU</button>
+
 </div>
 
 
-<!-- RULES -->
+<!-- ================= RULES ================= -->
+
 <div id="rulesScreen" class="screen">
+
   <h1>📜 RULES</h1>
 
   <p>🍎 Normal fruit = 1 point</p>
   <p>❓ Rare fruit = 5 points</p>
-  <p>🪙 ₦1 coin = 2 game coins</p>
-  <p>🐲 Avoid the black monsters!</p>
-  <p>❤️ You have 3 lives.</p>
-  <p>🎯 Reach the level goal to complete the level.</p>
-  <p>🔓 Completing a level unlocks the next level.</p>
+  <p>🪙 ₦1 coin = 2 coins</p>
+  <p>👑 Golden King/God coin = 4 coins</p>
+  <p>🐲 Avoid monsters.</p>
+  <p>❤️ You start with 3 lives.</p>
+  <p>🎯 Reach the goal to complete a level.</p>
+  <p>🔓 Completing a level unlocks the next.</p>
 
   <button onclick="showScreen('menuScreen')">⬅ BACK</button>
+
 </div>
 
 
-<!-- HELP -->
+<!-- ================= HELP ================= -->
+
 <div id="helpScreen" class="screen">
+
   <h1>❓ HELP</h1>
 
   <p>💻 Laptop: Arrow keys or WASD</p>
-  <p>📱 Phone: Use the D-pad buttons.</p>
-  <p>⏸ SPACE = Pause</p>
-  <p>🍎 Eat fruit to score.</p>
-  <p>🪙 Collect ₦ coins.</p>
-  <p>🐲 Watch out for monsters.</p>
+  <p>📱 Phone: Use the D-pad.</p>
+  <p>⏸ SPACE = pause</p>
+  <p>🔥 Fire Snake/God: F = Fire</p>
+  <p>❄️ Ice Snake/God: I = Ice</p>
+  <p>🛡️ Souvenir shields block monster hits.</p>
+  <p>🐍 Helper Snake collects nearby things.</p>
 
   <button onclick="showScreen('menuScreen')">⬅ BACK</button>
+
 </div>
 
 
-<!-- SHOP -->
-<div id="shopScreen" class="screen">
-  <h1>🛒 SNAKE SHOP</h1>
+<!-- ================= SKIN SHOP ================= -->
+
+<div id="skinShopScreen" class="screen">
+
+  <h1>🐍 SNAKE SHOP</h1>
 
   <h2>🪙 Coins: <span id="shopCoins">0</span></h2>
 
-  <div id="shopInfo">
+  <div class="shopTabs">
+    <button onclick="openSkinShop()">🐍 Snake Shop</button>
+    <button onclick="openSouvenirShop()">🎁 Souvenir Shop</button>
+  </div>
+
+  <div id="shopInfo" class="infoBox">
     Choose a snake to see its origin and power.
   </div>
 
-  <div id="shopGrid" class="shopGrid"></div>
+  <div id="skinGrid" class="shopGrid"></div>
 
   <button onclick="showScreen('menuScreen')">⬅ MENU</button>
+
 </div>
 
 
-<!-- GAME -->
+<!-- ================= SOUVENIR SHOP ================= -->
+
+<div id="souvenirShopScreen" class="screen">
+
+  <h1>🎁 SOUVENIR SHOP</h1>
+
+  <h2>🪙 Coins: <span id="souvenirCoins">0</span></h2>
+
+  <div class="shopTabs">
+    <button onclick="openSkinShop()">🐍 Snake Shop</button>
+    <button onclick="openSouvenirShop()">🎁 Souvenir Shop</button>
+  </div>
+
+  <div class="infoBox">
+    Buy hats, shields, helpers and special items.
+    <br>
+    <b>🛡️ Shield ×1 is the cheapest at 100 coins.</b>
+  </div>
+
+  <h2 class="souvenirTitle">🛡️ SHIELDS</h2>
+  <div id="shieldGrid" class="shopGrid"></div>
+
+  <h2 class="souvenirTitle">🎩 HATS</h2>
+  <div id="hatGrid" class="shopGrid"></div>
+
+  <h2 class="souvenirTitle">⭐ SPECIAL ITEMS</h2>
+  <div id="specialGrid" class="shopGrid"></div>
+
+  <h2 class="souvenirTitle">🐍 HELPER</h2>
+  <div id="helperGrid" class="shopGrid"></div>
+
+  <button onclick="showScreen('menuScreen')">⬅ MENU</button>
+
+</div>
+
+
+<!-- ================= GAME ================= -->
+
 <div id="gameScreen" class="screen">
 
   <div class="stats">
@@ -311,6 +394,8 @@ button:disabled{
     ❤️ <span id="livesDisplay">3</span>
     |
     🪙 <span id="coinsDisplay">0</span>
+    |
+    🛡️ <span id="shieldDisplay">0</span>
   </div>
 
   <canvas id="gameCanvas" width="700" height="500"></canvas>
@@ -322,23 +407,33 @@ button:disabled{
     <button class="right" onclick="changeDirection('right')">➡️</button>
   </div>
 
+  <button onclick="fireAttack()">🔥 FIRE (F)</button>
+  <button onclick="activateIce()">❄️ ICE (I)</button>
+  <br>
+
   <button onclick="pauseGame()">⏸ PAUSE</button>
   <button onclick="leaveGame()">🚪 LEAVE</button>
+
 </div>
 
 
-<!-- PAUSE -->
+<!-- ================= PAUSE ================= -->
+
 <div id="pauseScreen" class="screen">
+
   <h1>⏸ PAUSED</h1>
 
   <button onclick="resumeGame()">▶ RESUME</button>
   <button onclick="retryLevel()">🔄 RETRY</button>
-  <button onclick="leaveGame()">🚪 LEVELS</button>
+  <button onclick="leaveGame()">📋 LEVELS</button>
+
 </div>
 
 
-<!-- GAME OVER -->
+<!-- ================= GAME OVER ================= -->
+
 <div id="gameOverScreen" class="screen">
+
   <h1>💀 GAME OVER</h1>
 
   <p>Level: <span id="gameOverLevel">1</span></p>
@@ -347,25 +442,38 @@ button:disabled{
   <button onclick="retryLevel()">🔄 RETRY</button>
   <button onclick="openLevels()">📋 LEVELS</button>
   <button onclick="showScreen('menuScreen')">🏠 MENU</button>
+
 </div>
 
 
-<!-- LEVEL COMPLETE -->
+<!-- ================= LEVEL COMPLETE ================= -->
+
 <div id="levelCompleteScreen" class="screen">
+
   <h1>🏆 LEVEL COMPLETE!</h1>
 
-  <p>You completed Level <span id="completedLevel">1</span>!</p>
-  <p>🎯 Score: <span id="completedScore">0</span></p>
+  <p>
+    You completed Level
+    <span id="completedLevel">1</span>!
+  </p>
+
+  <p>
+    🎯 Score:
+    <span id="completedScore">0</span>
+  </p>
 
   <p id="unlockMessage"></p>
 
   <button onclick="openLevels()">📋 LEVEL LIST</button>
   <button onclick="showScreen('menuScreen')">🏠 MENU</button>
+
 </div>
 
 
-<!-- ALL COMPLETE -->
+<!-- ================= ALL COMPLETE ================= -->
+
 <div id="allCompleteScreen" class="screen">
+
   <h1>👑 LEGEND!</h1>
 
   <h2>YOU BEAT ALL 200 LEVELS!</h2>
@@ -374,21 +482,23 @@ button:disabled{
 
   <button onclick="openLevels()">📋 LEVEL LIST</button>
   <button onclick="showScreen('menuScreen')">🏠 MENU</button>
+
 </div>
 
 
 <script>
 
-/* =========================
+/* =====================================================
    BASIC SETTINGS
-========================= */
+===================================================== */
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 const GRID = 25;
-const MOVE_DELAY_NORMAL = 180;
-const MOVE_DELAY_FAST = 125;
+
+const NORMAL_DELAY = 180;
+const ULTRA_DELAY = 125;
 
 let snake = [];
 let direction = "right";
@@ -410,9 +520,10 @@ let paused = false;
 let lastMove = 0;
 
 let fireCooldown = 0;
-let shieldHits = 0;
+let iceMoves = 0;
 
-let gameCoins = Number(localStorage.getItem("snakeCoins")) || 0;
+let gameCoins =
+  Number(localStorage.getItem("snakeCoins")) || 0;
 
 let unlockedLevel =
   Number(localStorage.getItem("snakeUnlockedLevel")) || 1;
@@ -420,16 +531,10 @@ let unlockedLevel =
 if(unlockedLevel < 1) unlockedLevel = 1;
 if(unlockedLevel > 200) unlockedLevel = 200;
 
-let selectedSkin =
-  localStorage.getItem("selectedSkin") || "green";
 
-let ownedSkins =
-  JSON.parse(localStorage.getItem("ownedSkins") || '["green"]');
-
-
-/* =========================
-   SNAKE SKINS
-========================= */
+/* =====================================================
+   SKIN DATA
+===================================================== */
 
 const skins = [
 
@@ -450,7 +555,7 @@ const skins = [
     emoji:"🔥",
     color:"#ff3b00",
     origin:"Born inside a legendary volcano.",
-    power:"🔥 Fire breath can destroy monsters."
+    power:"🔥 Fire breath can destroy monsters.<br><br><b>Press F to activate Fire.</b>"
   },
 
   {
@@ -460,7 +565,7 @@ const skins = [
     emoji:"🔵",
     color:"#00aaff",
     origin:"Created in the deep blue beast arena.",
-    power:"🧲 Attracts nearby fruit and coins."
+    power:"🧲 Attracts nearby fruit and ₦ coins."
   },
 
   {
@@ -470,7 +575,7 @@ const skins = [
     emoji:"❄️",
     color:"#9eeeff",
     origin:"Frozen for 1,000 years in the Ice Kingdom.",
-    power:"❄️ Slows monsters."
+    power:"❄️ Freezes monsters.<br><br><b>Press I to activate Ice.</b>"
   },
 
   {
@@ -479,8 +584,8 @@ const skins = [
     price:250,
     emoji:"👑",
     color:"#ffd700",
-    origin:"The royal snake of the golden kingdom.",
-    power:"🪙 Coins give 4 game coins."
+    origin:"The royal snake of the Golden Kingdom.",
+    power:"🪙 ₦ coins are worth 4 coins."
   },
 
   {
@@ -490,7 +595,7 @@ const skins = [
     emoji:"🌑",
     color:"#777777",
     origin:"A mysterious snake from the Shadow Realm.",
-    power:"🌑 Monsters have trouble tracking you."
+    power:"🌑 Monsters are less likely to chase you."
   },
 
   {
@@ -500,7 +605,7 @@ const skins = [
     emoji:"🌈",
     color:"#ff55ff",
     origin:"Born when seven magical worlds collided.",
-    power:"🌈 Attracts fruit and finds rare fruit more often."
+    power:"🌈 Attracts fruit and coins + better rare fruit chance."
   },
 
   {
@@ -520,7 +625,7 @@ const skins = [
     emoji:"⚡",
     color:"#00ffff",
     origin:"Powered by an ancient energy crystal.",
-    power:"⚡ Moves faster and has protection."
+    power:"⚡ Moves faster and has a shield."
   },
 
   {
@@ -535,10 +640,124 @@ const skins = [
 
 ];
 
+let selectedSkin =
+  localStorage.getItem("selectedSkin") || "green";
 
-/* =========================
+let ownedSkins =
+  JSON.parse(
+    localStorage.getItem("ownedSkins") ||
+    '["green"]'
+  );
+
+
+/* =====================================================
+   HATS
+===================================================== */
+
+const hats = [
+
+  {
+    id:"bluecap",
+    name:"Blue Cap",
+    price:300,
+    emoji:"🧢"
+  },
+
+  {
+    id:"tophat",
+    name:"Top Hat",
+    price:500,
+    emoji:"🎩"
+  },
+
+  {
+    id:"royal",
+    name:"Royal Hat",
+    price:700,
+    emoji:"👒"
+  },
+
+  {
+    id:"helmet",
+    name:"Battle Helmet",
+    price:900,
+    emoji:"⛑️"
+  },
+
+  {
+    id:"cowboy",
+    name:"Cowboy Hat",
+    price:1200,
+    emoji:"🤠"
+  },
+
+  {
+    id:"genius",
+    name:"Genius Hat",
+    price:1500,
+    emoji:"🎓"
+  },
+
+  {
+    id:"ninja",
+    name:"Ninja Hood",
+    price:1800,
+    emoji:"🥷"
+  },
+
+  {
+    id:"crown",
+    name:"Crown",
+    price:2500,
+    emoji:"👑"
+  },
+
+  {
+    id:"monsterhat",
+    name:"Monster Hat",
+    price:3200,
+    emoji:"🎃"
+  },
+
+  {
+    id:"diamond",
+    name:"Diamond Crown",
+    price:5000,
+    emoji:"💎"
+  }
+
+];
+
+let ownedHats =
+  JSON.parse(
+    localStorage.getItem("ownedHats") ||
+    '["none"]'
+  );
+
+let selectedHat =
+  localStorage.getItem("selectedHat") || "none";
+
+
+/* =====================================================
+   SOUVENIR INVENTORY
+===================================================== */
+
+let shields =
+  Number(localStorage.getItem("snakeShields")) || 0;
+
+let helperOwned =
+  localStorage.getItem("helperOwned") === "1";
+
+let souvenirItems =
+  JSON.parse(
+    localStorage.getItem("souvenirItems") ||
+    '{"coinMagnet":0,"luckyCharm":0,"extraLife":0,"coinMultiplier":0,"monsterRadar":0,"secondChance":0}'
+  );
+
+
+/* =====================================================
    SCREENS
-========================= */
+===================================================== */
 
 function showScreen(id){
 
@@ -550,33 +769,27 @@ function showScreen(id){
 }
 
 
-function updateMenu(){
-
-  document.getElementById("menuUnlocked").textContent =
-    unlockedLevel;
-}
-
+/* =====================================================
+   LEVEL LIST
+===================================================== */
 
 function openLevels(){
 
   running = false;
   paused = false;
 
-  updateMenu();
-
   renderLevels();
+
+  updateMenu();
 
   showScreen("levelsScreen");
 }
 
 
-/* =========================
-   LEVEL LIST
-========================= */
-
 function renderLevels(){
 
-  const grid = document.getElementById("levelGrid");
+  const grid =
+    document.getElementById("levelGrid");
 
   grid.innerHTML = "";
 
@@ -585,7 +798,8 @@ function renderLevels(){
 
   for(let i = 1; i <= 200; i++){
 
-    const button = document.createElement("button");
+    const button =
+      document.createElement("button");
 
     button.className = "levelBtn";
 
@@ -594,9 +808,11 @@ function renderLevels(){
       button.classList.add("levelUnlocked");
 
       if(i === selectedLevel){
-        button.textContent = "▶ Level " + i;
+        button.textContent =
+          "▶ Level " + i;
       }else{
-        button.textContent = "🔓 Level " + i;
+        button.textContent =
+          "🔓 Level " + i;
       }
 
       button.onclick = function(){
@@ -607,7 +823,8 @@ function renderLevels(){
 
       button.classList.add("levelLocked");
 
-      button.textContent = "🔒 Level " + i;
+      button.textContent =
+        "🔒 Level " + i;
 
       button.disabled = true;
     }
@@ -616,10 +833,6 @@ function renderLevels(){
   }
 }
 
-
-/* =========================
-   LEVEL START
-========================= */
 
 function startLevel(number){
 
@@ -650,9 +863,9 @@ function startSelectedLevel(){
 }
 
 
-/* =========================
+/* =====================================================
    GOAL
-========================= */
+===================================================== */
 
 function getGoal(){
 
@@ -663,9 +876,9 @@ function getGoal(){
 }
 
 
-/* =========================
+/* =====================================================
    START GAME
-========================= */
+===================================================== */
 
 function startGame(){
 
@@ -676,15 +889,36 @@ function startGame(){
   lives = 3;
 
   fireCooldown = 0;
+  iceMoves = 0;
 
-  shieldHits = 0;
+  /*
+    ULTRA = 1 shield
+    GOD = 2 shields
+    Souvenir shields are added too.
+  */
+
+  let powerShields = 0;
 
   if(selectedSkin === "ultra"){
-    shieldHits = 1;
+    powerShields = 1;
   }
 
   if(selectedSkin === "god"){
-    shieldHits = 2;
+    powerShields = 2;
+  }
+
+  shieldRunCount =
+    shields + powerShields;
+
+  /* EXTRA LIFE */
+
+  if(souvenirItems.extraLife > 0){
+
+    lives += souvenirItems.extraLife;
+
+    souvenirItems.extraLife = 0;
+
+    saveSouvenirItems();
   }
 
   snake = [
@@ -697,6 +931,9 @@ function startGame(){
   nextDirection = "right";
 
   monsters = [];
+
+  fruit = null;
+  coin = null;
 
   makeFruit();
   makeCoin();
@@ -714,9 +951,9 @@ function startGame(){
 }
 
 
-/* =========================
+/* =====================================================
    GAME LOOP
-========================= */
+===================================================== */
 
 function gameLoop(time){
 
@@ -727,10 +964,10 @@ function gameLoop(time){
   if(!paused){
 
     const delay =
-      (selectedSkin === "ultra" ||
-       selectedSkin === "god")
-      ? MOVE_DELAY_FAST
-      : MOVE_DELAY_NORMAL;
+      selectedSkin === "ultra" ||
+      selectedSkin === "god"
+      ? ULTRA_DELAY
+      : NORMAL_DELAY;
 
     if(time - lastMove >= delay){
 
@@ -746,9 +983,9 @@ function gameLoop(time){
 }
 
 
-/* =========================
+/* =====================================================
    UPDATE GAME
-========================= */
+===================================================== */
 
 function updateGame(){
 
@@ -758,6 +995,7 @@ function updateGame(){
     x:snake[0].x,
     y:snake[0].y
   };
+
 
   if(direction === "up"){
     head.y--;
@@ -775,10 +1013,12 @@ function updateGame(){
     head.x++;
   }
 
+
   const cols = canvas.width / GRID;
   const rows = canvas.height / GRID;
 
-  /* WRAP AROUND */
+
+  /* WRAP */
 
   if(head.x < 0){
     head.x = cols - 1;
@@ -796,6 +1036,7 @@ function updateGame(){
     head.y = 0;
   }
 
+
   /* SELF COLLISION */
 
   for(let i = 0; i < snake.length; i++){
@@ -810,7 +1051,12 @@ function updateGame(){
     }
   }
 
+
   snake.unshift(head);
+
+  let collectedFruit = false;
+  let collectedCoin = false;
+
 
   /* FRUIT */
 
@@ -822,12 +1068,15 @@ function updateGame(){
 
     score += fruit.rare ? 5 : 1;
 
+    collectedFruit = true;
+
     makeFruit();
 
   }else{
 
     snake.pop();
   }
+
 
   /* COIN */
 
@@ -837,35 +1086,58 @@ function updateGame(){
     head.y === coin.y
   ){
 
-    if(selectedSkin === "gold" ||
-       selectedSkin === "god"){
+    let coinValue = 2;
 
-      gameCoins += 4;
-
-    }else{
-
-      gameCoins += 2;
+    if(
+      selectedSkin === "gold" ||
+      selectedSkin === "god"
+    ){
+      coinValue = 4;
     }
+
+    /* COIN MULTIPLIER */
+
+    if(souvenirItems.coinMultiplier > 0){
+
+      coinValue *= 2;
+
+      souvenirItems.coinMultiplier--;
+
+      saveSouvenirItems();
+    }
+
+    gameCoins += coinValue;
 
     localStorage.setItem(
       "snakeCoins",
       gameCoins
     );
 
+    collectedCoin = true;
+
     makeCoin();
   }
 
-  /* ATTRACT */
 
-  attractObjects();
+  /*
+    Don't attract a freshly spawned
+    fruit or coin on the same update.
+  */
+
+  if(!collectedFruit && !collectedCoin){
+    attractObjects();
+  }
+
 
   /* MONSTERS */
 
   updateMonsters();
 
-  /* FIRE */
 
-  useFirePower();
+  /* HELPER */
+
+  updateHelper();
+
 
   /* MONSTER COLLISION */
 
@@ -876,41 +1148,46 @@ function updateGame(){
       head.y === monsters[i].y
     ){
 
+      /* BEAST */
+
       if(
         selectedSkin === "beast" ||
-        selectedSkin === "fire" ||
         selectedSkin === "god"
       ){
 
         monsters.splice(i,1);
+
+        spawnOneMonster();
+
         continue;
       }
 
-      if(
-        selectedSkin === "ultra" ||
-        selectedSkin === "god"
-      ){
 
-        if(shieldHits > 0){
+      /* SHIELD */
 
-          shieldHits--;
+      if(shieldRunCount > 0){
 
-          monsters.splice(i,1);
+        shieldRunCount--;
 
-          continue;
-        }
+        monsters.splice(i,1);
+
+        spawnOneMonster();
+
+        continue;
       }
 
+
       loseLife();
+
       return;
     }
   }
 
-  /* LEVEL COMPLETE */
 
   if(score >= getGoal()){
 
     completeLevel();
+
     return;
   }
 
@@ -918,55 +1195,94 @@ function updateGame(){
 }
 
 
-/* =========================
-   CHANGE DIRECTION
-========================= */
+/* =====================================================
+   DIRECTION
+===================================================== */
 
 function changeDirection(newDirection){
 
-  if(newDirection === "up" &&
-     direction !== "down"){
+  if(
+    newDirection === "up" &&
+    direction !== "down"
+  ){
     nextDirection = "up";
   }
 
-  if(newDirection === "down" &&
-     direction !== "up"){
+  if(
+    newDirection === "down" &&
+    direction !== "up"
+  ){
     nextDirection = "down";
   }
 
-  if(newDirection === "left" &&
-     direction !== "right"){
+  if(
+    newDirection === "left" &&
+    direction !== "right"
+  ){
     nextDirection = "left";
   }
 
-  if(newDirection === "right" &&
-     direction !== "left"){
+  if(
+    newDirection === "right" &&
+    direction !== "left"
+  ){
     nextDirection = "right";
   }
 }
 
 
-/* =========================
+/* =====================================================
    KEYBOARD
-========================= */
+===================================================== */
 
 document.addEventListener("keydown",function(e){
 
-  if(e.key === "ArrowUp" || e.key.toLowerCase() === "w"){
+  const key = e.key.toLowerCase();
+
+  if(
+    e.key === "ArrowUp" ||
+    key === "w"
+  ){
     changeDirection("up");
   }
 
-  if(e.key === "ArrowDown" || e.key.toLowerCase() === "s"){
+  if(
+    e.key === "ArrowDown" ||
+    key === "s"
+  ){
     changeDirection("down");
   }
 
-  if(e.key === "ArrowLeft" || e.key.toLowerCase() === "a"){
+  if(
+    e.key === "ArrowLeft" ||
+    key === "a"
+  ){
     changeDirection("left");
   }
 
-  if(e.key === "ArrowRight" || e.key.toLowerCase() === "d"){
+  if(
+    e.key === "ArrowRight" ||
+    key === "d"
+  ){
     changeDirection("right");
   }
+
+
+  /* FIRE */
+
+  if(key === "f"){
+    fireAttack();
+  }
+
+
+  /* ICE */
+
+  if(key === "i"){
+    activateIce();
+  }
+
+
+  /* PAUSE */
 
   if(e.code === "Space"){
 
@@ -979,99 +1295,155 @@ document.addEventListener("keydown",function(e){
       }else{
         pauseGame();
       }
-
     }
   }
 
 });
 
 
-/* =========================
+/* =====================================================
    FRUIT
-========================= */
+===================================================== */
 
 function makeFruit(){
 
-  const fruitList = [
-    "🍎",
-    "🍌",
-    "🍊",
-    "🍇"
-  ];
+  const fruitList =
+    ["🍎","🍌","🍊","🍇"];
 
   const cols = canvas.width / GRID;
   const rows = canvas.height / GRID;
 
   let rareChance = 0.08;
 
+
+  /* LUCKY CHARM */
+
+  if(souvenirItems.luckyCharm > 0){
+    rareChance = 0.18;
+  }
+
+
+  /* RAINBOW / GOD */
+
   if(
     selectedSkin === "rainbow" ||
     selectedSkin === "god"
   ){
-
-    rareChance = 0.20;
+    rareChance += 0.12;
   }
 
-  fruit = {
 
-    x:Math.floor(Math.random() * cols),
+  for(let attempt = 0; attempt < 100; attempt++){
 
-    y:Math.floor(Math.random() * rows),
+    const x =
+      Math.floor(Math.random() * cols);
 
-    rare:Math.random() < rareChance
-  };
+    const y =
+      Math.floor(Math.random() * rows);
 
-  fruit.emoji = fruit.rare
-    ? "❓"
-    : fruitList[
-        Math.floor(
-          Math.random() * fruitList.length
-        )
-      ];
 
-  if(
-    snake.some(function(p){
-      return p.x === fruit.x &&
-             p.y === fruit.y;
-    })
-  ){
+    const snakeSpot =
+      snake.some(function(p){
+        return p.x === x && p.y === y;
+      });
 
-    makeFruit();
+
+    const monsterSpot =
+      monsters.some(function(m){
+        return m.x === x && m.y === y;
+      });
+
+
+    const coinSpot =
+      coin &&
+      coin.x === x &&
+      coin.y === y;
+
+
+    if(
+      !snakeSpot &&
+      !monsterSpot &&
+      !coinSpot
+    ){
+
+      fruit = {
+        x:x,
+        y:y,
+        rare:Math.random() < rareChance
+      };
+
+      fruit.emoji =
+        fruit.rare
+        ? "❓"
+        : fruitList[
+            Math.floor(
+              Math.random() *
+              fruitList.length
+            )
+          ];
+
+      return;
+    }
   }
 }
 
 
-/* =========================
+/* =====================================================
    COIN
-========================= */
+===================================================== */
 
 function makeCoin(){
 
   const cols = canvas.width / GRID;
   const rows = canvas.height / GRID;
 
-  coin = {
+  for(let attempt = 0; attempt < 100; attempt++){
 
-    x:Math.floor(Math.random() * cols),
+    const x =
+      Math.floor(Math.random() * cols);
 
-    y:Math.floor(Math.random() * rows)
-  };
+    const y =
+      Math.floor(Math.random() * rows);
 
-  if(
-    snake.some(function(p){
-      return p.x === coin.x &&
-             p.y === coin.y;
-    })
-  ){
 
-    makeCoin();
+    const snakeSpot =
+      snake.some(function(p){
+        return p.x === x && p.y === y;
+      });
+
+
+    const monsterSpot =
+      monsters.some(function(m){
+        return m.x === x && m.y === y;
+      });
+
+
+    const fruitSpot =
+      fruit &&
+      fruit.x === x &&
+      fruit.y === y;
+
+
+    if(
+      !snakeSpot &&
+      !monsterSpot &&
+      !fruitSpot
+    ){
+
+      coin = {
+        x:x,
+        y:y
+      };
+
+      return;
+    }
   }
 }
 
 
-/* =========================
+/* =====================================================
    MONSTERS
-========================= */
+===================================================== */
 
 function makeMonsters(){
 
@@ -1081,52 +1453,99 @@ function makeMonsters(){
       8
     );
 
+  for(let i = 0; i < count; i++){
+
+    spawnOneMonster();
+  }
+}
+
+
+function spawnOneMonster(){
+
   const cols = canvas.width / GRID;
   const rows = canvas.height / GRID;
 
-  for(let i = 0; i < count; i++){
+  for(let attempt = 0; attempt < 100; attempt++){
 
-    let monster = {
+    const x =
+      Math.floor(Math.random() * cols);
 
-      x:Math.floor(Math.random() * cols),
+    const y =
+      Math.floor(Math.random() * rows);
 
-      y:Math.floor(Math.random() * rows)
-    };
 
-    monsters.push(monster);
+    const snakeSpot =
+      snake.some(function(p){
+        return p.x === x && p.y === y;
+      });
+
+
+    const fruitSpot =
+      fruit &&
+      fruit.x === x &&
+      fruit.y === y;
+
+
+    const coinSpot =
+      coin &&
+      coin.x === x &&
+      coin.y === y;
+
+
+    const monsterSpot =
+      monsters.some(function(m){
+        return m.x === x && m.y === y;
+      });
+
+
+    if(
+      !snakeSpot &&
+      !fruitSpot &&
+      !coinSpot &&
+      !monsterSpot
+    ){
+
+      monsters.push({
+        x:x,
+        y:y
+      });
+
+      return;
+    }
   }
 }
 
 
 function updateMonsters(){
 
+  if(iceMoves > 0){
+
+    iceMoves--;
+
+    return;
+  }
+
+
   const cols = canvas.width / GRID;
   const rows = canvas.height / GRID;
 
   const head = snake[0];
 
+
   monsters.forEach(function(monster){
 
-    /* ICE POWER */
-
-    if(
-      selectedSkin === "ice" ||
-      selectedSkin === "god"
-    ){
-
-      if(Math.random() < 0.45){
-        return;
-      }
-    }
-
-    /* SHADOW */
+    /*
+      Shadow/Rainbow/God:
+      monsters are more random and
+      chase less often.
+    */
 
     if(
       selectedSkin === "shadow" ||
-      selectedSkin === "god"
+      selectedSkin === "rainbow"
     ){
 
-      if(Math.random() < 0.85){
+      if(Math.random() < 0.82){
 
         randomMove(monster);
 
@@ -1147,16 +1566,23 @@ function updateMonsters(){
       }
     }
 
+
     monster.x =
       Math.max(
         0,
-        Math.min(cols - 1,monster.x)
+        Math.min(
+          cols - 1,
+          monster.x
+        )
       );
 
     monster.y =
       Math.max(
         0,
-        Math.min(rows - 1,monster.y)
+        Math.min(
+          rows - 1,
+          monster.y
+        )
       );
   });
 }
@@ -1164,22 +1590,22 @@ function updateMonsters(){
 
 function randomMove(monster){
 
-  const randomDirection =
+  const r =
     Math.floor(Math.random() * 4);
 
-  if(randomDirection === 0){
+  if(r === 0){
     monster.x++;
   }
 
-  if(randomDirection === 1){
+  if(r === 1){
     monster.x--;
   }
 
-  if(randomDirection === 2){
+  if(r === 2){
     monster.y++;
   }
 
-  if(randomDirection === 3){
+  if(r === 3){
     monster.y--;
   }
 }
@@ -1201,23 +1627,34 @@ function chasePlayer(monster,head){
 }
 
 
-/* =========================
-   ATTRACTION POWERS
-========================= */
+/* =====================================================
+   ATTRACTION
+===================================================== */
 
 function attractObjects(){
 
   if(
     selectedSkin !== "blue" &&
     selectedSkin !== "rainbow" &&
-    selectedSkin !== "god"
+    selectedSkin !== "god" &&
+    souvenirItems.coinMagnet <= 0
   ){
     return;
   }
 
   const head = snake[0];
 
-  if(fruit){
+
+  /* FRUIT */
+
+  if(
+    fruit &&
+    (
+      selectedSkin === "blue" ||
+      selectedSkin === "rainbow" ||
+      selectedSkin === "god"
+    )
+  ){
 
     const distance =
       Math.abs(head.x - fruit.x) +
@@ -1243,13 +1680,25 @@ function attractObjects(){
     }
   }
 
+
+  /* COIN */
+
   if(coin){
 
     const distance =
       Math.abs(head.x - coin.x) +
       Math.abs(head.y - coin.y);
 
-    if(distance <= 7){
+    const canMagnet =
+      selectedSkin === "blue" ||
+      selectedSkin === "rainbow" ||
+      selectedSkin === "god" ||
+      souvenirItems.coinMagnet > 0;
+
+    if(
+      canMagnet &&
+      distance <= 7
+    ){
 
       if(coin.x < head.x){
         coin.x++;
@@ -1271,11 +1720,15 @@ function attractObjects(){
 }
 
 
-/* =========================
-   FIRE POWER
-========================= */
+/* =====================================================
+   FIRE
+===================================================== */
 
-function useFirePower(){
+function fireAttack(){
+
+  if(!running || paused){
+    return;
+  }
 
   if(
     selectedSkin !== "fire" &&
@@ -1285,48 +1738,255 @@ function useFirePower(){
   }
 
   if(fireCooldown > 0){
-
-    fireCooldown--;
-    return;
-  }
-
-  if(monsters.length === 0){
     return;
   }
 
   const head = snake[0];
 
-  let nearest = -1;
-  let nearestDistance = 999;
+  let targetIndex = -1;
+  let bestDistance = 999;
+
 
   monsters.forEach(function(monster,index){
 
-    const distance =
-      Math.abs(head.x - monster.x) +
-      Math.abs(head.y - monster.y);
+    const dx = monster.x - head.x;
+    const dy = monster.y - head.y;
 
-    if(distance < nearestDistance){
+    let inLine = false;
+    let distance = 999;
 
-      nearestDistance = distance;
-      nearest = index;
+
+    if(
+      direction === "up" &&
+      dx === 0 &&
+      dy < 0 &&
+      dy >= -7
+    ){
+
+      inLine = true;
+      distance = Math.abs(dy);
     }
+
+
+    if(
+      direction === "down" &&
+      dx === 0 &&
+      dy > 0 &&
+      dy <= 7
+    ){
+
+      inLine = true;
+      distance = Math.abs(dy);
+    }
+
+
+    if(
+      direction === "left" &&
+      dy === 0 &&
+      dx < 0 &&
+      dx >= -7
+    ){
+
+      inLine = true;
+      distance = Math.abs(dx);
+    }
+
+
+    if(
+      direction === "right" &&
+      dy === 0 &&
+      dx > 0 &&
+      dx <= 7
+    ){
+
+      inLine = true;
+      distance = Math.abs(dx);
+    }
+
+
+    if(
+      inLine &&
+      distance < bestDistance
+    ){
+
+      bestDistance = distance;
+      targetIndex = index;
+    }
+
   });
 
-  if(
-    nearest !== -1 &&
-    nearestDistance <= 6
-  ){
 
-    monsters.splice(nearest,1);
+  if(targetIndex !== -1){
 
-    fireCooldown = 8;
+    monsters.splice(
+      targetIndex,
+      1
+    );
+
+    spawnOneMonster();
+
+    fireCooldown = 3;
   }
 }
 
 
-/* =========================
-   LOSE LIFE
-========================= */
+/* =====================================================
+   ICE
+===================================================== */
+
+function activateIce(){
+
+  if(!running || paused){
+    return;
+  }
+
+  if(
+    selectedSkin !== "ice" &&
+    selectedSkin !== "god"
+  ){
+    return;
+  }
+
+  if(iceMoves > 0){
+    return;
+  }
+
+  iceMoves = 20;
+}
+
+
+/* =====================================================
+   HELPER SNAKE
+===================================================== */
+
+function updateHelper(){
+
+  if(!helperOwned){
+    return;
+  }
+
+  if(!helper){
+    return;
+  }
+
+
+  let target = null;
+
+  if(fruit){
+    target = {
+      x:fruit.x,
+      y:fruit.y
+    };
+  }
+
+  if(
+    coin &&
+    !target
+  ){
+
+    target = {
+      x:coin.x,
+      y:coin.y
+    };
+  }
+
+
+  if(target){
+
+    if(helper.x < target.x){
+      helper.x++;
+    }else if(helper.x > target.x){
+      helper.x--;
+    }
+
+    if(helper.y < target.y){
+      helper.y++;
+    }else if(helper.y > target.y){
+      helper.y--;
+    }
+  }
+
+
+  /* FRUIT */
+
+  if(
+    fruit &&
+    helper.x === fruit.x &&
+    helper.y === fruit.y
+  ){
+
+    score +=
+      fruit.rare ? 5 : 1;
+
+    makeFruit();
+  }
+
+
+  /* COIN */
+
+  if(
+    coin &&
+    helper.x === coin.x &&
+    helper.y === coin.y
+  ){
+
+    let value = 2;
+
+    if(
+      selectedSkin === "gold" ||
+      selectedSkin === "god"
+    ){
+      value = 4;
+    }
+
+    gameCoins += value;
+
+    localStorage.setItem(
+      "snakeCoins",
+      gameCoins
+    );
+
+    makeCoin();
+  }
+
+
+  /* MONSTER */
+
+  for(let i = 0; i < monsters.length; i++){
+
+    if(
+      helper.x === monsters[i].x &&
+      helper.y === monsters[i].y
+    ){
+
+      /*
+        Helper dies immediately
+        when it touches a monster.
+      */
+
+      helperOwned = false;
+      helper = null;
+
+      localStorage.setItem(
+        "helperOwned",
+        "0"
+      );
+
+      break;
+    }
+  }
+}
+
+
+let helper = null;
+
+
+/* =====================================================
+   LIFE
+===================================================== */
+
+let shieldRunCount = 0;
+
 
 function loseLife(){
 
@@ -1334,20 +1994,37 @@ function loseLife(){
 
   if(lives <= 0){
 
-    running = false;
+    /*
+      SECOND CHANCE
+    */
 
-    document.getElementById(
-      "gameOverLevel"
-    ).textContent = level;
+    if(souvenirItems.secondChance > 0){
 
-    document.getElementById(
-      "gameOverScore"
-    ).textContent = score;
+      souvenirItems.secondChance--;
 
-    showScreen("gameOverScreen");
+      saveSouvenirItems();
 
-    return;
+      lives = 1;
+      shieldRunCount = 1;
+
+    }else{
+
+      running = false;
+
+      document.getElementById(
+        "gameOverLevel"
+      ).textContent = level;
+
+      document.getElementById(
+        "gameOverScore"
+      ).textContent = score;
+
+      showScreen("gameOverScreen");
+
+      return;
+    }
   }
+
 
   snake = [
     {x:8,y:10},
@@ -1362,15 +2039,16 @@ function loseLife(){
 }
 
 
-/* =========================
+/* =====================================================
    LEVEL COMPLETE
-========================= */
+===================================================== */
 
 function completeLevel(){
 
   running = false;
 
   const completed = level;
+
 
   if(completed < 200){
 
@@ -1388,13 +2066,16 @@ function completeLevel(){
       );
     }
 
+
     document.getElementById(
       "completedLevel"
     ).textContent = completed;
 
+
     document.getElementById(
       "completedScore"
     ).textContent = score;
+
 
     document.getElementById(
       "unlockMessage"
@@ -1403,42 +2084,46 @@ function completeLevel(){
       (completed + 1) +
       " is now unlocked!";
 
+
     showScreen("levelCompleteScreen");
 
   }else{
+
+    unlockedLevel = 200;
 
     localStorage.setItem(
       "snakeUnlockedLevel",
       "200"
     );
 
-    unlockedLevel = 200;
-
     showScreen("allCompleteScreen");
   }
 }
 
 
-/* =========================
+/* =====================================================
    RETRY
-========================= */
+===================================================== */
 
 function retryLevel(){
 
   level = selectedLevel;
 
   if(level > unlockedLevel){
+
     level = unlockedLevel;
-    selectedLevel = unlockedLevel;
+
+    selectedLevel =
+      unlockedLevel;
   }
 
   startGame();
 }
 
 
-/* =========================
+/* =====================================================
    PAUSE
-========================= */
+===================================================== */
 
 function pauseGame(){
 
@@ -1458,7 +2143,8 @@ function resumeGame(){
 
   showScreen("gameScreen");
 
-  lastMove = performance.now();
+  lastMove =
+    performance.now();
 }
 
 
@@ -1471,9 +2157,9 @@ function leaveGame(){
 }
 
 
-/* =========================
+/* =====================================================
    STATS
-========================= */
+===================================================== */
 
 function updateStats(){
 
@@ -1481,27 +2167,41 @@ function updateStats(){
     "levelDisplay"
   ).textContent = level;
 
+
   document.getElementById(
     "goalDisplay"
-  ).textContent = getGoal();
+  ).textContent =
+    getGoal();
+
 
   document.getElementById(
     "scoreDisplay"
-  ).textContent = score;
+  ).textContent =
+    score;
+
 
   document.getElementById(
     "livesDisplay"
-  ).textContent = lives;
+  ).textContent =
+    lives;
+
 
   document.getElementById(
     "coinsDisplay"
-  ).textContent = gameCoins;
+  ).textContent =
+    gameCoins;
+
+
+  document.getElementById(
+    "shieldDisplay"
+  ).textContent =
+    shieldRunCount;
 }
 
 
-/* =========================
-   DRAW GAME
-========================= */
+/* =====================================================
+   DRAW
+===================================================== */
 
 function draw(){
 
@@ -1512,12 +2212,17 @@ function draw(){
     canvas.height
   );
 
-  /* BACKGROUND GRID */
+
+  /* GRID */
 
   ctx.strokeStyle =
-    "rgba(0,140,255,.08)";
+    "rgba(0,140,255,.07)";
 
-  for(let x = 0; x < canvas.width; x += GRID){
+  for(
+    let x = 0;
+    x < canvas.width;
+    x += GRID
+  ){
 
     ctx.beginPath();
 
@@ -1527,7 +2232,12 @@ function draw(){
     ctx.stroke();
   }
 
-  for(let y = 0; y < canvas.height; y += GRID){
+
+  for(
+    let y = 0;
+    y < canvas.height;
+    y += GRID
+  ){
 
     ctx.beginPath();
 
@@ -1549,8 +2259,8 @@ function draw(){
 
     ctx.fillText(
       fruit.emoji,
-      fruit.x * GRID + GRID / 2,
-      fruit.y * GRID + GRID / 2
+      fruit.x * GRID + GRID/2,
+      fruit.y * GRID + GRID/2
     );
   }
 
@@ -1572,13 +2282,10 @@ function draw(){
 
     ctx.font = "13px Arial";
 
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
     ctx.fillText(
       "₦",
-      coin.x * GRID + GRID / 2,
-      coin.y * GRID + GRID / 2
+      coin.x * GRID + GRID/2,
+      coin.y * GRID + GRID/2
     );
   }
 
@@ -1595,6 +2302,7 @@ function draw(){
       GRID - 4,
       GRID - 4
     );
+
 
     /* EYES */
 
@@ -1613,6 +2321,7 @@ function draw(){
       5,
       5
     );
+
 
     ctx.fillStyle = "red";
 
@@ -1639,9 +2348,12 @@ function draw(){
       return s.id === selectedSkin;
     }) || skins[0];
 
+
   snake.forEach(function(part,index){
 
-    ctx.fillStyle = skin.color;
+    ctx.fillStyle =
+      skin.color;
+
 
     ctx.fillRect(
       part.x * GRID + 2,
@@ -1649,6 +2361,7 @@ function draw(){
       GRID - 4,
       GRID - 4
     );
+
 
     /* HEAD */
 
@@ -1670,55 +2383,149 @@ function draw(){
         5
       );
 
-      /* FIRE */
+
+      /* FIRE EFFECT */
 
       if(
         selectedSkin === "fire" ||
         selectedSkin === "god"
       ){
 
-        ctx.font = "18px Arial";
+        ctx.font = "17px Arial";
 
         ctx.fillText(
           "🔥",
-          part.x * GRID + GRID / 2,
-          part.y * GRID + GRID / 2
+          part.x * GRID + GRID/2,
+          part.y * GRID + GRID/2
         );
+      }
+
+
+      /* HAT */
+
+      if(selectedHat !== "none"){
+
+        const hat =
+          hats.find(function(h){
+            return h.id === selectedHat;
+          });
+
+        if(hat){
+
+          ctx.font = "20px Arial";
+
+          ctx.fillText(
+            hat.emoji,
+            part.x * GRID + GRID/2,
+            part.y * GRID - 4
+          );
+        }
       }
     }
   });
+
+
+  /* HELPER */
+
+  if(helperOwned && helper){
+
+    ctx.fillStyle = "#39c8ff";
+
+    ctx.fillRect(
+      helper.x * GRID + 5,
+      helper.y * GRID + 5,
+      GRID - 10,
+      GRID - 10
+    );
+
+    ctx.fillStyle = "white";
+
+    ctx.fillRect(
+      helper.x * GRID + 8,
+      helper.y * GRID + 8,
+      4,
+      4
+    );
+
+    ctx.fillRect(
+      helper.x * GRID + 14,
+      helper.y * GRID + 8,
+      4,
+      4
+    );
+  }
+
+
+  /* RADAR */
+
+  if(souvenirItems.monsterRadar > 0){
+
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "#ff5555";
+
+    monsters.forEach(function(monster){
+
+      const dx =
+        monster.x - snake[0].x;
+
+      const dy =
+        monster.y - snake[0].y;
+
+      let arrow = "•";
+
+      if(Math.abs(dx) > Math.abs(dy)){
+
+        arrow =
+          dx > 0 ? "➡️" : "⬅️";
+
+      }else if(dy !== 0){
+
+        arrow =
+          dy > 0 ? "⬇️" : "⬆️";
+      }
+
+      ctx.fillText(
+        arrow,
+        monster.x * GRID + GRID/2,
+        monster.y * GRID - 2
+      );
+    });
+  }
 }
 
 
-/* =========================
-   SHOP
-========================= */
+/* =====================================================
+   SKIN SHOP
+===================================================== */
 
-function openShop(){
+function openSkinShop(){
 
-  renderShop();
+  renderSkinShop();
 
-  showScreen("shopScreen");
+  showScreen("skinShopScreen");
 }
 
 
-function renderShop(){
+function renderSkinShop(){
 
   document.getElementById(
     "shopCoins"
   ).textContent = gameCoins;
 
+
   const grid =
-    document.getElementById("shopGrid");
+    document.getElementById("skinGrid");
 
   grid.innerHTML = "";
+
 
   skins.forEach(function(skin){
 
     const card =
       document.createElement("div");
 
-    card.className = "skinCard";
+    card.className = "card";
+
 
     const owned =
       ownedSkins.includes(skin.id);
@@ -1726,9 +2533,9 @@ function renderShop(){
     const equipped =
       selectedSkin === skin.id;
 
-    card.innerHTML =
 
-      '<div class="skinPreview">' +
+    card.innerHTML =
+      '<div class="preview">' +
       skin.emoji +
       '</div>' +
 
@@ -1748,53 +2555,64 @@ function renderShop(){
       skin.power +
       '</p>';
 
+
     const button =
       document.createElement("button");
 
+
     if(equipped){
 
-      button.textContent = "✅ EQUIPPED";
+      button.textContent =
+        "✅ EQUIPPED";
 
     }else if(owned){
 
-      button.textContent = "EQUIP";
+      button.textContent =
+        "EQUIP";
 
-      button.onclick = function(){
+      button.onclick =
+        function(){
 
-        selectedSkin = skin.id;
+          selectedSkin =
+            skin.id;
 
-        localStorage.setItem(
-          "selectedSkin",
-          selectedSkin
-        );
+          localStorage.setItem(
+            "selectedSkin",
+            selectedSkin
+          );
 
-        renderShop();
-      };
+          renderSkinShop();
+        };
 
     }else{
 
       button.textContent =
         "BUY 🪙 " + skin.price;
 
-      button.onclick = function(){
+      button.onclick =
+        function(){
 
-        buySkin(skin.id);
-      };
+          buySkin(skin.id);
+        };
     }
+
 
     card.appendChild(button);
 
-    card.onclick = function(){
 
-      document.getElementById(
-        "shopInfo"
-      ).innerHTML =
-        "<b>" + skin.name + "</b><br>" +
-        skin.origin + "<br><br>" +
-        "<span class='power'>" +
-        skin.power +
-        "</span>";
-    };
+    card.onclick =
+      function(){
+
+        document.getElementById(
+          "shopInfo"
+        ).innerHTML =
+          "<b>" + skin.name + "</b><br><br>" +
+          skin.origin + "<br><br>" +
+          "<span class='power'>" +
+          skin.power +
+          "</span>";
+      };
+
 
     grid.appendChild(card);
   });
@@ -1808,9 +2626,11 @@ function buySkin(id){
       return s.id === id;
     });
 
+
   if(!skin){
     return;
   }
+
 
   if(ownedSkins.includes(id)){
 
@@ -1821,10 +2641,11 @@ function buySkin(id){
       selectedSkin
     );
 
-    renderShop();
+    renderSkinShop();
 
     return;
   }
+
 
   if(gameCoins < skin.price){
 
@@ -1837,11 +2658,75 @@ function buySkin(id){
     return;
   }
 
+
   gameCoins -= skin.price;
 
   ownedSkins.push(id);
 
   selectedSkin = id;
+
+
+  localStorage.setItem(
+    "snakeCoins",
+    gameCoins
+  );
+
+
+  localStorage.setItem(
+    "ownedSkins",
+    JSON.stringify(ownedSkins)
+  );
+
+
+  localStorage.setItem(
+    "selectedSkin",
+    selectedSkin
+  );
+
+
+  renderSkinShop();
+}
+
+
+/* =====================================================
+   SOUVENIR SHOP
+===================================================== */
+
+function openSouvenirShop(){
+
+  renderSouvenirShop();
+
+  showScreen("souvenirShopScreen");
+}
+
+
+function saveSouvenirItems(){
+
+  localStorage.setItem(
+    "souvenirItems",
+    JSON.stringify(souvenirItems)
+  );
+}
+
+
+function buyShield(amount,price){
+
+  if(gameCoins < price){
+
+    alert(
+      "You need " +
+      (price - gameCoins) +
+      " more coins!"
+    );
+
+    return;
+  }
+
+
+  gameCoins -= price;
+
+  shields += amount;
+
 
   localStorage.setItem(
     "snakeCoins",
@@ -1849,31 +2734,535 @@ function buySkin(id){
   );
 
   localStorage.setItem(
-    "ownedSkins",
-    JSON.stringify(ownedSkins)
+    "snakeShields",
+    shields
   );
 
-  localStorage.setItem(
-    "selectedSkin",
-    selectedSkin
-  );
 
-  renderShop();
+  renderSouvenirShop();
 }
 
 
-/* =========================
+/* =====================================================
+   HAT SHOP
+===================================================== */
+
+function buyHat(hat){
+
+  if(ownedHats.includes(hat.id)){
+
+    selectedHat = hat.id;
+
+    localStorage.setItem(
+      "selectedHat",
+      selectedHat
+    );
+
+    renderSouvenirShop();
+
+    return;
+  }
+
+
+  if(gameCoins < hat.price){
+
+    alert(
+      "You need " +
+      (hat.price - gameCoins) +
+      " more coins!"
+    );
+
+    return;
+  }
+
+
+  gameCoins -= hat.price;
+
+  ownedHats.push(hat.id);
+
+  selectedHat = hat.id;
+
+
+  localStorage.setItem(
+    "snakeCoins",
+    gameCoins
+  );
+
+
+  localStorage.setItem(
+    "ownedHats",
+    JSON.stringify(ownedHats)
+  );
+
+
+  localStorage.setItem(
+    "selectedHat",
+    selectedHat
+  );
+
+
+  renderSouvenirShop();
+}
+
+
+/* =====================================================
+   SPECIAL ITEMS
+===================================================== */
+
+const specialItems = [
+
+  {
+    id:"coinMagnet",
+    name:"🧲 Coin Magnet",
+    price:1200,
+    description:"Permanently attracts nearby ₦ coins."
+  },
+
+  {
+    id:"luckyCharm",
+    name:"🍀 Lucky Charm",
+    price:1500,
+    description:"Permanently increases your rare ❓ fruit chance."
+  },
+
+  {
+    id:"extraLife",
+    name:"❤️ Extra Life",
+    price:1800,
+    description:"Adds one extra life to your next game."
+  },
+
+  {
+    id:"monsterRadar",
+    name:"🧭 Monster Radar",
+    price:2200,
+    description:"Shows arrows pointing toward monsters."
+  },
+
+  {
+    id:"coinMultiplier",
+    name:"💰 Coin Multiplier",
+    price:2800,
+    description:"Doubles your next 10 coin pickups."
+  },
+
+  {
+    id:"secondChance",
+    name:"✨ Second Chance",
+    price:3500,
+    description:"When you would get Game Over, you survive with 1 life."
+  }
+
+];
+
+
+function buySpecial(item){
+
+  if(gameCoins < item.price){
+
+    alert(
+      "You need " +
+      (item.price - gameCoins) +
+      " more coins!"
+    );
+
+    return;
+  }
+
+
+  gameCoins -= item.price;
+
+  souvenirItems[item.id]++;
+
+  localStorage.setItem(
+    "snakeCoins",
+    gameCoins
+  );
+
+  saveSouvenirItems();
+
+  renderSouvenirShop();
+}
+
+
+/* =====================================================
+   HELPER SHOP
+===================================================== */
+
+function buyHelper(){
+
+  if(helperOwned){
+
+    alert(
+      "You already have a Helper Snake. " +
+      "It must die before you can buy another."
+    );
+
+    return;
+  }
+
+
+  const price = 2500;
+
+
+  if(gameCoins < price){
+
+    alert(
+      "You need " +
+      (price - gameCoins) +
+      " more coins!"
+    );
+
+    return;
+  }
+
+
+  gameCoins -= price;
+
+  helperOwned = true;
+
+
+  /*
+    Start helper next game.
+  */
+
+  helper = {
+    x:snake.length > 0
+      ? snake[0].x
+      : 10,
+    y:snake.length > 0
+      ? snake[0].y
+      : 10
+  };
+
+
+  localStorage.setItem(
+    "snakeCoins",
+    gameCoins
+  );
+
+  localStorage.setItem(
+    "helperOwned",
+    "1"
+  );
+
+
+  renderSouvenirShop();
+}
+
+
+/* =====================================================
+   RENDER SOUVENIR SHOP
+===================================================== */
+
+function renderSouvenirShop(){
+
+  document.getElementById(
+    "souvenirCoins"
+  ).textContent = gameCoins;
+
+
+  /* SHIELDS */
+
+  const shieldGrid =
+    document.getElementById(
+      "shieldGrid"
+    );
+
+  shieldGrid.innerHTML = "";
+
+
+  const shieldPacks = [
+
+    {
+      amount:1,
+      price:100
+    },
+
+    {
+      amount:5,
+      price:450
+    },
+
+    {
+      amount:10,
+      price:800
+    }
+
+  ];
+
+
+  shieldPacks.forEach(function(pack){
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML =
+      '<div class="preview">🛡️</div>' +
+      '<h3>Shield ×' +
+      pack.amount +
+      '</h3>' +
+      '<div class="price">🪙 ' +
+      pack.price +
+      '</div>' +
+      '<p class="power">' +
+      "Blocks monster hits." +
+      '</p>' +
+      '<p>Owned: ' +
+      shields +
+      '</p>';
+
+
+    const button =
+      document.createElement("button");
+
+    button.textContent =
+      "BUY";
+
+
+    button.onclick =
+      function(){
+
+        buyShield(
+          pack.amount,
+          pack.price
+        );
+      };
+
+
+    card.appendChild(button);
+
+    shieldGrid.appendChild(card);
+  });
+
+
+  /* HATS */
+
+  const hatGrid =
+    document.getElementById(
+      "hatGrid"
+    );
+
+  hatGrid.innerHTML = "";
+
+
+  hats.forEach(function(hat){
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+
+    const owned =
+      ownedHats.includes(hat.id);
+
+    const equipped =
+      selectedHat === hat.id;
+
+
+    card.innerHTML =
+      '<div class="preview">' +
+      hat.emoji +
+      '</div>' +
+
+      '<h3>' +
+      hat.name +
+      '</h3>' +
+
+      '<div class="price">🪙 ' +
+      hat.price +
+      '</div>';
+
+
+    const button =
+      document.createElement("button");
+
+
+    if(equipped){
+
+      button.textContent =
+        "✅ EQUIPPED";
+
+    }else if(owned){
+
+      button.textContent =
+        "EQUIP";
+
+      button.onclick =
+        function(){
+
+          selectedHat =
+            hat.id;
+
+          localStorage.setItem(
+            "selectedHat",
+            selectedHat
+          );
+
+          renderSouvenirShop();
+        };
+
+    }else{
+
+      button.textContent =
+        "BUY";
+
+      button.onclick =
+        function(){
+
+          buyHat(hat);
+        };
+    }
+
+
+    card.appendChild(button);
+
+    hatGrid.appendChild(card);
+  });
+
+
+  /* SPECIAL ITEMS */
+
+  const specialGrid =
+    document.getElementById(
+      "specialGrid"
+    );
+
+  specialGrid.innerHTML = "";
+
+
+  specialItems.forEach(function(item){
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+
+    card.innerHTML =
+      '<div class="preview">' +
+      item.name.substring(0,2) +
+      '</div>' +
+
+      '<h3>' +
+      item.name +
+      '</h3>' +
+
+      '<div class="price">🪙 ' +
+      item.price +
+      '</div>' +
+
+      '<p class="power">' +
+      item.description +
+      '</p>' +
+
+      '<p>Owned: ' +
+      souvenirItems[item.id] +
+      '</p>';
+
+
+    const button =
+      document.createElement("button");
+
+    button.textContent =
+      "BUY";
+
+
+    button.onclick =
+      function(){
+
+        buySpecial(item);
+      };
+
+
+    card.appendChild(button);
+
+    specialGrid.appendChild(card);
+  });
+
+
+  /* HELPER */
+
+  const helperGrid =
+    document.getElementById(
+      "helperGrid"
+    );
+
+  helperGrid.innerHTML = "";
+
+
+  const helperCard =
+    document.createElement("div");
+
+  helperCard.className =
+    "card";
+
+
+  helperCard.innerHTML =
+    '<div class="preview">🐍</div>' +
+
+    '<h3>Helper Snake</h3>' +
+
+    '<div class="price">🪙 2500</div>' +
+
+    '<p class="helperInfo">' +
+    'Follows you and helps collect fruit and coins.' +
+    '<br><br>' +
+    '🐲 If it touches a monster, it dies immediately.' +
+    '<br>' +
+    'You can only have <b>1</b> until it dies.' +
+    '</p>';
+
+
+  const helperButton =
+    document.createElement("button");
+
+
+  if(helperOwned){
+
+    helperButton.textContent =
+      "🐍 HELPER ACTIVE";
+
+  }else{
+
+    helperButton.textContent =
+      "BUY 🪙 2500";
+
+    helperButton.onclick =
+      function(){
+
+        buyHelper();
+      };
+  }
+
+
+  helperCard.appendChild(
+    helperButton
+  );
+
+  helperGrid.appendChild(
+    helperCard
+  );
+}
+
+
+/* =====================================================
    MUSIC
-========================= */
+===================================================== */
 
 let audioContext = null;
 let musicStarted = false;
+
 
 function startMusic(){
 
   if(musicStarted){
     return;
   }
+
 
   try{
 
@@ -1882,6 +3271,7 @@ function startMusic(){
         window.AudioContext ||
         window.webkitAudioContext
       )();
+
 
     musicStarted = true;
 
@@ -1900,6 +3290,7 @@ function playMusicLoop(){
     return;
   }
 
+
   const notes = [
     261.63,
     329.63,
@@ -1911,8 +3302,10 @@ function playMusicLoop(){
     349.23
   ];
 
+
   let time =
     audioContext.currentTime;
+
 
   notes.forEach(function(freq){
 
@@ -1922,20 +3315,26 @@ function playMusicLoop(){
     const gain =
       audioContext.createGain();
 
-    oscillator.type = "square";
+
+    oscillator.type =
+      "square";
+
 
     oscillator.frequency.value =
       freq;
+
 
     gain.gain.setValueAtTime(
       0.035,
       time
     );
 
+
     gain.gain.exponentialRampToValueAtTime(
       0.001,
       time + 0.18
     );
+
 
     oscillator.connect(gain);
 
@@ -1943,14 +3342,17 @@ function playMusicLoop(){
       audioContext.destination
     );
 
+
     oscillator.start(time);
 
     oscillator.stop(
       time + 0.18
     );
 
+
     time += 0.2;
   });
+
 
   setTimeout(
     playMusicLoop,
@@ -1959,9 +3361,32 @@ function playMusicLoop(){
 }
 
 
-/* =========================
+/* =====================================================
    INITIALIZE
-========================= */
+===================================================== */
+
+function updateMenu(){
+
+  document.getElementById(
+    "menuUnlocked"
+  ).textContent =
+    unlockedLevel;
+}
+
+
+/*
+  Make sure Helper is restored
+  when page is opened.
+*/
+
+if(helperOwned){
+
+  helper = {
+    x:10,
+    y:10
+  };
+}
+
 
 updateMenu();
 
