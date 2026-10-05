@@ -6,121 +6,136 @@
 <title>Snake Chaos</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    background:#101010;
+    color:white;
+    font-family:Arial,sans-serif;
+    text-align:center;
 }
 
-body {
-    margin: 0;
-    background: #111;
-    color: white;
-    font-family: Arial, sans-serif;
-    text-align: center;
+h1{margin:10px}
+
+canvas{
+    background:#228B22;
+    border:4px solid white;
+    max-width:95vw;
+    height:auto;
 }
 
-h1 {
-    margin: 10px;
-    color: lime;
+button{
+    background:#333;
+    color:white;
+    border:2px solid #666;
+    border-radius:10px;
+    padding:12px 18px;
+    margin:5px;
+    font-size:16px;
+    cursor:pointer;
 }
 
-#info {
-    font-size: 17px;
-    margin: 8px;
+button:hover{
+    background:#555;
 }
 
-canvas {
-    display: block;
-    margin: 10px auto;
-    border: 4px solid lime;
-    max-width: 95vw;
+button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
 }
 
-button {
-    border: none;
-    border-radius: 8px;
-    padding: 11px 18px;
-    margin: 5px;
-    font-size: 16px;
-    cursor: pointer;
+.big{
+    display:block;
+    width:250px;
+    margin:12px auto;
 }
 
-button:hover {
-    transform: scale(1.04);
+.danger{
+    background:#9b0000;
 }
 
-.play {
-    background: lime;
+#hud{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:6px;
+    margin:8px;
 }
 
-.shopButton {
-    background: gold;
+.hud{
+    background:#222;
+    padding:8px 12px;
+    border-radius:8px;
 }
 
-.pauseButton {
-    background: dodgerblue;
-    color: white;
+#message{
+    min-height:25px;
+    font-weight:bold;
 }
 
-.screen {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.94);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
+.screen{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.94);
+    z-index:20;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:15px;
+    overflow:auto;
 }
 
-.hidden {
-    display: none !important;
+.panel{
+    background:#181818;
+    border:2px solid #777;
+    border-radius:18px;
+    padding:25px;
+    width:min(950px,95vw);
+    max-height:95vh;
+    overflow:auto;
 }
 
-.box {
-    width: 92%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    background: #222;
-    border: 3px solid lime;
-    border-radius: 15px;
-    padding: 25px;
+.hidden{
+    display:none!important;
 }
 
-.box h1 {
-    color: lime;
+.shopGrid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:15px;
 }
 
-.rules {
-    text-align: left;
+.skin{
+    background:#252525;
+    border:2px solid #555;
+    border-radius:15px;
+    padding:12px;
 }
 
-.rules li {
-    margin: 9px;
+.skin canvas{
+    width:180px;
+    height:80px;
+    border:2px solid #444;
 }
 
-.skin {
-    border: 2px solid #555;
-    border-radius: 10px;
-    padding: 12px;
-    margin: 10px;
+.price{
+    color:gold;
+    font-weight:bold;
 }
 
-.skin button {
-    background: gold;
+.good{
+    color:lime;
 }
 
-.owned {
-    background: lime !important;
+.rules{
+    text-align:left;
+    max-width:700px;
+    margin:auto;
 }
 
-.effectText {
-    min-height: 25px;
-    font-weight: bold;
-}
-
-#message {
-    color: yellow;
-    min-height: 22px;
+.rules li{
+    margin:8px;
 }
 </style>
 </head>
@@ -129,509 +144,424 @@ button:hover {
 
 <h1>🐍 SNAKE CHAOS</h1>
 
-<div id="info">
-    Level: <span id="level">1</span>
-    |
-    Score: <span id="score">0</span>
-    /
-    <span id="goal">5</span>
-    |
-    ❤️ <span id="lives">3</span>
-    |
-    🪙 <span id="coins">0</span>
+<div id="hud">
+    <div class="hud">⭐ Score: <span id="score">0</span></div>
+    <div class="hud">🎯 Goal: <span id="goal">5</span></div>
+    <div class="hud">❤️ Lives: <span id="lives">3</span></div>
+    <div class="hud">🏆 High: <span id="high">0</span></div>
+    <div class="hud">🪙 Coins: <span id="coins">0</span></div>
+    <div class="hud">🌎 Level: <span id="level">1</span></div>
 </div>
 
-<div class="effectText" id="effectText">
-    No effect
-</div>
+<canvas id="game" width="400" height="400"></canvas>
 
 <div id="message"></div>
 
-<button class="pauseButton" onclick="togglePause()">
-    ⏸️ Pause
-</button>
-
-<button class="shopButton" onclick="openShop()">
-    🛒 Shop
-</button>
-
-<canvas id="game" width="400" height="400"></canvas>
+<div>
+    <button onclick="pauseGame()">⏸️ Pause</button>
+    <button onclick="openShop()">🛒 Shop</button>
+    <button onclick="leaveGame()">🚪 Leave Game</button>
+</div>
 
 
 <!-- MAIN MENU -->
 
 <div id="menu" class="screen">
+<div class="panel">
 
-    <div class="box">
+<h1>🐍 SNAKE CHAOS</h1>
 
-        <h1>🐍 SNAKE CHAOS</h1>
+<p>Survive the monsters and reach level 200!</p>
 
-        <h2>200 LEVELS</h2>
+<button class="big" onclick="startGame()">▶️ PLAY</button>
 
-        <p>
-            🪙 Coins:
-            <span id="menuCoins">0</span>
-        </p>
+<button class="big" onclick="rules()">📖 RULES</button>
 
-        <button class="play" onclick="showRules()">
-            ▶️ PLAY
-        </button>
+<button class="big" onclick="openShop()">🛒 SHOP</button>
 
-        <br>
+<button class="big" onclick="showHigh()">🏆 HIGH SCORE</button>
 
-        <button class="shopButton" onclick="openShop()">
-            🛒 SNAKE SHOP
-        </button>
+<button class="big" onclick="help()">❓ HELP</button>
 
-        <button onclick="showHighScore()">
-            🏆 HIGH SCORE
-        </button>
+<button class="big danger" onclick="resetGame()">🔄 RESET EVERYTHING</button>
 
-        <button onclick="showHelp()">
-            📖 HOW TO PLAY
-        </button>
-
-    </div>
-
+</div>
 </div>
 
 
 <!-- RULES -->
 
-<div id="rules" class="screen hidden">
+<div id="rulesScreen" class="screen hidden">
+<div class="panel">
 
-    <div class="box">
+<h1>📖 RULES</h1>
 
-        <h1>📜 RULES</h1>
+<div class="rules">
 
-        <div class="rules">
+<ul>
+<li>⌨️ Use Arrow Keys or WASD to move.</li>
+<li>🍎 Eat food to gain points.</li>
+<li>🎯 Reach the goal to complete a level.</li>
+<li>🪙 Collect coins to buy skins.</li>
+<li>👹 Avoid monsters.</li>
+<li>⚫ The BLACK monster attacks you.</li>
+<li>❤️ The black monster removes exactly 1 life.</li>
+<li>⏸️ Space pauses the game.</li>
+<li>🛒 Buy different snake skins.</li>
+<li>🌎 There are 200 levels.</li>
+</ul>
 
-            <ul>
-                <li>🐍 Eat fruit to increase your score.</li>
-                <li>🎯 Reach the level goal to advance.</li>
-                <li>🟡 ₦ coin = 10 coins.</li>
-                <li>🔴 $ coin = 20 coins.</li>
-                <li>🔵 £ coin = 30 coins.</li>
-                <li>♻️ A new coin appears after every collection.</li>
-                <li>🪙 Your coins are saved.</li>
-                <li>👾 Avoid the monsters.</li>
-                <li>💥 Don't hit yourself or obstacles.</li>
-                <li>❤️ You have 3 lives.</li>
-                <li>⚡ The game gets harder.</li>
-                <li>⌨️ Arrow keys and WASD control the snake.</li>
-                <li>⏸️ Space pauses the game.</li>
-            </ul>
+</div>
 
-        </div>
+<button onclick="backMenu()">⬅️ BACK</button>
 
-        <button class="play" onclick="startGame()">
-            ✅ START
-        </button>
-
-        <button onclick="backToMenu()">
-            ↩️ BACK
-        </button>
-
-    </div>
-
+</div>
 </div>
 
 
 <!-- SHOP -->
 
-<div id="shop" class="screen hidden">
+<div id="shopScreen" class="screen hidden">
+<div class="panel">
 
-    <div class="box">
+<h1>🛒 SNAKE SHOP</h1>
 
-        <h1>🛒 SNAKE SHOP</h1>
+<h2>🪙 Coins: <span id="shopCoins">0</span></h2>
 
-        <h2>
-            🪙
-            <span id="shopCoins">0</span>
-        </h2>
+<div id="shop" class="shopGrid"></div>
 
-        <div id="shopList"></div>
+<button onclick="closeShop()">⬅️ BACK</button>
 
-        <button onclick="backToMenu()">
-            🏠 MENU
-        </button>
-
-    </div>
-
+</div>
 </div>
 
 
 <!-- PAUSE -->
 
 <div id="pauseScreen" class="screen hidden">
+<div class="panel">
 
-    <div class="box">
+<h1>⏸️ PAUSED</h1>
 
-        <h1>⏸️ PAUSED</h1>
+<button class="big" onclick="resumeGame()">▶️ RESUME</button>
 
-        <button class="play" onclick="togglePause()">
-            ▶️ RESUME
-        </button>
+<button class="big" onclick="leaveGame()">🚪 LEAVE GAME</button>
 
-        <button onclick="backToMenu()">
-            🏠 MENU
-        </button>
-
-    </div>
-
+</div>
 </div>
 
 
 <!-- GAME OVER -->
 
 <div id="gameOver" class="screen hidden">
+<div class="panel">
 
-    <div class="box">
+<h1>💀 GAME OVER</h1>
 
-        <h1>💥 GAME OVER!</h1>
+<h2>Score: <span id="finalScore">0</span></h2>
 
-        <p>
-            Level:
-            <span id="finalLevel">1</span>
-        </p>
+<button class="big" onclick="startGame()">🔄 TRY AGAIN</button>
 
-        <p>
-            Score:
-            <span id="finalScore">0</span>
-        </p>
+<button class="big" onclick="backMenu()">🏠 MENU</button>
 
-        <p>
-            🪙 Coins:
-            <span id="finalCoins">0</span>
-        </p>
-
-        <button class="play" onclick="startGame()">
-            🔄 TRY AGAIN
-        </button>
-
-        <button onclick="backToMenu()">
-            🏠 MENU
-        </button>
-
-    </div>
-
+</div>
 </div>
 
 
 <!-- LEVEL COMPLETE -->
 
 <div id="levelComplete" class="screen hidden">
+<div class="panel">
 
-    <div class="box">
+<h1>🎉 LEVEL COMPLETE!</h1>
 
-        <h1>🎉 LEVEL COMPLETE!</h1>
+<h2>Level <span id="finishedLevel">1</span></h2>
 
-        <p>
-            You completed Level
-            <span id="completedLevel">1</span>
-        </p>
+<button class="big" onclick="nextLevel()">➡️ NEXT LEVEL</button>
 
-        <p>
-            Next goal:
-            <span id="nextGoal">10</span>
-        </p>
+<button class="big" onclick="leaveGame()">🚪 LEAVE GAME</button>
 
-        <button class="play" onclick="nextLevel()">
-            ▶️ NEXT LEVEL
-        </button>
-
-    </div>
-
+</div>
 </div>
 
 
 <!-- HIGH SCORE -->
 
-<div id="highScoreScreen" class="screen hidden">
+<div id="highScreen" class="screen hidden">
+<div class="panel">
 
-    <div class="box">
+<h1>🏆 HIGH SCORE</h1>
 
-        <h1>🏆 HIGH SCORE</h1>
+<h2 id="bigHigh">0</h2>
 
-        <h2 id="highScore">0</h2>
+<button onclick="backMenu()">⬅️ BACK</button>
 
-        <button onclick="backToMenu()">
-            ↩️ BACK
-        </button>
-
-    </div>
-
+</div>
 </div>
 
 
 <!-- HELP -->
 
 <div id="helpScreen" class="screen hidden">
+<div class="panel">
 
-    <div class="box">
+<h1>❓ HELP</h1>
 
-        <h1>📖 HOW TO PLAY</h1>
+<p>⬆️⬇️⬅️➡️ / WASD = Move</p>
 
-        <p>Move with:</p>
+<p>Space = Pause</p>
 
-        <h2>⬆️ ⬇️ ⬅️ ➡️</h2>
+<p>🟢 Normal food = +1</p>
 
-        <p>or</p>
+<p>⚡ Speed = +1 and speed boost</p>
 
-        <h2>W A S D</h2>
+<p>🛡️ Resistance = protects you</p>
 
-        <p>Press SPACE to pause.</p>
+<p>2️⃣ Double = +2</p>
 
-        <button onclick="backToMenu()">
-            ↩️ BACK
-        </button>
+<p>🐌 Slow = slows the game</p>
 
-    </div>
+<p>☠️ Bad food = -2</p>
 
+<button onclick="backMenu()">⬅️ BACK</button>
+
+</div>
 </div>
 
 
 <script>
 
-/* =========================
-   CANVAS
-========================= */
+const canvas=document.getElementById("game");
+const ctx=canvas.getContext("2d");
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const CELL=20;
+const SIZE=20;
 
 
 /* =========================
    SAVED DATA
 ========================= */
 
-let coins = Number(localStorage.getItem("snakeCoins")) || 0;
+let coins=Number(localStorage.getItem("snakeCoins"))||0;
 
-let highScore =
-    Number(localStorage.getItem("snakeHighScore")) || 0;
+let highScore=Number(localStorage.getItem("snakeHigh"))||0;
 
-let ownedSkins =
-    JSON.parse(localStorage.getItem("snakeSkins")) ||
-    ["classic"];
+let owned=JSON.parse(
+    localStorage.getItem("snakeOwned")||'["classic"]'
+);
 
-let selectedSkin =
-    localStorage.getItem("snakeSelectedSkin") ||
-    "classic";
+let selected=
+    localStorage.getItem("snakeSelected")||"classic";
+
+
+function save(){
+
+    localStorage.setItem("snakeCoins",coins);
+
+    localStorage.setItem("snakeHigh",highScore);
+
+    localStorage.setItem(
+        "snakeOwned",
+        JSON.stringify(owned)
+    );
+
+    localStorage.setItem(
+        "snakeSelected",
+        selected
+    );
+
+}
 
 
 /* =========================
    SKINS
 ========================= */
 
-const skins = [
+const skins=[
 
-    {
-        id: "classic",
-        name: "Classic Green",
-        price: 0,
-        color: "lime",
-        description: "The original snake."
-    },
+{
+id:"classic",
+name:"Classic Green",
+price:0,
+color:"lime",
+description:"The original snake."
+},
 
-    {
-        id: "redhorn",
-        name: "Red Horns",
-        price: 50,
-        color: "red",
-        description: "A red snake with horns."
-    },
+{
+id:"redhorn",
+name:"Red Horns",
+price:50,
+color:"red",
+description:"A red snake with horns."
+},
 
-    {
-        id: "bigeye",
-        name: "Big Eyes",
-        price: 100,
-        color: "green",
-        description: "A green snake with huge eyes."
-    },
+{
+id:"bigeye",
+name:"Big Eyes",
+price:100,
+color:"green",
+description:"Huge eyes!"
+},
 
-    {
-        id: "blue",
-        name: "Blue Beast",
-        price: 150,
-        color: "deepskyblue",
-        description: "A powerful blue snake."
-    },
+{
+id:"blue",
+name:"Blue Beast",
+price:150,
+color:"deepskyblue",
+description:"A powerful blue snake."
+},
 
-    {
-        id: "gold",
-        name: "Golden King",
-        price: 250,
-        color: "gold",
-        description: "A golden royal snake."
-    },
+{
+id:"gold",
+name:"Golden King",
+price:250,
+color:"gold",
+description:"A royal golden snake."
+},
 
-    {
-        id: "shadow",
-        name: "Shadow King",
-        price: 400,
-        color: "purple",
-        description: "A mysterious shadow snake."
-    },
+{
+id:"shadow",
+name:"Shadow King",
+price:400,
+color:"purple",
+description:"A mysterious shadow snake."
+},
 
-    {
-        id: "rainbow",
-        name: "Rainbow Legend",
-        price: 600,
-        color: "magenta",
-        description: "The legendary rainbow snake."
-    }
+{
+id:"rainbow",
+name:"Rainbow Legend",
+price:600,
+color:"rainbow",
+description:"The legendary rainbow snake."
+},
+
+{
+id:"ultra",
+name:"Ultra Snake",
+price:1000,
+color:"ultra",
+description:"An ultra powerful snake."
+},
+
+{
+id:"god",
+name:"God Snake",
+price:2000,
+color:"god",
+description:"The ultimate snake."
+}
 
 ];
 
 
 /* =========================
-   GAME VARIABLES
+   VARIABLES
 ========================= */
 
-let snake = [];
-let food = null;
-let coin = null;
-let monsters = [];
-let obstacles = [];
+let snake=[];
 
-let dx = 20;
-let dy = 0;
+let food=null;
+let coin=null;
 
-let score = 0;
-let level = 1;
-let lives = 3;
+let monsters=[];
+let obstacles=[];
 
-let goal = 5;
+let dx=CELL;
+let dy=0;
 
-let gameRunning = false;
-let paused = false;
+let score=0;
+let level=1;
+let lives=3;
 
-let speed = 150;
+let goal=5;
 
-let effect = "none";
-let effectTimer = 0;
+let running=false;
+let paused=false;
+
+let gameSpeed=150;
+
+let effect="none";
+let effectTimer=0;
+
+let lastMove=0;
+
+let cameFromGame=false;
 
 
 /* =========================
-   GOAL
+   BASIC FUNCTIONS
 ========================= */
 
-function getGoal(levelNumber) {
+function hideScreens(){
 
-    return levelNumber * 5;
+    document.querySelectorAll(".screen")
+        .forEach(x=>x.classList.add("hidden"));
 
 }
 
 
-/* =========================
-   SAVE DATA
-========================= */
-
-function saveData() {
-
-    localStorage.setItem(
-        "snakeCoins",
-        coins
-    );
-
-    localStorage.setItem(
-        "snakeSkins",
-        JSON.stringify(ownedSkins)
-    );
-
-    localStorage.setItem(
-        "snakeSelectedSkin",
-        selectedSkin
-    );
-
-    localStorage.setItem(
-        "snakeHighScore",
-        highScore
-    );
-
-}
-
-
-/* =========================
-   UPDATE COINS
-========================= */
-
-function updateCoins() {
-
-    document.getElementById("coins").textContent = coins;
-
-    document.getElementById("menuCoins").textContent = coins;
-
-    document.getElementById("shopCoins").textContent = coins;
-
-}
-
-
-/* =========================
-   START GAME
-========================= */
-
-function startGame() {
+function showScreen(id){
 
     hideScreens();
 
-    level = 1;
-    score = 0;
-    lives = 3;
-
-    startLevel();
+    document
+        .getElementById(id)
+        .classList.remove("hidden");
 
 }
 
 
-/* =========================
-   START LEVEL
-========================= */
+function updateHUD(){
 
-function startLevel() {
+    document.getElementById("score").textContent=score;
 
-    goal = getGoal(level);
+    document.getElementById("goal").textContent=goal;
 
-    /*
-       Higher level = faster.
-       The minimum speed is 55.
-    */
+    document.getElementById("lives").textContent=lives;
 
-    speed = Math.max(
-        55,
-        150 - level * 0.45
-    );
+    document.getElementById("level").textContent=level;
 
-    snake = [
+    document.getElementById("coins").textContent=coins;
 
-        {x: 200, y: 200},
-        {x: 180, y: 200},
-        {x: 160, y: 200}
+    document.getElementById("high").textContent=highScore;
 
-    ];
+}
 
-    dx = 20;
-    dy = 0;
 
-    effect = "none";
-    effectTimer = 0;
+function message(text){
 
-    createFood();
+    document.getElementById("message")
+        .textContent=text;
 
-    createCoin();
+    setTimeout(()=>{
 
-    createMonsters();
+        document.getElementById("message")
+            .textContent="";
 
-    createObstacles();
+    },1500);
 
-    gameRunning = true;
-    paused = false;
+}
 
-    hideScreens();
 
-    updateInfo();
+function randomPos(){
 
-    draw();
+    return {
+
+        x:Math.floor(Math.random()*SIZE)*CELL,
+
+        y:Math.floor(Math.random()*SIZE)*CELL
+
+    };
+
+}
+
+
+function same(a,b){
+
+    return a &&
+           b &&
+           a.x===b.x &&
+           a.y===b.y;
 
 }
 
@@ -640,9 +570,9 @@ function startLevel() {
    FOOD
 ========================= */
 
-function createFood() {
+function makeFood(){
 
-    const types = [
+    const types=[
         "normal",
         "speed",
         "resistance",
@@ -651,40 +581,69 @@ function createFood() {
         "bad"
     ];
 
-    const random =
-        Math.random();
+    food={
+        ...randomPos(),
 
-    let type = "normal";
+        type:
+            types[
+                Math.floor(
+                    Math.random()*types.length
+                )
+            ]
+    };
 
-    if (random < 0.18) {
-        type = "speed";
-    }
+}
 
-    else if (random < 0.33) {
-        type = "resistance";
-    }
 
-    else if (random < 0.48) {
-        type = "double";
-    }
+function drawFood(){
 
-    else if (random < 0.60) {
-        type = "slow";
-    }
+    if(!food)return;
 
-    else if (random < 0.70) {
-        type = "bad";
-    }
+    const colors={
 
-    food = {
-
-        x: Math.floor(Math.random() * 20) * 20,
-
-        y: Math.floor(Math.random() * 20) * 20,
-
-        type: type
+        normal:"lime",
+        speed:"yellow",
+        resistance:"cyan",
+        double:"gold",
+        slow:"blue",
+        bad:"red"
 
     };
+
+    ctx.fillStyle=colors[food.type];
+
+    ctx.beginPath();
+
+    ctx.arc(
+        food.x+10,
+        food.y+10,
+        8,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="black";
+
+    ctx.font="bold 11px Arial";
+
+    const symbols={
+
+        normal:"●",
+        speed:"⚡",
+        resistance:"S",
+        double:"2x",
+        slow:"🐌",
+        bad:"X"
+
+    };
+
+    ctx.fillText(
+        symbols[food.type],
+        food.x+5,
+        food.y+14
+    );
 
 }
 
@@ -693,46 +652,119 @@ function createFood() {
    COINS
 ========================= */
 
-function createCoin() {
+function makeCoin(){
 
-    const random =
-        Math.random();
+    const r=Math.random();
 
     let type;
 
-    /*
-       Most common = ₦
-       Rare = $
-       Ultra rare = £
-    */
+    if(r<0.75)
+        type="naira";
 
-    if (random < 0.75) {
+    else if(r<0.95)
+        type="dollar";
 
-        type = "naira";
+    else
+        type="pound";
 
-    }
-
-    else if (random < 0.95) {
-
-        type = "dollar";
-
-    }
-
-    else {
-
-        type = "pound";
-
-    }
-
-    coin = {
-
-        x: Math.floor(Math.random() * 20) * 20,
-
-        y: Math.floor(Math.random() * 20) * 20,
-
-        type: type
-
+    coin={
+        ...randomPos(),
+        type:type
     };
+
+}
+
+
+function drawCoin(){
+
+    if(!coin)return;
+
+    let symbol;
+    let color;
+
+    if(coin.type==="naira"){
+
+        symbol="₦";
+        color="yellow";
+
+    }
+
+    else if(coin.type==="dollar"){
+
+        symbol="$";
+        color="red";
+
+    }
+
+    else{
+
+        symbol="£";
+        color="deepskyblue";
+
+    }
+
+    ctx.fillStyle=color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        coin.x+10,
+        coin.y+10,
+        9,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="black";
+
+    ctx.font="bold 13px Arial";
+
+    ctx.fillText(
+        symbol,
+        coin.x+5,
+        coin.y+15
+    );
+
+}
+
+
+function collectCoin(){
+
+    if(!coin)return;
+
+    if(coin.type==="naira"){
+
+        coins+=10;
+
+        message("🪙 +10 COINS!");
+
+    }
+
+    else if(coin.type==="dollar"){
+
+        coins+=20;
+
+        message("💵 +20 COINS!");
+
+    }
+
+    else{
+
+        coins+=30;
+
+        message("💷 +30 COINS!");
+
+    }
+
+    save();
+
+    /* NEW COIN IMMEDIATELY */
+
+    makeCoin();
+
+    updateHUD();
 
 }
 
@@ -741,50 +773,258 @@ function createCoin() {
    MONSTERS
 ========================= */
 
-function createMonsters() {
+function makeMonsters(){
 
-    monsters = [];
+    monsters=[];
 
-    let amount =
-        Math.min(
-            1 + Math.floor(level / 10),
-            8
-        );
+    const amount=Math.min(
+        1+Math.floor(level/10),
+        7
+    );
 
-    for (
-        let i = 0;
-        i < amount;
-        i++
-    ) {
+    const types=[
+        "blue",
+        "red",
+        "pink"
+    ];
 
-        const types = [
-            "blue",
-            "red",
-            "pink"
-        ];
+    for(let i=0;i<amount;i++){
 
         monsters.push({
 
-            x:
-                Math.floor(
-                    Math.random() * 20
-                ) * 20,
-
-            y:
-                Math.floor(
-                    Math.random() * 20
-                ) * 20,
+            ...randomPos(),
 
             type:
                 types[
-                    i % 3
+                    Math.floor(
+                        Math.random()*types.length
+                    )
                 ],
 
-            counter: 0
+            cooldown:0
 
         });
 
     }
+
+
+    /* BLACK MONSTER
+       ALWAYS SPAWNS */
+
+    monsters.push({
+
+        ...randomPos(),
+
+        type:"black",
+
+        cooldown:0
+
+    });
+
+}
+
+
+function moveMonsters(){
+
+    monsters.forEach(m=>{
+
+        if(m.cooldown>0)
+            m.cooldown--;
+
+
+        /* BLACK = AGGRESSIVE */
+
+        if(m.type==="black"){
+
+            if(m.x<snake[0].x)
+                m.x+=CELL;
+
+            else if(m.x>snake[0].x)
+                m.x-=CELL;
+
+            if(m.y<snake[0].y)
+                m.y+=CELL;
+
+            else if(m.y>snake[0].y)
+                m.y-=CELL;
+
+        }
+
+
+        /* RED */
+
+        else if(m.type==="red"){
+
+            if(Math.random()<0.7){
+
+                if(m.x<snake[0].x)
+                    m.x+=CELL;
+
+                else if(m.x>snake[0].x)
+                    m.x-=CELL;
+
+            }else{
+
+                if(m.y<snake[0].y)
+                    m.y+=CELL;
+
+                else if(m.y>snake[0].y)
+                    m.y-=CELL;
+
+            }
+
+        }
+
+
+        /* BLUE */
+
+        else if(m.type==="blue"){
+
+            if(Math.random()<0.5){
+
+                if(m.x<snake[0].x)
+                    m.x+=CELL;
+
+                else if(m.x>snake[0].x)
+                    m.x-=CELL;
+
+            }
+
+        }
+
+
+        /* PINK */
+
+        else{
+
+            if(Math.random()<0.4){
+
+                const dirs=[
+                    {x:CELL,y:0},
+                    {x:-CELL,y:0},
+                    {x:0,y:CELL},
+                    {x:0,y:-CELL}
+                ];
+
+                const d=
+                    dirs[
+                        Math.floor(
+                            Math.random()*dirs.length
+                        )
+                    ];
+
+                m.x+=d.x;
+                m.y+=d.y;
+
+            }
+
+        }
+
+
+        m.x=Math.max(
+            0,
+            Math.min(
+                canvas.width-CELL,
+                m.x
+            )
+        );
+
+        m.y=Math.max(
+            0,
+            Math.min(
+                canvas.height-CELL,
+                m.y
+            )
+        );
+
+    });
+
+}
+
+
+function drawMonsters(){
+
+    monsters.forEach(m=>{
+
+        let color;
+
+        if(m.type==="black")
+            color="black";
+
+        else if(m.type==="red")
+            color="red";
+
+        else if(m.type==="blue")
+            color="blue";
+
+        else
+            color="hotpink";
+
+
+        ctx.fillStyle=color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            m.x+10,
+            m.y+10,
+            9,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+
+        /* eyes */
+
+        ctx.fillStyle="white";
+
+        ctx.fillRect(
+            m.x+4,
+            m.y+5,
+            4,
+            4
+        );
+
+        ctx.fillRect(
+            m.x+12,
+            m.y+5,
+            4,
+            4
+        );
+
+
+        /* mouth */
+
+        ctx.fillStyle="red";
+
+        ctx.fillRect(
+            m.x+7,
+            m.y+13,
+            6,
+            3
+        );
+
+
+        /* BLACK OUTLINE */
+
+        if(m.type==="black"){
+
+            ctx.strokeStyle="white";
+
+            ctx.lineWidth=2;
+
+            ctx.strokeRect(
+                m.x,
+                m.y,
+                CELL,
+                CELL
+            );
+
+        }
+
+    });
 
 }
 
@@ -793,204 +1033,355 @@ function createMonsters() {
    OBSTACLES
 ========================= */
 
-function createObstacles() {
+function makeObstacles(){
 
-    obstacles = [];
+    obstacles=[];
 
-    let amount =
-        Math.min(
-            Math.floor(level / 5),
-            20
+    const amount=Math.min(
+        Math.floor(level/5),
+        15
+    );
+
+    for(let i=0;i<amount;i++){
+
+        obstacles.push(
+            randomPos()
         );
 
-    for (
-        let i = 0;
-        i < amount;
-        i++
-    ) {
-
-        obstacles.push({
-
-            x:
-                Math.floor(
-                    Math.random() * 20
-                ) * 20,
-
-            y:
-                Math.floor(
-                    Math.random() * 20
-                ) * 20
-
-        });
-
     }
 
 }
 
 
-/* =========================
-   CONTROLS
-========================= */
+function drawObstacles(){
 
-document.addEventListener(
-    "keydown",
-    function(event) {
+    ctx.fillStyle="#555";
 
-        const key =
-            event.key.toLowerCase();
+    obstacles.forEach(o=>{
 
-        if (key === " ") {
+        ctx.fillRect(
+            o.x,
+            o.y,
+            CELL,
+            CELL
+        );
 
-            event.preventDefault();
-
-            togglePause();
-
-            return;
-
-        }
-
-        if (
-            !gameRunning ||
-            paused
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            (
-                event.key === "ArrowUp" ||
-                key === "w"
-            )
-            &&
-            dy === 0
-        ) {
-
-            dx = 0;
-            dy = -20;
-
-        }
-
-
-        if (
-            (
-                event.key === "ArrowDown" ||
-                key === "s"
-            )
-            &&
-            dy === 0
-        ) {
-
-            dx = 0;
-            dy = 20;
-
-        }
-
-
-        if (
-            (
-                event.key === "ArrowLeft" ||
-                key === "a"
-            )
-            &&
-            dx === 0
-        ) {
-
-            dx = -20;
-            dy = 0;
-
-        }
-
-
-        if (
-            (
-                event.key === "ArrowRight" ||
-                key === "d"
-            )
-            &&
-            dx === 0
-        ) {
-
-            dx = 20;
-            dy = 0;
-
-        }
-
-    }
-);
-
-
-/* =========================
-   GAME LOOP
-========================= */
-
-let lastTime = 0;
-
-function loop(timestamp) {
-
-    if (
-        gameRunning &&
-        !paused &&
-        timestamp - lastTime >= speed
-    ) {
-
-        lastTime = timestamp;
-
-        update();
-
-        draw();
-
-    }
-
-    requestAnimationFrame(loop);
+    });
 
 }
 
-requestAnimationFrame(loop);
+
+/* =========================
+   SNAKE
+========================= */
+
+function snakeColor(part){
+
+    const skin=
+        skins.find(
+            s=>s.id===selected
+        );
+
+    if(!skin)
+        return "lime";
+
+
+    if(skin.id==="rainbow"){
+
+        const g=
+            ctx.createLinearGradient(
+                part.x,
+                part.y,
+                part.x+20,
+                part.y+20
+            );
+
+        g.addColorStop(0,"red");
+        g.addColorStop(.25,"yellow");
+        g.addColorStop(.5,"lime");
+        g.addColorStop(.75,"cyan");
+        g.addColorStop(1,"magenta");
+
+        return g;
+
+    }
+
+
+    if(skin.id==="ultra"){
+
+        const g=
+            ctx.createLinearGradient(
+                part.x,
+                part.y,
+                part.x+20,
+                part.y+20
+            );
+
+        g.addColorStop(0,"cyan");
+        g.addColorStop(.5,"blue");
+        g.addColorStop(1,"purple");
+
+        return g;
+
+    }
+
+
+    if(skin.id==="god"){
+
+        const g=
+            ctx.createLinearGradient(
+                part.x,
+                part.y,
+                part.x+20,
+                part.y+20
+            );
+
+        g.addColorStop(0,"white");
+        g.addColorStop(.35,"gold");
+        g.addColorStop(.7,"violet");
+        g.addColorStop(1,"cyan");
+
+        return g;
+
+    }
+
+
+    return skin.color;
+
+}
+
+
+function drawSnake(){
+
+    snake.forEach((p,i)=>{
+
+        ctx.fillStyle=snakeColor(p);
+
+        ctx.fillRect(
+            p.x+1,
+            p.y+1,
+            18,
+            18
+        );
+
+
+        /* BIG EYES */
+
+        if(
+            selected==="bigeye" &&
+            i===0
+        ){
+
+            ctx.fillStyle="white";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x+6,
+                p.y+7,
+                5,
+                0,
+                Math.PI*2
+            );
+
+            ctx.arc(
+                p.x+14,
+                p.y+7,
+                5,
+                0,
+                Math.PI*2
+            );
+
+            ctx.fill();
+
+            ctx.fillStyle="black";
+
+            ctx.beginPath();
+
+            ctx.arc(
+                p.x+6,
+                p.y+7,
+                2,
+                0,
+                Math.PI*2
+            );
+
+            ctx.arc(
+                p.x+14,
+                p.y+7,
+                2,
+                0,
+                Math.PI*2
+            );
+
+            ctx.fill();
+
+        }
+
+
+        /* RED HORNS */
+
+        if(
+            selected==="redhorn" &&
+            i===0
+        ){
+
+            ctx.fillStyle="darkred";
+
+            ctx.beginPath();
+
+            ctx.moveTo(p.x+2,p.y+3);
+            ctx.lineTo(p.x+6,p.y-6);
+            ctx.lineTo(p.x+9,p.y+3);
+
+            ctx.moveTo(p.x+11,p.y+3);
+            ctx.lineTo(p.x+15,p.y-6);
+            ctx.lineTo(p.x+18,p.y+3);
+
+            ctx.fill();
+
+        }
+
+
+        /* GOD CROWN */
+
+        if(
+            selected==="god" &&
+            i===0
+        ){
+
+            ctx.fillStyle="gold";
+
+            ctx.beginPath();
+
+            ctx.moveTo(p.x+1,p.y+2);
+            ctx.lineTo(p.x+5,p.y-6);
+            ctx.lineTo(p.x+10,p.y+2);
+            ctx.lineTo(p.x+15,p.y-6);
+            ctx.lineTo(p.x+19,p.y+2);
+
+            ctx.fill();
+
+        }
+
+    });
+
+}
 
 
 /* =========================
-   UPDATE GAME
+   ARENA
 ========================= */
 
-function update() {
+function drawArena(){
 
-    if (effectTimer > 0) {
+    const themes=[
+        "#228B22",
+        "#5b4636",
+        "#315d8c",
+        "#101030",
+        "#4b1d4b"
+    ];
 
-        effectTimer--;
+    const color=
+        themes[
+            Math.floor(
+                (level-1)/20
+            )%themes.length
+        ];
+
+    ctx.fillStyle=color;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+}
+
+
+/* =========================
+   LIFE LOSS
+========================= */
+
+function loseLife(reason){
+
+    lives--;
+
+    updateHUD();
+
+    if(lives<=0){
+
+        gameOver();
+
+        return;
 
     }
 
-    else {
-
-        effect = "none";
-
-    }
+    message(reason||"❤️ -1 LIFE");
 
 
-    let head = {
+    snake=[
+        {x:200,y:200},
+        {x:180,y:200},
+        {x:160,y:200}
+    ];
 
-        x: snake[0].x + dx,
+    dx=CELL;
+    dy=0;
 
-        y: snake[0].y + dy
 
+    /* move black monster away */
+
+    monsters.forEach(m=>{
+
+        if(m.type==="black"){
+
+            const p=randomPos();
+
+            m.x=p.x;
+            m.y=p.y;
+
+            m.cooldown=12;
+
+        }
+
+    });
+
+}
+
+
+/* =========================
+   UPDATE
+========================= */
+
+function update(){
+
+    if(!running||paused)
+        return;
+
+
+    moveMonsters();
+
+
+    const head={
+        x:snake[0].x+dx,
+        y:snake[0].y+dy
     };
 
 
     /* WALL */
 
-    if (
+    if(
+        head.x<0 ||
+        head.y<0 ||
+        head.x>=400 ||
+        head.y>=400
+    ){
 
-        head.x < 0 ||
-        head.x >= 400 ||
-        head.y < 0 ||
-        head.y >= 400
-
-    ) {
-
-        loseLife();
+        loseLife("💥 WALL! -1 LIFE");
 
         return;
 
@@ -999,20 +1390,18 @@ function update() {
 
     /* SELF */
 
-    for (
-        let i = 0;
-        i < snake.length;
+    for(
+        let i=1;
+        i<snake.length;
         i++
-    ) {
+    ){
 
-        if (
+        if(
+            head.x===snake[i].x &&
+            head.y===snake[i].y
+        ){
 
-            head.x === snake[i].x &&
-            head.y === snake[i].y
-
-        ) {
-
-            loseLife();
+            loseLife("🐍 YOU HIT YOURSELF!");
 
             return;
 
@@ -1023,18 +1412,11 @@ function update() {
 
     /* OBSTACLES */
 
-    for (
-        const obstacle of obstacles
-    ) {
+    for(const o of obstacles){
 
-        if (
+        if(same(head,o)){
 
-            head.x === obstacle.x &&
-            head.y === obstacle.y
-
-        ) {
-
-            loseLife();
+            loseLife("🧱 OBSTACLE! -1 LIFE");
 
             return;
 
@@ -1045,24 +1427,41 @@ function update() {
 
     /* MONSTERS */
 
-    for (
-        const monster of monsters
-    ) {
+    for(const m of monsters){
 
-        if (
+        if(same(head,m)){
 
-            head.x === monster.x &&
-            head.y === monster.y
+            if(m.type==="black"){
 
-        ) {
+                if(
+                    effect!=="resistance" &&
+                    m.cooldown<=0
+                ){
 
-            if (
-                effect !== "resistance"
-            ) {
+                    loseLife(
+                        "⚫ BLACK MONSTER ATTACK! -1 LIFE"
+                    );
 
-                loseLife();
+                    return;
 
-                return;
+                }
+
+            }
+
+            else{
+
+                if(effect!=="resistance"){
+
+                    score=Math.max(
+                        0,
+                        score-1
+                    );
+
+                    message(
+                        "👹 MONSTER! -1 POINT"
+                    );
+
+                }
 
             }
 
@@ -1076,24 +1475,75 @@ function update() {
 
     /* FOOD */
 
-    if (
+    if(
+        food &&
+        same(head,food)
+    ){
 
-        head.x === food.x &&
-        head.y === food.y
+        if(food.type==="normal"){
 
-    ) {
+            score+=1;
 
-        applyFoodEffect();
+        }
 
-        snake.push(
-            snake[snake.length - 1]
-        );
+        else if(food.type==="speed"){
 
-        createFood();
+            score+=1;
+
+            effect="speed";
+
+            effectTimer=60;
+
+            gameSpeed=80;
+
+        }
+
+        else if(food.type==="resistance"){
+
+            score+=1;
+
+            effect="resistance";
+
+            effectTimer=80;
+
+        }
+
+        else if(food.type==="double"){
+
+            score+=2;
+
+            message("⭐ DOUBLE POINTS!");
+
+        }
+
+        else if(food.type==="slow"){
+
+            score+=1;
+
+            effect="slow";
+
+            effectTimer=70;
+
+            gameSpeed=220;
+
+        }
+
+        else if(food.type==="bad"){
+
+            score=Math.max(
+                0,
+                score-2
+            );
+
+            message("☠️ BAD FOOD! -2");
+
+        }
+
+        makeFood();
 
     }
 
-    else {
+    else{
 
         snake.pop();
 
@@ -1102,361 +1552,70 @@ function update() {
 
     /* COIN */
 
-    if (
-
-        head.x === coin.x &&
-        head.y === coin.y
-
-    ) {
+    if(
+        coin &&
+        same(head,coin)
+    ){
 
         collectCoin();
 
     }
 
 
-    moveMonsters();
+    /* EFFECT */
+
+    if(effectTimer>0){
+
+        effectTimer--;
+
+    }
+
+    else{
+
+        effect="none";
+
+        gameSpeed=150;
+
+    }
 
 
-    updateInfo();
+    /* LEVEL */
 
-
-    if (score >= goal) {
+    if(score>=goal){
 
         completeLevel();
 
+        return;
+
     }
+
+
+    if(score>highScore){
+
+        highScore=score;
+
+        save();
+
+    }
+
+    updateHUD();
 
 }
 
 
 /* =========================
-   FOOD EFFECTS
+   DRAW
 ========================= */
 
-function applyFoodEffect() {
-
-    if (
-        food.type === "normal"
-    ) {
-
-        score += 1;
-
-        showMessage(
-            "🍎 +1 POINT"
-        );
-
-    }
-
-
-    else if (
-        food.type === "speed"
-    ) {
-
-        score += 1;
-
-        effect = "speed";
-
-        effectTimer = 50;
-
-        showMessage(
-            "⚡ SPEED!"
-        );
-
-    }
-
-
-    else if (
-        food.type === "resistance"
-    ) {
-
-        score += 1;
-
-        effect = "resistance";
-
-        effectTimer = 60;
-
-        showMessage(
-            "🛡️ RESISTANCE!"
-        );
-
-    }
-
-
-    else if (
-        food.type === "double"
-    ) {
-
-        score += 2;
-
-        effect = "double";
-
-        effectTimer = 50;
-
-        showMessage(
-            "✖️2 DOUBLE POINTS!"
-        );
-
-    }
-
-
-    else if (
-        food.type === "slow"
-    ) {
-
-        score += 1;
-
-        effect = "slow";
-
-        effectTimer = 40;
-
-        showMessage(
-            "🐌 SLOW!"
-        );
-
-    }
-
-
-    else if (
-        food.type === "bad"
-    ) {
-
-        score = Math.max(
-            0,
-            score - 2
-        );
-
-        showMessage(
-            "💀 BAD FRUIT! -2"
-        );
-
-    }
-
-}
-
-
-/* =========================
-   COLLECT COIN
-========================= */
-
-function collectCoin() {
-
-    let value = 10;
-    let symbol = "₦";
-
-    if (
-        coin.type === "dollar"
-    ) {
-
-        value = 20;
-        symbol = "$";
-
-    }
-
-    else if (
-        coin.type === "pound"
-    ) {
-
-        value = 30;
-        symbol = "£";
-
-    }
-
-    coins += value;
-
-    saveData();
-
-    updateCoins();
-
-    showMessage(
-        "🪙 " +
-        symbol +
-        " +" +
-        value +
-        " COINS!"
-    );
-
-    /*
-       IMPORTANT:
-       A new coin immediately appears.
-    */
-
-    createCoin();
-
-}
-
-
-/* =========================
-   MONSTER MOVEMENT
-========================= */
-
-function moveMonsters() {
-
-    for (
-        const monster of monsters
-    ) {
-
-        monster.counter++;
-
-        if (
-            monster.counter % 3 !== 0
-        ) {
-
-            continue;
-
-        }
-
-
-        if (
-            monster.type === "blue"
-        ) {
-
-            /*
-               Blue follows slowly.
-            */
-
-            if (
-                monster.x < snake[0].x
-            ) {
-
-                monster.x += 20;
-
-            }
-
-            else if (
-                monster.x > snake[0].x
-            ) {
-
-                monster.x -= 20;
-
-            }
-
-            else if (
-                monster.y < snake[0].y
-            ) {
-
-                monster.y += 20;
-
-            }
-
-            else if (
-                monster.y > snake[0].y
-            ) {
-
-                monster.y -= 20;
-
-            }
-
-        }
-
-
-        else if (
-            monster.type === "red"
-        ) {
-
-            /*
-               Red follows more aggressively.
-            */
-
-            if (
-                monster.x < snake[0].x
-            ) {
-
-                monster.x += 20;
-
-            }
-
-            else if (
-                monster.x > snake[0].x
-            ) {
-
-                monster.x -= 20;
-
-            }
-
-            if (
-                monster.y < snake[0].y
-            ) {
-
-                monster.y += 20;
-
-            }
-
-            else if (
-                monster.y > snake[0].y
-            ) {
-
-                monster.y -= 20;
-
-            }
-
-        }
-
-
-        else {
-
-            /*
-               Pink moves randomly.
-            */
-
-            const moves = [
-
-                {x:20,y:0},
-                {x:-20,y:0},
-                {x:0,y:20},
-                {x:0,y:-20}
-
-            ];
-
-            const move =
-                moves[
-                    Math.floor(
-                        Math.random() *
-                        moves.length
-                    )
-                ];
-
-            monster.x += move.x;
-            monster.y += move.y;
-
-        }
-
-
-        monster.x =
-            Math.max(
-                0,
-                Math.min(
-                    380,
-                    monster.x
-                )
-            );
-
-        monster.y =
-            Math.max(
-                0,
-                Math.min(
-                    380,
-                    monster.y
-                )
-            );
-
-    }
-
-}
-
-
-/* =========================
-   DRAW GAME
-========================= */
-
-function draw() {
+function draw(){
 
     drawArena();
 
     drawObstacles();
 
-    drawFood();
-
     drawCoin();
+
+    drawFood();
 
     drawMonsters();
 
@@ -1466,486 +1625,83 @@ function draw() {
 
 
 /* =========================
-   ARENA
+   GAME LOOP
 ========================= */
 
-function drawArena() {
+function loop(time){
 
-    const themes = [
+    if(
+        running &&
+        !paused &&
+        time-lastMove>=gameSpeed
+    ){
 
-        "#228B22",   // grass
+        update();
 
-        "#5b4636",   // castle
+        draw();
 
-        "#315d8c",   // school
+        lastMove=time;
 
-        "#101030",   // space
+    }
 
-        "#4b1d4b"    // purple
-
-    ];
-
-    const theme =
-        themes[
-            Math.floor(
-                (level - 1) / 20
-            ) % themes.length
-        ];
-
-    ctx.fillStyle = theme;
-
-    ctx.fillRect(
-        0,
-        0,
-        400,
-        400
-    );
+    requestAnimationFrame(loop);
 
 }
 
 
 /* =========================
-   OBSTACLES
+   START
 ========================= */
 
-function drawObstacles() {
+function startGame(){
 
-    ctx.fillStyle = "#777";
+    hideScreens();
 
-    for (
-        const obstacle of obstacles
-    ) {
+    level=1;
 
-        ctx.fillRect(
-            obstacle.x,
-            obstacle.y,
-            18,
-            18
-        );
+    score=0;
 
-    }
+    lives=3;
+
+    goal=5;
+
+    effect="none";
+
+    effectTimer=0;
+
+    startLevel();
 
 }
 
 
-/* =========================
-   FOOD DRAWING
-========================= */
+function startLevel(){
 
-function drawFood() {
-
-    const colors = {
-
-        normal: "red",
-
-        speed: "cyan",
-
-        resistance: "blue",
-
-        double: "gold",
-
-        slow: "orange",
-
-        bad: "purple"
-
-    };
-
-    ctx.fillStyle =
-        colors[food.type];
-
-    ctx.beginPath();
-
-    ctx.arc(
-        food.x + 10,
-        food.y + 10,
-        9,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    ctx.fillStyle = "white";
-
-    ctx.font = "12px Arial";
-
-    const symbols = {
-
-        normal: "+1",
-
-        speed: "⚡",
-
-        resistance: "🛡",
-
-        double: "x2",
-
-        slow: "🐌",
-
-        bad: "!"
-
-    };
-
-    ctx.fillText(
-        symbols[food.type],
-        food.x + 4,
-        food.y + 14
-    );
-
-}
-
-
-/* =========================
-   COIN DRAWING
-========================= */
-
-function drawCoin() {
-
-    let color;
-    let symbol;
-
-    if (
-        coin.type === "naira"
-    ) {
-
-        color = "yellow";
-        symbol = "₦";
-
-    }
-
-    else if (
-        coin.type === "dollar"
-    ) {
-
-        color = "red";
-        symbol = "$";
-
-    }
-
-    else {
-
-        color = "deepskyblue";
-        symbol = "£";
-
-    }
-
-    ctx.fillStyle = color;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        coin.x + 10,
-        coin.y + 10,
-        9,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-    ctx.fillStyle = "black";
-
-    ctx.font = "bold 12px Arial";
-
-    ctx.fillText(
-        symbol,
-        coin.x + 5,
-        coin.y + 14
-    );
-
-}
-
-
-/* =========================
-   MONSTER DRAWING
-========================= */
-
-function drawMonsters() {
-
-    for (
-        const monster of monsters
-    ) {
-
-        if (
-            monster.type === "blue"
-        ) {
-
-            ctx.fillStyle = "blue";
-
-        }
-
-        else if (
-            monster.type === "red"
-        ) {
-
-            ctx.fillStyle = "red";
-
-        }
-
-        else {
-
-            ctx.fillStyle = "hotpink";
-
-        }
-
-
-        /* BODY */
-
-        ctx.beginPath();
-
-        ctx.arc(
-            monster.x + 10,
-            monster.y + 10,
-            9,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-
-        /* EYES */
-
-        ctx.fillStyle = "white";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            monster.x + 6,
-            monster.y + 7,
-            3,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.arc(
-            monster.x + 14,
-            monster.y + 7,
-            3,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-
-        /* PUPILS */
-
-        ctx.fillStyle = "black";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            monster.x + 6,
-            monster.y + 7,
-            1.5,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.arc(
-            monster.x + 14,
-            monster.y + 7,
-            1.5,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-
-        /* MOUTH */
-
-        ctx.strokeStyle = "black";
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            monster.x + 5,
-            monster.y + 14
-        );
-
-        ctx.lineTo(
-            monster.x + 15,
-            monster.y + 14
-        );
-
-        ctx.stroke();
-
-    }
-
-}
-
-
-/* =========================
-   SNAKE DRAWING
-========================= */
-
-function drawSnake() {
-
-    const skin =
-        skins.find(
-            s => s.id === selectedSkin
-        ) || skins[0];
-
-
-    for (
-        let i = snake.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const part =
-            snake[i];
-
-        ctx.fillStyle =
-            skin.color;
-
-        ctx.fillRect(
-            part.x,
-            part.y,
-            18,
-            18
-        );
-
-    }
-
-
-    /* HEAD */
-
-    const head =
-        snake[0];
-
-    ctx.fillStyle =
-        skin.color;
-
-    ctx.fillRect(
-        head.x,
-        head.y,
-        18,
-        18
-    );
-
-
-    /* BIG EYES SKIN */
-
-    if (
-        selectedSkin === "bigeye"
-    ) {
-
-        ctx.fillStyle = "white";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            head.x + 5,
-            head.y + 5,
-            4,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.arc(
-            head.x + 13,
-            head.y + 5,
-            4,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-
-    }
-
-
-    /* RED HORN SKIN */
-
-    if (
-        selectedSkin === "redhorn"
-    ) {
-
-        ctx.fillStyle = "white";
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            head.x + 3,
-            head.y
-        );
-
-        ctx.lineTo(
-            head.x + 7,
-            head.y - 7
-        );
-
-        ctx.lineTo(
-            head.x + 9,
-            head.y
-        );
-
-        ctx.fill();
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            head.x + 10,
-            head.y
-        );
-
-        ctx.lineTo(
-            head.x + 14,
-            head.y - 7
-        );
-
-        ctx.lineTo(
-            head.x + 17,
-            head.y
-        );
-
-        ctx.fill();
-
-    }
-
-}
-
-
-/* =========================
-   LIVES
-========================= */
-
-function loseLife() {
-
-    lives--;
-
-    updateInfo();
-
-    if (
-        lives <= 0
-    ) {
-
-        endGame();
-
-        return;
-
-    }
-
-
-    showMessage(
-        "💥 Ouch! Life lost!"
-    );
-
-
-    snake = [
-
+    snake=[
         {x:200,y:200},
         {x:180,y:200},
         {x:160,y:200}
-
     ];
 
-    dx = 20;
-    dy = 0;
+    dx=CELL;
+    dy=0;
+
+    goal=level*5;
+
+    makeFood();
+
+    makeCoin();
+
+    makeMonsters();
+
+    makeObstacles();
+
+    running=true;
+
+    paused=false;
+
+    updateHUD();
+
+    draw();
 
 }
 
@@ -1954,43 +1710,30 @@ function loseLife() {
    LEVEL COMPLETE
 ========================= */
 
-function completeLevel() {
+function completeLevel(){
 
-    gameRunning = false;
-
-    document.getElementById(
-        "completedLevel"
-    ).textContent = level;
+    running=false;
 
     document.getElementById(
-        "nextGoal"
-    ).textContent =
-        getGoal(level + 1);
+        "finishedLevel"
+    ).textContent=level;
 
-    document.getElementById(
-        "levelComplete"
-    ).classList.remove("hidden");
+    showScreen("levelComplete");
 
 }
 
 
-/* =========================
-   NEXT LEVEL
-========================= */
-
-function nextLevel() {
+function nextLevel(){
 
     level++;
 
-    if (
-        level > 200
-    ) {
+    if(level>200){
 
         alert(
-            "🏆 YOU BEAT ALL 200 LEVELS! 🏆"
+            "🏆 YOU BEAT ALL 200 LEVELS!"
         );
 
-        backToMenu();
+        backMenu();
 
         return;
 
@@ -2005,35 +1748,25 @@ function nextLevel() {
    GAME OVER
 ========================= */
 
-function endGame() {
+function gameOver(){
 
-    gameRunning = false;
+    running=false;
 
-    if (
-        score > highScore
-    ) {
-
-        highScore = score;
-
-        saveData();
-
-    }
-
-    document.getElementById(
-        "finalLevel"
-    ).textContent = level;
+    paused=false;
 
     document.getElementById(
         "finalScore"
-    ).textContent = score;
+    ).textContent=score;
 
-    document.getElementById(
-        "finalCoins"
-    ).textContent = coins;
+    if(score>highScore){
 
-    document.getElementById(
-        "gameOver"
-    ).classList.remove("hidden");
+        highScore=score;
+
+        save();
+
+    }
+
+    showScreen("gameOver");
 
 }
 
@@ -2042,31 +1775,379 @@ function endGame() {
    PAUSE
 ========================= */
 
-function togglePause() {
+function pauseGame(){
 
-    if (!gameRunning) {
+    if(!running)
         return;
+
+    paused=true;
+
+    showScreen("pauseScreen");
+
+}
+
+
+function resumeGame(){
+
+    paused=false;
+
+    hideScreens();
+
+}
+
+
+/* =========================
+   LEAVE GAME
+========================= */
+
+function leaveGame(){
+
+    running=false;
+
+    paused=false;
+
+    cameFromGame=false;
+
+    showScreen("menu");
+
+    updateHUD();
+
+}
+
+
+/* =========================
+   RESET
+========================= */
+
+function resetGame(){
+
+    const yes=confirm(
+        "RESET EVERYTHING?\n\nThis deletes coins, skins and high score."
+    );
+
+    if(!yes)
+        return;
+
+
+    localStorage.removeItem("snakeCoins");
+
+    localStorage.removeItem("snakeHigh");
+
+    localStorage.removeItem("snakeOwned");
+
+    localStorage.removeItem("snakeSelected");
+
+
+    coins=0;
+
+    highScore=0;
+
+    owned=["classic"];
+
+    selected="classic";
+
+
+    level=1;
+
+    score=0;
+
+    lives=3;
+
+
+    save();
+
+    updateHUD();
+
+    renderShop();
+
+    message("🔄 EVERYTHING RESET!");
+
+}
+
+
+/* =========================
+   SHOP PREVIEW
+========================= */
+
+function previewSkin(c,skin){
+
+    const x=c.getContext("2d");
+
+    x.clearRect(
+        0,
+        0,
+        c.width,
+        c.height
+    );
+
+    x.fillStyle="#111";
+
+    x.fillRect(
+        0,
+        0,
+        c.width,
+        c.height
+    );
+
+
+    const positions=[
+        [25,30],
+        [50,30],
+        [75,30],
+        [100,30],
+        [125,30]
+    ];
+
+
+    positions.forEach((p,i)=>{
+
+        let color=skin.color;
+
+
+        if(skin.id==="rainbow"){
+
+            const g=x.createLinearGradient(
+                p[0],
+                p[1],
+                p[0]+25,
+                p[1]+20
+            );
+
+            g.addColorStop(0,"red");
+            g.addColorStop(.25,"yellow");
+            g.addColorStop(.5,"lime");
+            g.addColorStop(.75,"cyan");
+            g.addColorStop(1,"magenta");
+
+            color=g;
+
+        }
+
+
+        if(skin.id==="ultra"){
+
+            const g=x.createLinearGradient(
+                p[0],
+                p[1],
+                p[0]+25,
+                p[1]+20
+            );
+
+            g.addColorStop(0,"cyan");
+            g.addColorStop(.5,"blue");
+            g.addColorStop(1,"purple");
+
+            color=g;
+
+        }
+
+
+        if(skin.id==="god"){
+
+            const g=x.createLinearGradient(
+                p[0],
+                p[1],
+                p[0]+25,
+                p[1]+20
+            );
+
+            g.addColorStop(0,"white");
+            g.addColorStop(.35,"gold");
+            g.addColorStop(.7,"violet");
+            g.addColorStop(1,"cyan");
+
+            color=g;
+
+        }
+
+
+        x.fillStyle=color;
+
+        x.fillRect(
+            p[0],
+            p[1],
+            25,
+            20
+        );
+
+    });
+
+
+    /* FACE */
+
+    x.fillStyle="white";
+
+    x.beginPath();
+
+    x.arc(
+        91,
+        34,
+        skin.id==="bigeye"?7:3,
+        0,
+        Math.PI*2
+    );
+
+    x.arc(
+        101,
+        34,
+        skin.id==="bigeye"?7:3,
+        0,
+        Math.PI*2
+    );
+
+    x.fill();
+
+
+    /* horns */
+
+    if(skin.id==="redhorn"){
+
+        x.fillStyle="darkred";
+
+        x.beginPath();
+
+        x.moveTo(82,28);
+        x.lineTo(87,14);
+        x.lineTo(92,28);
+
+        x.moveTo(97,28);
+        x.lineTo(102,14);
+        x.lineTo(107,28);
+
+        x.fill();
+
     }
 
-    paused = !paused;
 
-    if (
-        paused
-    ) {
+    /* crown */
 
-        document.getElementById(
-            "pauseScreen"
-        ).classList.remove("hidden");
+    if(skin.id==="god"){
+
+        x.fillStyle="gold";
+
+        x.beginPath();
+
+        x.moveTo(82,20);
+        x.lineTo(88,7);
+        x.lineTo(95,20);
+        x.lineTo(102,7);
+        x.lineTo(110,20);
+
+        x.fill();
 
     }
 
-    else {
+}
 
-        document.getElementById(
-            "pauseScreen"
-        ).classList.add("hidden");
 
-    }
+/* =========================
+   RENDER SHOP
+========================= */
+
+function renderShop(){
+
+    const shop=
+        document.getElementById("shop");
+
+    shop.innerHTML="";
+
+    document.getElementById(
+        "shopCoins"
+    ).textContent=coins;
+
+
+    skins.forEach(skin=>{
+
+        const div=
+            document.createElement("div");
+
+        div.className="skin";
+
+
+        const c=
+            document.createElement("canvas");
+
+        c.width=180;
+
+        c.height=80;
+
+        previewSkin(c,skin);
+
+        div.appendChild(c);
+
+
+        const h=
+            document.createElement("h2");
+
+        h.textContent=skin.name;
+
+        div.appendChild(h);
+
+
+        const p=
+            document.createElement("p");
+
+        p.textContent=
+            skin.description;
+
+        div.appendChild(p);
+
+
+        const price=
+            document.createElement("p");
+
+        price.className="price";
+
+        price.textContent=
+            skin.price===0
+            ? "FREE"
+            : "🪙 "+skin.price+" coins";
+
+        div.appendChild(price);
+
+
+        const b=
+            document.createElement("button");
+
+
+        if(owned.includes(skin.id)){
+
+            if(selected===skin.id){
+
+                b.textContent="✅ EQUIPPED";
+
+                b.disabled=true;
+
+            }
+
+            else{
+
+                b.textContent="EQUIP";
+
+                b.onclick=()=>{
+                    equip(skin.id);
+                };
+
+            }
+
+        }
+
+        else{
+
+            b.textContent="BUY";
+
+            b.onclick=()=>{
+                buy(skin.id);
+            };
+
+        }
+
+
+        div.appendChild(b);
+
+        shop.appendChild(div);
+
+    });
 
 }
 
@@ -2075,151 +2156,63 @@ function togglePause() {
    SHOP
 ========================= */
 
-function openShop() {
+function openShop(){
 
-    gameRunning = false;
+    cameFromGame=running;
 
-    hideScreens();
+    if(running){
 
-    document.getElementById(
-        "shop"
-    ).classList.remove("hidden");
+        paused=true;
 
-    updateCoins();
+    }
+
+    running=false;
 
     renderShop();
+
+    showScreen("shopScreen");
 
 }
 
 
-function renderShop() {
+function closeShop(){
 
-    const list =
-        document.getElementById(
-            "shopList"
-        );
+    if(cameFromGame){
 
-    list.innerHTML = "";
+        running=true;
 
+        paused=false;
 
-    for (
-        const skin of skins
-    ) {
+        hideScreens();
 
-        const div =
-            document.createElement(
-                "div"
-            );
+        draw();
 
-        div.className = "skin";
+    }
 
+    else{
 
-        const title =
-            document.createElement(
-                "h2"
-            );
-
-        title.textContent =
-            skin.name;
-
-        div.appendChild(title);
-
-
-        const description =
-            document.createElement(
-                "p"
-            );
-
-        description.textContent =
-            skin.description;
-
-        div.appendChild(
-            description
-        );
-
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-
-        if (
-            ownedSkins.includes(
-                skin.id
-            )
-        ) {
-
-            if (
-                selectedSkin === skin.id
-            ) {
-
-                button.textContent =
-                    "✅ EQUIPPED";
-
-                button.className =
-                    "owned";
-
-            }
-
-            else {
-
-                button.textContent =
-                    "EQUIP";
-
-                button.onclick =
-                    function() {
-
-                        equipSkin(
-                            skin.id
-                        );
-
-                    };
-
-            }
-
-        }
-
-        else {
-
-            button.textContent =
-                "🪙 BUY " +
-                skin.price;
-
-            button.onclick =
-                function() {
-
-                    buySkin(
-                        skin
-                    );
-
-                };
-
-        }
-
-        div.appendChild(
-            button
-        );
-
-        list.appendChild(div);
+        backMenu();
 
     }
 
 }
 
 
-/* =========================
-   BUY SKIN
-========================= */
+function buy(id){
 
-function buySkin(skin) {
+    const skin=
+        skins.find(
+            s=>s.id===id
+        );
 
-    if (
-        coins < skin.price
-    ) {
+    if(!skin)
+        return;
+
+
+    if(coins<skin.price){
 
         alert(
-            "❌ Not enough coins!"
+            "❌ NOT ENOUGH COINS!"
         );
 
         return;
@@ -2227,236 +2220,190 @@ function buySkin(skin) {
     }
 
 
-    coins -= skin.price;
+    coins-=skin.price;
 
-    ownedSkins.push(
-        skin.id
-    );
+    owned.push(id);
 
-    selectedSkin =
-        skin.id;
+    selected=id;
 
-    saveData();
-
-    updateCoins();
+    save();
 
     renderShop();
 
-    showMessage(
-        "🐍 Skin purchased!"
+    updateHUD();
+
+    message(
+        "🐍 "+skin.name+" UNLOCKED!"
     );
 
 }
 
 
-/* =========================
-   EQUIP SKIN
-========================= */
+function equip(id){
 
-function equipSkin(id) {
-
-    if (
-        !ownedSkins.includes(id)
-    ) {
-
+    if(!owned.includes(id))
         return;
 
-    }
+    selected=id;
 
-    selectedSkin = id;
-
-    saveData();
+    save();
 
     renderShop();
 
-}
-
-
-/* =========================
-   INFO
-========================= */
-
-function updateInfo() {
-
-    document.getElementById(
-        "level"
-    ).textContent = level;
-
-    document.getElementById(
-        "score"
-    ).textContent = score;
-
-    document.getElementById(
-        "goal"
-    ).textContent = goal;
-
-    document.getElementById(
-        "lives"
-    ).textContent = lives;
-
-    updateCoins();
-
-
-    let text = "No effect";
-
-    if (
-        effect === "speed"
-    ) {
-
-        text = "⚡ SPEED ACTIVE";
-
-    }
-
-    if (
-        effect === "resistance"
-    ) {
-
-        text = "🛡️ RESISTANCE ACTIVE";
-
-    }
-
-    if (
-        effect === "double"
-    ) {
-
-        text = "✖️2 DOUBLE POINTS ACTIVE";
-
-    }
-
-    if (
-        effect === "slow"
-    ) {
-
-        text = "🐌 SLOW ACTIVE";
-
-    }
-
-    document.getElementById(
-        "effectText"
-    ).textContent = text;
+    draw();
 
 }
 
 
 /* =========================
-   MESSAGE
+   OTHER MENUS
 ========================= */
 
-function showMessage(text) {
+function rules(){
 
-    document.getElementById(
-        "message"
-    ).textContent = text;
-
-    setTimeout(
-        function() {
-
-            document.getElementById(
-                "message"
-            ).textContent = "";
-
-        },
-        1200
+    showScreen(
+        "rulesScreen"
     );
 
 }
 
 
-/* =========================
-   SCREENS
-========================= */
+function help(){
 
-function hideScreens() {
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(
-            screen =>
-                screen.classList.add(
-                    "hidden"
-                )
-        );
-
-}
-
-
-function showRules() {
-
-    hideScreens();
-
-    document.getElementById(
-        "rules"
-    ).classList.remove(
-        "hidden"
-    );
-
-}
-
-
-function showHighScore() {
-
-    hideScreens();
-
-    document.getElementById(
-        "highScore"
-    ).textContent =
-        highScore;
-
-    document.getElementById(
-        "highScoreScreen"
-    ).classList.remove(
-        "hidden"
-    );
-
-}
-
-
-function showHelp() {
-
-    hideScreens();
-
-    document.getElementById(
+    showScreen(
         "helpScreen"
-    ).classList.remove(
-        "hidden"
     );
 
 }
 
 
-function backToMenu() {
-
-    gameRunning = false;
-    paused = false;
-
-    hideScreens();
+function showHigh(){
 
     document.getElementById(
-        "menu"
-    ).classList.remove(
-        "hidden"
+        "bigHigh"
+    ).textContent=highScore;
+
+    showScreen(
+        "highScreen"
     );
 
-    updateCoins();
+}
+
+
+function backMenu(){
+
+    running=false;
+
+    paused=false;
+
+    showScreen("menu");
 
 }
 
 
 /* =========================
-   INITIALIZE
+   KEYBOARD
 ========================= */
 
-updateCoins();
+document.addEventListener(
+"keydown",
+function(e){
 
-updateInfo();
+    const key=e.key.toLowerCase();
 
-hideScreens();
 
-document.getElementById(
-    "menu"
-).classList.remove(
-    "hidden"
-);
+    if(key===" "){
+
+        e.preventDefault();
+
+        if(paused)
+            resumeGame();
+
+        else
+            pauseGame();
+
+        return;
+
+    }
+
+
+    if(!running||paused)
+        return;
+
+
+    if(
+        e.key==="ArrowUp" ||
+        key==="w"
+    ){
+
+        if(dy===0){
+
+            dx=0;
+            dy=-CELL;
+
+        }
+
+    }
+
+
+    else if(
+        e.key==="ArrowDown" ||
+        key==="s"
+    ){
+
+        if(dy===0){
+
+            dx=0;
+            dy=CELL;
+
+        }
+
+    }
+
+
+    else if(
+        e.key==="ArrowLeft" ||
+        key==="a"
+    ){
+
+        if(dx===0){
+
+            dx=-CELL;
+            dy=0;
+
+        }
+
+    }
+
+
+    else if(
+        e.key==="ArrowRight" ||
+        key==="d"
+    ){
+
+        if(dx===0){
+
+            dx=CELL;
+            dy=0;
+
+        }
+
+    }
+
+});
+
+
+/* =========================
+   START PAGE
+========================= */
+
+updateHUD();
+
+renderShop();
+
+showScreen("menu");
+
+requestAnimationFrame(loop);
 
 </script>
 
