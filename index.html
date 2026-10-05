@@ -1,723 +1,605 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Snake Chaos</title>
 
 <style>
+*{
+  box-sizing:border-box;
+}
 
 body{
-    margin:0;
-    background:#111;
-    color:white;
-    font-family:Arial,sans-serif;
-    text-align:center;
+  margin:0;
+  background:
+    radial-gradient(circle at top,#123b69 0%,#07101d 45%,#02050a 100%);
+  color:white;
+  font-family:Arial,sans-serif;
+  text-align:center;
+  min-height:100vh;
 }
 
-.screen{
-    display:none;
-    min-height:100vh;
-    padding:20px;
-}
-
-.active{
-    display:block;
+h1{
+  color:#00bfff;
+  text-shadow:0 0 15px #008cff;
+  margin:15px 0 5px;
 }
 
 button{
-    padding:12px 20px;
-    margin:6px;
-    border:none;
-    border-radius:8px;
-    background:#28a745;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
+  background:linear-gradient(135deg,#087cff,#001b3d);
+  color:white;
+  border:2px solid #00bfff;
+  border-radius:10px;
+  padding:12px 22px;
+  margin:6px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 10px #006cff;
 }
 
 button:hover{
-    background:#36c95b;
+  background:linear-gradient(135deg,#00bfff,#003b80);
+  transform:scale(1.04);
 }
 
-button:disabled{
-    background:#555;
-    cursor:not-allowed;
+.screen{
+  display:none;
 }
 
-.danger{
-    background:#c62828;
+.active{
+  display:block;
+}
+
+#menu{
+  padding-top:35px;
+}
+
+.panel{
+  width:92%;
+  max-width:850px;
+  margin:15px auto;
+  padding:20px;
+  background:rgba(3,15,30,.88);
+  border:2px solid #008cff;
+  border-radius:18px;
+  box-shadow:
+    0 0 20px #006eff,
+    inset 0 0 20px rgba(0,150,255,.12);
 }
 
 canvas{
-    background:#1f7a2e;
-    border:4px solid white;
-    max-width:95vw;
+  width:min(92vw,700px);
+  height:auto;
+  background:#06111f;
+  border:4px solid #00aaff;
+  border-radius:12px;
+  box-shadow:
+    0 0 25px #0077ff,
+    inset 0 0 30px #001b38;
+  image-rendering:auto;
 }
 
-.hud{
-    font-size:18px;
-    margin:10px;
+.info{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:10px;
 }
 
-.shopGrid{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:12px;
+.info span{
+  background:#061a32;
+  border:1px solid #008cff;
+  border-radius:8px;
+  padding:8px 12px;
+  box-shadow:0 0 8px #004cff;
 }
 
-.card{
-    width:160px;
-    background:#222;
-    border:2px solid #555;
-    border-radius:10px;
-    padding:10px;
+.shop-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:15px;
+  margin-top:15px;
 }
 
-.card canvas{
-    width:140px;
-    height:80px;
-    border:1px solid #555;
+.skin{
+  background:linear-gradient(145deg,#071a30,#020810);
+  border:2px solid #007cff;
+  border-radius:15px;
+  padding:12px;
+  box-shadow:0 0 12px rgba(0,120,255,.45);
 }
 
+.skin canvas{
+  width:120px;
+  height:80px;
+  border:2px solid #008cff;
+  border-radius:8px;
+}
+
+.locked{
+  opacity:.65;
+}
+
+.small{
+  color:#9bdcff;
+  font-size:13px;
+}
+
+.big{
+  font-size:25px;
+  font-weight:bold;
+  color:#00c8ff;
+}
+
+.warning{
+  color:#ff5555;
+}
+
+.good{
+  color:#39ff9b;
+}
 </style>
 </head>
 
 <body>
 
-
-<!-- =========================
-     MAIN MENU
-========================= -->
-
 <div id="menu" class="screen active">
+  <h1>🐍 SNAKE CHAOS</h1>
 
-<h1>🐍 Snake Chaos</h1>
+  <div class="panel">
+    <p class="big">BLUE × BLACK EDITION</p>
+    <p>Survive monsters, collect coins and reach Level 200!</p>
 
-<p>200 Levels of Snake Chaos!</p>
-
-<button onclick="startGame()">
-PLAY
-</button>
-
-<button onclick="show('rules')">
-RULES
-</button>
-
-<button onclick="showShop()">
-SHOP
-</button>
-
-<button onclick="show('help')">
-HELP
-</button>
-
-<br>
-
-<button class="danger" onclick="resetEverything()">
-RESET EVERYTHING
-</button>
-
+    <button onclick="showScreen('game');startGame()">▶ PLAY</button>
+    <button onclick="showScreen('rules')">📜 RULES</button>
+    <button onclick="showScreen('shop');drawShop()">🛍 SHOP</button>
+    <button onclick="showScreen('help')">❓ HELP</button>
+  </div>
 </div>
 
-
-<!-- =========================
-     RULES
-========================= -->
 
 <div id="rules" class="screen">
+  <div class="panel">
+    <h1>📜 RULES</h1>
 
-<h1>📜 Rules</h1>
+    <p>🍎 🍌 🍊 🍇 normal fruits = <b>1 point</b></p>
+    <p>❓ rare mystery fruit = <b>5 points</b></p>
+    <p>₦ coin = <b>2 coins</b></p>
+    <p>👾 Black monsters will chase you.</p>
+    <p>💥 Touching a monster costs one life.</p>
+    <p>❤️ You start with 3 lives.</p>
+    <p>🎯 Reach the level goal to continue.</p>
 
-<p>🍎 🍌 🍊 🍇 Normal fruits = 1 point</p>
-
-<p>❓ Rare unidentified fruit = 5 points</p>
-
-<p>₦ One coin = 10 coins</p>
-
-<p>⬛ Black monsters have faces and attack you.</p>
-
-<p>Touching a monster costs one life.</p>
-
-<p>Reach the goal to complete the level.</p>
-
-<button onclick="show('menu')">
-BACK
-</button>
-
+    <button onclick="showScreen('menu')">⬅ BACK</button>
+  </div>
 </div>
 
-
-<!-- =========================
-     HELP
-========================= -->
 
 <div id="help" class="screen">
+  <div class="panel">
+    <h1>❓ HELP</h1>
 
-<h1>❓ Help</h1>
+    <p>⬆️⬇️⬅️➡️ Arrow keys = Move</p>
+    <p>W A S D = Move</p>
+    <p>SPACE = Pause</p>
+    <p>Eat fruit to gain points.</p>
+    <p>Collect ₦ coins to earn 2 coins.</p>
+    <p>Avoid the black monsters!</p>
 
-<p>⬆️⬇️⬅️➡️ Arrow keys = move</p>
-
-<p>W A S D = move</p>
-
-<p>SPACE = pause</p>
-
-<p>Eat fruits to gain points.</p>
-
-<p>Collect ₦ coins to gain coins.</p>
-
-<p>Avoid the black monsters.</p>
-
-<button onclick="show('menu')">
-BACK
-</button>
-
+    <button onclick="showScreen('menu')">⬅ BACK</button>
+  </div>
 </div>
 
-
-<!-- =========================
-     SHOP
-========================= -->
 
 <div id="shop" class="screen">
+  <div class="panel">
+    <h1>🛍 SNAKE SHOP</h1>
 
-<h1>🛒 Snake Shop</h1>
+    <p>💰 Your coins: <span id="shopCoins">0</span></p>
 
-<p>
-Coins:
-<b id="shopCoins">0</b>
-</p>
+    <div id="shopGrid" class="shop-grid"></div>
 
-<div id="shopGrid" class="shopGrid"></div>
-
-<button onclick="show('menu')">
-BACK
-</button>
-
+    <button onclick="showScreen('menu')">⬅ BACK</button>
+  </div>
 </div>
 
-
-<!-- =========================
-     GAME
-========================= -->
 
 <div id="game" class="screen">
 
-<h1>🐍 Snake Chaos</h1>
+  <h1>🐍 SNAKE CHAOS</h1>
 
-<div class="hud">
+  <div class="info">
+    <span>⭐ Score: <b id="score">0</b></span>
+    <span>🎯 Goal: <b id="goal">5</b></span>
+    <span>❤️ Lives: <b id="lives">3</b></span>
+    <span>💰 Coins: <b id="coins">0</b></span>
+    <span>🏆 Level: <b id="level">1</b></span>
+  </div>
 
-Level:
-<b id="level">1</b>
+  <canvas id="gameCanvas" width="700" height="500"></canvas>
 
-&nbsp; | &nbsp;
+  <br>
 
-Score:
-<b id="score">0</b>
-
-&nbsp; | &nbsp;
-
-Goal:
-<b id="goal">5</b>
-
-&nbsp; | &nbsp;
-
-Lives:
-<b id="lives">3</b>
-
-&nbsp; | &nbsp;
-
-Coins:
-<b id="coins">0</b>
+  <button onclick="togglePause()">⏸ PAUSE</button>
+  <button onclick="leaveGame()">🚪 LEAVE GAME</button>
 
 </div>
 
-<canvas
-id="canvas"
-width="600"
-height="600">
-</canvas>
-
-<br>
-
-<button onclick="togglePause()">
-PAUSE / RESUME
-</button>
-
-<button onclick="leaveGame()">
-LEAVE GAME
-</button>
-
-</div>
-
-
-<!-- =========================
-     PAUSE
-========================= -->
 
 <div id="pause" class="screen">
-
-<h1>⏸️ PAUSED</h1>
-
-<button onclick="togglePause()">
-RESUME
-</button>
-
-<button onclick="leaveGame()">
-LEAVE GAME
-</button>
-
+  <div class="panel">
+    <h1>⏸ PAUSED</h1>
+    <button onclick="resumeGame()">▶ RESUME</button>
+    <button onclick="leaveGame()">🚪 LEAVE GAME</button>
+  </div>
 </div>
 
-
-<!-- =========================
-     GAME OVER
-========================= -->
 
 <div id="gameover" class="screen">
+  <div class="panel">
+    <h1>💀 GAME OVER</h1>
 
-<h1>💀 GAME OVER</h1>
+    <p>Score: <span id="finalScore">0</span></p>
+    <p>Level: <span id="finalLevel">1</span></p>
 
-<p>
-Final Score:
-<b id="finalScore">0</b>
-</p>
-
-<button onclick="startGame()">
-TRY AGAIN
-</button>
-
-<button onclick="show('menu')">
-MENU
-</button>
-
+    <button onclick="showScreen('game');startGame()">🔄 TRY AGAIN</button>
+    <button onclick="showScreen('menu')">🏠 MENU</button>
+  </div>
 </div>
 
 
-<!-- =========================
-     LEVEL COMPLETE
-========================= -->
-
 <div id="levelComplete" class="screen">
+  <div class="panel">
+    <h1>🎉 LEVEL COMPLETE!</h1>
 
-<h1>⭐ LEVEL COMPLETE!</h1>
+    <p>You reached the goal!</p>
+    <p>Get ready for the next level...</p>
 
-<p>You completed the level!</p>
-
-<button onclick="nextLevel()">
-NEXT LEVEL
-</button>
-
+    <button onclick="nextLevel()">➡ NEXT LEVEL</button>
+  </div>
 </div>
 
 
 <script>
 
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-/* =========================
-   CANVAS
-========================= */
-
-const canvas =
-document.getElementById("canvas");
-
-const ctx =
-canvas.getContext("2d");
-
-const CELL = 30;
-
-const GRID = 20;
-
-const SIZE = 600;
-
-
-/* =========================
-   GAME VARIABLES
-========================= */
+const GRID = 25;
 
 let snake = [];
-
-let direction = {
-    x:1,
-    y:0
-};
-
-let nextDirection = {
-    x:1,
-    y:0
-};
+let direction = {x:1,y:0};
+let nextDirection = {x:1,y:0};
 
 let fruit = null;
-
 let coinsList = [];
-
 let monsters = [];
 
-let obstacles = [];
-
 let score = 0;
-
 let level = 1;
-
 let lives = 3;
+let coins = Number(localStorage.getItem("snakeCoins") || 0);
 
 let running = false;
-
 let paused = false;
-
-
-/* =========================
-   SPEED
-========================= */
-
-/*
-180 = slower
-220 = even slower
-150 = faster
-*/
 
 let lastMove = 0;
 
+/* LOWER = FASTER
+   HIGHER = SLOWER */
 const MOVE_DELAY = 180;
 
 
 /* =========================
-   SAVED DATA
-========================= */
-
-let coins =
-Number(
-    localStorage.getItem("snakeCoins") || 0
-);
-
-let highScore =
-Number(
-    localStorage.getItem("snakeHighScore") || 0
-);
-
-let selectedSkin =
-localStorage.getItem("snakeSelected")
-|| "Green Snake";
-
-
-let ownedSkins;
-
-try{
-
-    ownedSkins =
-    JSON.parse(
-        localStorage.getItem("snakeOwned")
-        ||
-        '["Green Snake"]'
-    );
-
-}catch(e){
-
-    ownedSkins =
-    ["Green Snake"];
-
-}
-
-
-/* =========================
-   SKINS
+   SNAKE SKINS
 ========================= */
 
 const skins = [
-
-    ["Green Snake",0],
-
-    ["Fire Snake",50],
-
-    ["Big Eyes Snake",100],
-
-    ["Ice Snake",150],
-
-    ["Golden King",250],
-
-    ["Shadow Snake",400],
-
-    ["Rainbow Legend",600],
-
-    ["Beast Snake",800],
-
-    ["Ultra Snake",1000],
-
-    ["God Snake",2000]
-
+  {name:"Green Snake",price:0,type:"green"},
+  {name:"Fire Snake",price:50,type:"fire"},
+  {name:"Big Eyes Snake",price:100,type:"eyes"},
+  {name:"Ice Snake",price:150,type:"ice"},
+  {name:"Golden King",price:250,type:"gold"},
+  {name:"Shadow Snake",price:400,type:"shadow"},
+  {name:"Rainbow Legend",price:600,type:"rainbow"},
+  {name:"Beast Snake",price:800,type:"beast"},
+  {name:"Ultra Snake",price:1000,type:"ultra"},
+  {name:"God Snake",price:2000,type:"god"}
 ];
 
+let selectedSkin =
+  localStorage.getItem("selectedSkin") || "Green Snake";
 
-/* =========================
-   SAVE DATA
-========================= */
+let owned;
 
-function saveData(){
-
-    localStorage.setItem(
-        "snakeCoins",
-        coins
-    );
-
-    localStorage.setItem(
-        "snakeHighScore",
-        highScore
-    );
-
-    localStorage.setItem(
-        "snakeSelected",
-        selectedSkin
-    );
-
-    localStorage.setItem(
-        "snakeOwned",
-        JSON.stringify(ownedSkins)
-    );
-
+try{
+  owned = JSON.parse(
+    localStorage.getItem("ownedSkins") ||
+    '["Green Snake"]'
+  );
+}catch{
+  owned = ["Green Snake"];
 }
 
 
 /* =========================
-   SCREEN
+   SCREEN SYSTEM
 ========================= */
 
-function show(id){
+function showScreen(id){
 
-    document
-    .querySelectorAll(".screen")
-    .forEach(
-        screen =>
-        screen.classList.remove("active")
-    );
+  document.querySelectorAll(".screen")
+    .forEach(s=>s.classList.remove("active"));
 
-    document
-    .getElementById(id)
+  document.getElementById(id)
     .classList.add("active");
 
 }
 
 
 /* =========================
-   START GAME
+   SHOP
+========================= */
+
+function drawShop(){
+
+  document.getElementById("shopCoins").textContent = coins;
+
+  const grid = document.getElementById("shopGrid");
+
+  grid.innerHTML = "";
+
+  skins.forEach((skin,index)=>{
+
+    const box = document.createElement("div");
+
+    box.className = "skin";
+
+    if(!owned.includes(skin.name)){
+      box.classList.add("locked");
+    }
+
+    const preview = document.createElement("canvas");
+
+    preview.width = 120;
+    preview.height = 80;
+
+    box.appendChild(preview);
+
+    const pc = preview.getContext("2d");
+
+    drawSnakePreview(
+      pc,
+      skin.type
+    );
+
+    const title = document.createElement("h3");
+
+    title.textContent = skin.name;
+
+    box.appendChild(title);
+
+    const price = document.createElement("p");
+
+    if(skin.price === 0){
+      price.textContent = "FREE";
+    }else{
+      price.textContent = "₦ " + skin.price;
+    }
+
+    box.appendChild(price);
+
+    const button = document.createElement("button");
+
+    if(owned.includes(skin.name)){
+
+      if(selectedSkin === skin.name){
+        button.textContent = "SELECTED";
+      }else{
+        button.textContent = "USE";
+      }
+
+      button.onclick = ()=>{
+        selectedSkin = skin.name;
+
+        localStorage.setItem(
+          "selectedSkin",
+          selectedSkin
+        );
+
+        drawShop();
+      };
+
+    }else{
+
+      button.textContent = "BUY";
+
+      button.onclick = ()=>{
+
+        if(coins >= skin.price){
+
+          coins -= skin.price;
+
+          owned.push(skin.name);
+
+          localStorage.setItem(
+            "snakeCoins",
+            coins
+          );
+
+          localStorage.setItem(
+            "ownedSkins",
+            JSON.stringify(owned)
+          );
+
+          drawShop();
+
+        }else{
+
+          alert(
+            "Not enough coins!"
+          );
+
+        }
+
+      };
+
+    }
+
+    box.appendChild(button);
+
+    grid.appendChild(box);
+
+  });
+
+}
+
+
+/* =========================
+   SHOP PREVIEWS
+========================= */
+
+function drawSnakePreview(c,type){
+
+  c.clearRect(
+    0,0,120,80
+  );
+
+  c.fillStyle = "#030914";
+
+  c.fillRect(
+    0,0,120,80
+  );
+
+  let colors;
+
+  if(type === "green"){
+    colors = ["#00ff66","#009944"];
+  }
+
+  if(type === "fire"){
+    colors = ["#ff4b00","#ffb000"];
+  }
+
+  if(type === "eyes"){
+    colors = ["#00aaff","#0055ff"];
+  }
+
+  if(type === "ice"){
+    colors = ["#bdf5ff","#00bfff"];
+  }
+
+  if(type === "gold"){
+    colors = ["#fff000","#ff9900"];
+  }
+
+  if(type === "shadow"){
+    colors = ["#222222","#000000"];
+  }
+
+  if(type === "rainbow"){
+    colors = ["#ff00ff","#00ffff"];
+  }
+
+  if(type === "beast"){
+    colors = ["#4400ff","#09001c"];
+  }
+
+  if(type === "ultra"){
+    colors = ["#00ffff","#0044ff"];
+  }
+
+  if(type === "god"){
+    colors = ["#ffffff","#0077ff"];
+  }
+
+  for(let i=0;i<5;i++){
+
+    c.fillStyle =
+      colors[i%2];
+
+    c.fillRect(
+      25 + i*15,
+      40,
+      14,
+      14
+    );
+
+  }
+
+  c.fillStyle =
+    colors[0];
+
+  c.fillRect(
+    80,
+    25,
+    18,
+    18
+  );
+
+  c.fillStyle =
+    "white";
+
+  c.fillRect(
+    86,
+    29,
+    4,
+    4
+  );
+
+  c.fillRect(
+    94,
+    29,
+    4,
+    4
+  );
+
+}
+
+
+/* =========================
+   GAME START
 ========================= */
 
 function startGame(){
 
-    level = 1;
+  score = 0;
+  level = 1;
+  lives = 3;
 
-    score = 0;
+  direction = {
+    x:1,
+    y:0
+  };
 
-    lives = 3;
+  nextDirection = {
+    x:1,
+    y:0
+  };
 
-    running = true;
+  snake = [
+    {x:10,y:10},
+    {x:9,y:10},
+    {x:8,y:10}
+  ];
 
-    paused = false;
+  makeFruit();
 
-    lastMove =
-    performance.now();
+  makeCoins();
 
-    setupLevel();
+  makeMonsters();
 
-    show("game");
+  running = true;
+  paused = false;
 
-    updateHUD();
+  lastMove = performance.now();
 
-}
+  updateUI();
 
-
-/* =========================
-   SETUP LEVEL
-========================= */
-
-function setupLevel(){
-
-    snake = [
-
-        {
-            x:10,
-            y:10
-        },
-
-        {
-            x:9,
-            y:10
-        },
-
-        {
-            x:8,
-            y:10
-        }
-
-    ];
-
-
-    direction = {
-        x:1,
-        y:0
-    };
-
-
-    nextDirection = {
-        x:1,
-        y:0
-    };
-
-
-    obstacles = [];
-
-    monsters = [];
-
-    coinsList = [];
-
-
-    /* OBSTACLES */
-
-    let obstacleAmount =
-    Math.min(
-        3 + Math.floor(level / 5),
-        12
-    );
-
-
-    for(
-        let i=0;
-        i<obstacleAmount;
-        i++
-    ){
-
-        addObstacle();
-
-    }
-
-
-    /* BLACK MONSTERS ONLY */
-
-    let monsterAmount =
-    Math.min(
-        1 + Math.floor(level / 10),
-        5
-    );
-
-
-    for(
-        let i=0;
-        i<monsterAmount;
-        i++
-    ){
-
-        addBlackMonster();
-
-    }
-
-
-    /* NAIRA COINS */
-
-    for(
-        let i=0;
-        i<3;
-        i++
-    ){
-
-        addCoin();
-
-    }
-
-
-    /* FRUIT */
-
-    createFruit();
-
-}
-
-
-/* =========================
-   FIND FREE POSITION
-========================= */
-
-function getFreePosition(){
-
-    for(
-        let tries=0;
-        tries<300;
-        tries++
-    ){
-
-        const position = {
-
-            x:
-            Math.floor(
-                Math.random()*GRID
-            ),
-
-            y:
-            Math.floor(
-                Math.random()*GRID
-            )
-
-        };
-
-
-        if(
-            snake.some(
-                s =>
-                s.x===position.x &&
-                s.y===position.y
-            )
-        ){
-
-            continue;
-
-        }
-
-
-        if(
-            obstacles.some(
-                o =>
-                o.x===position.x &&
-                o.y===position.y
-            )
-        ){
-
-            continue;
-
-        }
-
-
-        if(
-            monsters.some(
-                m =>
-                m.x===position.x &&
-                m.y===position.y
-            )
-        ){
-
-            continue;
-
-        }
-
-
-        if(
-            coinsList.some(
-                c =>
-                c.x===position.x &&
-                c.y===position.y
-            )
-        ){
-
-            continue;
-
-        }
-
-
-        return position;
-
-    }
-
-
-    return {
-        x:2,
-        y:2
-    };
+  showScreen("game");
 
 }
 
@@ -726,204 +608,109 @@ function getFreePosition(){
    FRUIT
 ========================= */
 
-/*
-Normal fruits:
-🍎 Apple
-🍌 Banana
-🍊 Orange
-🍇 Grapes
-
-They give 1 point.
-
-Rare unidentified fruit:
-❓
-
-It gives 5 points.
-*/
-
 const normalFruits = [
-    "🍎",
-    "🍌",
-    "🍊",
-    "🍇"
+  "🍎",
+  "🍌",
+  "🍊",
+  "🍇"
 ];
 
+function makeFruit(){
 
-function createFruit(){
-
-    const position =
-    getFreePosition();
-
-
-    const isRare =
+  let rare =
     Math.random() < 0.08;
 
+  let symbol =
+    rare
+    ? "❓"
+    : normalFruits[
+        Math.floor(
+          Math.random()*normalFruits.length
+        )
+      ];
 
-    fruit = {
+  fruit = {
 
-        x:position.x,
+    x:Math.floor(
+      Math.random()*
+      (canvas.width/GRID)
+    ),
 
-        y:position.y,
+    y:Math.floor(
+      Math.random()*
+      (canvas.height/GRID)
+    ),
 
-        symbol:
-        isRare
-        ? "❓"
-        :
-        normalFruits[
-            Math.floor(
-                Math.random()*
-                normalFruits.length
-            )
-        ],
+    rare:rare,
+    symbol:symbol
 
-        points:
-        isRare
-        ? 5
-        : 1,
-
-        rare:
-        isRare
-
-    };
+  };
 
 }
 
 
 /* =========================
-   OBSTACLE
+   COINS
 ========================= */
 
-function addObstacle(){
+function makeCoins(){
 
-    obstacles.push(
-        getFreePosition()
-    );
+  coinsList = [];
 
-}
-
-
-/* =========================
-   BLACK MONSTER
-========================= */
-
-function addBlackMonster(){
-
-    const position =
-    getFreePosition();
-
-
-    monsters.push({
-
-        x:position.x,
-
-        y:position.y
-
-    });
-
-}
-
-
-/* =========================
-   NAIRA COIN
-========================= */
-
-function addCoin(){
-
-    const position =
-    getFreePosition();
-
+  for(let i=0;i<3;i++){
 
     coinsList.push({
 
-        x:position.x,
+      x:Math.floor(
+        Math.random()*
+        (canvas.width/GRID)
+      ),
 
-        y:position.y,
-
-        value:10
+      y:Math.floor(
+        Math.random()*
+        (canvas.height/GRID)
+      )
 
     });
+
+  }
 
 }
 
 
 /* =========================
-   CONTROLS
+   MONSTERS
 ========================= */
 
-function changeDirection(x,y){
+function makeMonsters(){
 
-    if(
-        direction.x === -x &&
-        direction.y === -y
-    ){
+  monsters = [];
 
-        return;
+  let amount =
+    Math.min(
+      1 + Math.floor(level/5),
+      8
+    );
 
-    }
+  for(let i=0;i<amount;i++){
 
+    monsters.push({
 
-    nextDirection = {
-        x:x,
-        y:y
-    };
+      x:Math.floor(
+        Math.random()*
+        (canvas.width/GRID)
+      ),
+
+      y:Math.floor(
+        Math.random()*
+        (canvas.height/GRID)
+      )
+
+    });
+
+  }
 
 }
-
-
-document.addEventListener(
-"keydown",
-function(event){
-
-    if(
-        event.key==="ArrowUp" ||
-        event.key.toLowerCase()==="w"
-    ){
-
-        changeDirection(0,-1);
-
-    }
-
-
-    if(
-        event.key==="ArrowDown" ||
-        event.key.toLowerCase()==="s"
-    ){
-
-        changeDirection(0,1);
-
-    }
-
-
-    if(
-        event.key==="ArrowLeft" ||
-        event.key.toLowerCase()==="a"
-    ){
-
-        changeDirection(-1,0);
-
-    }
-
-
-    if(
-        event.key==="ArrowRight" ||
-        event.key.toLowerCase()==="d"
-    ){
-
-        changeDirection(1,0);
-
-    }
-
-
-    if(
-        event.code==="Space" &&
-        running
-    ){
-
-        togglePause();
-
-    }
-
-});
 
 
 /* =========================
@@ -932,283 +719,172 @@ function(event){
 
 function update(){
 
+  direction = nextDirection;
+
+  const head = {
+
+    x:snake[0].x + direction.x,
+    y:snake[0].y + direction.y
+
+  };
+
+
+  /* WALL WRAP */
+
+  const maxX =
+    canvas.width/GRID;
+
+  const maxY =
+    canvas.height/GRID;
+
+  if(head.x < 0)
+    head.x = maxX-1;
+
+  if(head.x >= maxX)
+    head.x = 0;
+
+  if(head.y < 0)
+    head.y = maxY-1;
+
+  if(head.y >= maxY)
+    head.y = 0;
+
+
+  /* SELF COLLISION */
+
+  for(let i=0;i<snake.length;i++){
+
     if(
-        !running ||
-        paused
+      head.x === snake[i].x &&
+      head.y === snake[i].y
     ){
 
-        return;
+      loseLife();
+      return;
 
     }
 
-
-    direction =
-    nextDirection;
+  }
 
 
-    const head = {
-
-        x:
-        snake[0].x +
-        direction.x,
-
-        y:
-        snake[0].y +
-        direction.y
-
-    };
+  snake.unshift(head);
 
 
-    /* WALL */
+  /* FRUIT */
 
-    if(
-        head.x<0 ||
-        head.y<0 ||
-        head.x>=GRID ||
-        head.y>=GRID
-    ){
+  if(
+    fruit &&
+    head.x === fruit.x &&
+    head.y === fruit.y
+  ){
 
-        loseLife();
+    if(fruit.rare){
 
-        return;
+      score += 5;
+
+    }else{
+
+      score += 1;
 
     }
 
+    /* NEW FRUIT IMMEDIATELY */
 
-    /* SELF */
+    makeFruit();
+
+  }else{
+
+    snake.pop();
+
+  }
+
+
+  /* COINS */
+
+  for(let i=coinsList.length-1;i>=0;i--){
 
     if(
-        snake.some(
-            part =>
-            part.x===head.x &&
-            part.y===head.y
+      head.x === coinsList[i].x &&
+      head.y === coinsList[i].y
+    ){
+
+      /* ONE NAIRA COIN = 2 COINS */
+
+      coins += 2;
+
+      localStorage.setItem(
+        "snakeCoins",
+        coins
+      );
+
+      coinsList.splice(i,1);
+
+      coinsList.push({
+
+        x:Math.floor(
+          Math.random()*
+          (canvas.width/GRID)
+        ),
+
+        y:Math.floor(
+          Math.random()*
+          (canvas.height/GRID)
         )
-    ){
 
-        loseLife();
-
-        return;
+      });
 
     }
 
-
-    /* OBSTACLE */
-
-    if(
-        obstacles.some(
-            obstacle =>
-            obstacle.x===head.x &&
-            obstacle.y===head.y
-        )
-    ){
-
-        loseLife();
-
-        return;
-
-    }
+  }
 
 
-    snake.unshift(head);
+  /* MONSTERS */
+
+  monsters.forEach(monster=>{
+
+    let dx =
+      head.x - monster.x;
+
+    let dy =
+      head.y - monster.y;
 
 
-    let ateFruit = false;
+    if(Math.abs(dx) > Math.abs(dy)){
 
+      monster.x +=
+        dx > 0 ? 1 : dx < 0 ? -1 : 0;
 
-    /* =========================
-       EAT FRUIT
-    ========================= */
+    }else{
 
-    if(
-        head.x===fruit.x &&
-        head.y===fruit.y
-    ){
-
-        score +=
-        fruit.points;
-
-
-        ateFruit = true;
-
-
-        /*
-        A NEW FRUIT
-        APPEARS IMMEDIATELY
-        */
-
-        createFruit();
+      monster.y +=
+        dy > 0 ? 1 : dy < 0 ? -1 : 0;
 
     }
-
-
-    if(!ateFruit){
-
-        snake.pop();
-
-    }
-
-
-    /* =========================
-       NAIRA COIN
-    ========================= */
-
-    for(
-        let i=coinsList.length-1;
-        i>=0;
-        i--
-    ){
-
-        if(
-            head.x===coinsList[i].x &&
-            head.y===coinsList[i].y
-        ){
-
-            /*
-            1 COIN = 10
-            */
-
-            coins += 10;
-
-
-            coinsList.splice(
-                i,
-                1
-            );
-
-
-            /*
-            NEW COIN IMMEDIATELY
-            */
-
-            addCoin();
-
-
-            saveData();
-
-        }
-
-    }
-
-
-    /* =========================
-       MONSTERS
-    ========================= */
-
-    moveBlackMonsters();
 
 
     if(
-        monsters.some(
-            monster =>
-            monster.x===head.x &&
-            monster.y===head.y
-        )
+      monster.x === head.x &&
+      monster.y === head.y
     ){
 
-        loseLife();
-
-        return;
+      loseLife();
 
     }
 
-
-    /* =========================
-       LEVEL
-    ========================= */
-
-    if(
-        score >= level*5
-    ){
-
-        running = false;
-
-        show("levelComplete");
-
-    }
+  });
 
 
-    updateHUD();
+  if(score >= level*5){
 
-}
+    running = false;
 
-
-/* =========================
-   MOVE BLACK MONSTERS
-========================= */
-
-function moveBlackMonsters(){
-
-    monsters.forEach(
-        monster => {
-
-            const head =
-            snake[0];
-
-
-            const xDifference =
-            Math.sign(
-                head.x-monster.x
-            );
-
-
-            const yDifference =
-            Math.sign(
-                head.y-monster.y
-            );
-
-
-            /*
-            Black monster follows
-            the snake.
-            */
-
-            if(
-                Math.random()<0.5 &&
-                xDifference!==0
-            ){
-
-                monster.x +=
-                xDifference;
-
-            }
-            else
-            if(
-                yDifference!==0
-            ){
-
-                monster.y +=
-                yDifference;
-
-            }
-            else{
-
-                monster.x +=
-                xDifference;
-
-            }
-
-
-            monster.x =
-            Math.max(
-                0,
-                Math.min(
-                    GRID-1,
-                    monster.x
-                )
-            );
-
-
-            monster.y =
-            Math.max(
-                0,
-                Math.min(
-                    GRID-1,
-                    monster.y
-                )
-            );
-
-        }
+    showScreen(
+      "levelComplete"
     );
+
+  }
+
+  updateUI();
 
 }
 
@@ -1219,75 +895,35 @@ function moveBlackMonsters(){
 
 function loseLife(){
 
-    lives--;
+  lives--;
 
-    updateHUD();
+  updateUI();
 
+  if(lives <= 0){
 
-    if(
-        lives<=0
-    ){
+    gameOver();
 
-        running = false;
+    return;
 
+  }
 
-        if(
-            score>highScore
-        ){
+  snake = [
 
-            highScore =
-            score;
+    {x:10,y:10},
+    {x:9,y:10},
+    {x:8,y:10}
 
-            saveData();
+  ];
 
-        }
+  direction = {
+    x:1,
+    y:0
+  };
 
-
-        document
-        .getElementById(
-            "finalScore"
-        )
-        .textContent =
-        score;
-
-
-        show("gameover");
-
-    }
-    else{
-
-        snake = [
-
-            {
-                x:10,
-                y:10
-            },
-
-            {
-                x:9,
-                y:10
-            },
-
-            {
-                x:8,
-                y:10
-            }
-
-        ];
-
-
-        direction = {
-            x:1,
-            y:0
-        };
-
-
-        nextDirection = {
-            x:1,
-            y:0
-        };
-
-    }
+  nextDirection = {
+    x:1,
+    y:0
+  };
 
 }
 
@@ -1298,20 +934,557 @@ function loseLife(){
 
 function nextLevel(){
 
-    level++;
+  level++;
 
-    running = true;
+  running = true;
 
-    paused = false;
+  snake = [
 
-    lastMove =
-    performance.now();
+    {x:10,y:10},
+    {x:9,y:10},
+    {x:8,y:10}
 
-    setupLevel();
+  ];
 
-    show("game");
+  direction = {
+    x:1,
+    y:0
+  };
 
-    updateHUD();
+  nextDirection = {
+    x:1,
+    y:0
+  };
+
+  makeFruit();
+
+  makeCoins();
+
+  makeMonsters();
+
+  lastMove = performance.now();
+
+  updateUI();
+
+  showScreen("game");
+
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function gameOver(){
+
+  running = false;
+
+  document.getElementById(
+    "finalScore"
+  ).textContent = score;
+
+  document.getElementById(
+    "finalLevel"
+  ).textContent = level;
+
+  showScreen("gameover");
+
+}
+
+
+/* =========================
+   UI
+========================= */
+
+function updateUI(){
+
+  document.getElementById(
+    "score"
+  ).textContent = score;
+
+  document.getElementById(
+    "goal"
+  ).textContent = level*5;
+
+  document.getElementById(
+    "lives"
+  ).textContent = lives;
+
+  document.getElementById(
+    "coins"
+  ).textContent = coins;
+
+  document.getElementById(
+    "level"
+  ).textContent = level;
+
+}
+
+
+/* =========================
+   DRAW
+========================= */
+
+function draw(){
+
+  /* BLUE / BLACK BACKGROUND */
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,0,
+      canvas.width,
+      canvas.height
+    );
+
+  gradient.addColorStop(
+    0,
+    "#071b36"
+  );
+
+  gradient.addColorStop(
+    .5,
+    "#020814"
+  );
+
+  gradient.addColorStop(
+    1,
+    "#001a32"
+  );
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    0,0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  /* GLOW GRID */
+
+  ctx.strokeStyle =
+    "rgba(0,150,255,.13)";
+
+  ctx.lineWidth = 1;
+
+  for(
+    let x=0;
+    x<canvas.width;
+    x+=GRID
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(x,0);
+
+    ctx.lineTo(
+      x,
+      canvas.height
+    );
+
+    ctx.stroke();
+
+  }
+
+  for(
+    let y=0;
+    y<canvas.height;
+    y+=GRID
+  ){
+
+    ctx.beginPath();
+
+    ctx.moveTo(0,y);
+
+    ctx.lineTo(
+      canvas.width,
+      y
+    );
+
+    ctx.stroke();
+
+  }
+
+
+  /* FRUIT */
+
+  if(fruit){
+
+    ctx.fillStyle =
+      fruit.rare
+      ? "#1820ff"
+      : "#08101c";
+
+    ctx.shadowColor =
+      fruit.rare
+      ? "#0077ff"
+      : "#00bfff";
+
+    ctx.shadowBlur = 12;
+
+    ctx.fillRect(
+      fruit.x*GRID+2,
+      fruit.y*GRID+2,
+      GRID-4,
+      GRID-4
+    );
+
+    ctx.shadowBlur = 0;
+
+    ctx.font =
+      "19px 'Segoe UI Emoji', Arial";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.textBaseline =
+      "middle";
+
+    ctx.fillText(
+      fruit.symbol,
+      fruit.x*GRID+GRID/2,
+      fruit.y*GRID+GRID/2+1
+    );
+
+  }
+
+
+  /* COINS */
+
+  coinsList.forEach(c=>{
+
+    ctx.shadowColor =
+      "#00aaff";
+
+    ctx.shadowBlur = 12;
+
+    ctx.fillStyle =
+      "#07192d";
+
+    ctx.fillRect(
+      c.x*GRID+3,
+      c.y*GRID+3,
+      GRID-6,
+      GRID-6
+    );
+
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle =
+      "#00d9ff";
+
+    ctx.font =
+      "bold 15px Arial";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.textBaseline =
+      "middle";
+
+    ctx.fillText(
+      "₦",
+      c.x*GRID+GRID/2,
+      c.y*GRID+GRID/2
+    );
+
+  });
+
+
+  /* MONSTERS */
+
+  monsters.forEach(m=>{
+
+    const x =
+      m.x*GRID;
+
+    const y =
+      m.y*GRID;
+
+
+    /* BLACK BODY */
+
+    ctx.shadowColor =
+      "#008cff";
+
+    ctx.shadowBlur = 10;
+
+    ctx.fillStyle =
+      "#020305";
+
+    ctx.fillRect(
+      x+1,
+      y+1,
+      GRID-2,
+      GRID-2
+    );
+
+    ctx.shadowBlur = 0;
+
+
+    /* BLUE BORDER */
+
+    ctx.strokeStyle =
+      "#0077ff";
+
+    ctx.lineWidth = 2;
+
+    ctx.strokeRect(
+      x+2,
+      y+2,
+      GRID-4,
+      GRID-4
+    );
+
+
+    /* EYES */
+
+    ctx.fillStyle =
+      "white";
+
+    ctx.fillRect(
+      x+5,
+      y+5,
+      5,
+      5
+    );
+
+    ctx.fillRect(
+      x+15,
+      y+5,
+      5,
+      5
+    );
+
+
+    /* RED PUPILS */
+
+    ctx.fillStyle =
+      "#ff1744";
+
+    ctx.fillRect(
+      x+7,
+      y+6,
+      3,
+      3
+    );
+
+    ctx.fillRect(
+      x+17,
+      y+6,
+      3,
+      3
+    );
+
+
+    /* MOUTH */
+
+    ctx.fillStyle =
+      "#ffffff";
+
+    ctx.fillRect(
+      x+6,
+      y+16,
+      14,
+      3
+    );
+
+  });
+
+
+  /* SNAKE */
+
+  snake.forEach((part,i)=>{
+
+    drawSnakePart(
+      part.x*GRID,
+      part.y*GRID,
+      i
+    );
+
+  });
+
+}
+
+
+/* =========================
+   SNAKE GRAPHICS
+========================= */
+
+function drawSnakePart(x,y,index){
+
+  let type =
+    skins.find(
+      s=>s.name===selectedSkin
+    )?.type || "green";
+
+
+  let main =
+    "#00aaff";
+
+  let second =
+    "#001f4d";
+
+
+  if(type === "green"){
+    main="#00e676";
+    second="#006633";
+  }
+
+  if(type === "fire"){
+    main="#ff4d00";
+    second="#ffcc00";
+  }
+
+  if(type === "eyes"){
+    main="#008cff";
+    second="#001c55";
+  }
+
+  if(type === "ice"){
+    main="#8eeaff";
+    second="#008cff";
+  }
+
+  if(type === "gold"){
+    main="#ffd700";
+    second="#8a5d00";
+  }
+
+  if(type === "shadow"){
+    main="#202020";
+    second="#000000";
+  }
+
+  if(type === "rainbow"){
+
+    const colors=[
+      "#ff004c",
+      "#ff8a00",
+      "#ffee00",
+      "#00ff66",
+      "#00c8ff",
+      "#7a00ff"
+    ];
+
+    main =
+      colors[index %
+      colors.length];
+
+    second =
+      "#050505";
+
+  }
+
+  if(type === "beast"){
+    main="#6200ff";
+    second="#090018";
+  }
+
+  if(type === "ultra"){
+    main="#00eaff";
+    second="#003cff";
+  }
+
+  if(type === "god"){
+    main="#ffffff";
+    second="#0077ff";
+  }
+
+
+  /* OUTER GLOW */
+
+  ctx.shadowColor =
+    main;
+
+  ctx.shadowBlur =
+    index===0 ? 15 : 7;
+
+
+  /* BODY */
+
+  const gradient =
+    ctx.createLinearGradient(
+      x,y,
+      x+GRID,y+GRID
+    );
+
+  gradient.addColorStop(
+    0,
+    main
+  );
+
+  gradient.addColorStop(
+    1,
+    second
+  );
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    x+2,
+    y+2,
+    GRID-4,
+    GRID-4
+  );
+
+  ctx.shadowBlur = 0;
+
+
+  /* BLUE HIGHLIGHT */
+
+  ctx.fillStyle =
+    "rgba(255,255,255,.25)";
+
+  ctx.fillRect(
+    x+4,
+    y+4,
+    GRID-10,
+    3
+  );
+
+
+  /* HEAD */
+
+  if(index === 0){
+
+    ctx.fillStyle =
+      "white";
+
+    ctx.fillRect(
+      x+5,
+      y+6,
+      5,
+      5
+    );
+
+    ctx.fillRect(
+      x+15,
+      y+6,
+      5,
+      5
+    );
+
+    ctx.fillStyle =
+      "#001020";
+
+    ctx.fillRect(
+      x+7,
+      y+7,
+      2,
+      3
+    );
+
+    ctx.fillRect(
+      x+17,
+      y+7,
+      2,
+      3
+    );
+
+  }
 
 }
 
@@ -1322,30 +1495,24 @@ function nextLevel(){
 
 function togglePause(){
 
-    if(!running){
+  if(!running)
+    return;
 
-        return;
+  paused = true;
 
-    }
+  showScreen("pause");
 
-
-    paused =
-    !paused;
+}
 
 
-    if(paused){
+function resumeGame(){
 
-        show("pause");
+  paused = false;
 
-    }
-    else{
+  lastMove =
+    performance.now();
 
-        lastMove =
-        performance.now();
-
-        show("game");
-
-    }
+  showScreen("game");
 
 }
 
@@ -1356,1055 +1523,158 @@ function togglePause(){
 
 function leaveGame(){
 
-    running = false;
+  running = false;
 
-    paused = false;
+  paused = false;
 
-    show("menu");
-
-}
-
-
-/* =========================
-   HUD
-========================= */
-
-function updateHUD(){
-
-    document
-    .getElementById("level")
-    .textContent =
-    level;
-
-
-    document
-    .getElementById("score")
-    .textContent =
-    score;
-
-
-    document
-    .getElementById("goal")
-    .textContent =
-    level*5;
-
-
-    document
-    .getElementById("lives")
-    .textContent =
-    lives;
-
-
-    document
-    .getElementById("coins")
-    .textContent =
-    coins;
+  showScreen("menu");
 
 }
 
 
 /* =========================
-   BACKGROUND
+   KEYBOARD
 ========================= */
 
-function drawBackground(){
+document.addEventListener(
+  "keydown",
+  e=>{
 
-    ctx.fillStyle =
-    "#1f7a2e";
-
-    ctx.fillRect(
-        0,
-        0,
-        SIZE,
-        SIZE
-    );
-
-
-    /*
-    Light grid like the
-    original simple graphics.
-    */
-
-    ctx.strokeStyle =
-    "rgba(255,255,255,0.05)";
-
-
-    for(
-        let x=0;
-        x<SIZE;
-        x+=CELL
-    ){
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            x,
-            0
-        );
-
-        ctx.lineTo(
-            x,
-            SIZE
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    for(
-        let y=0;
-        y<SIZE;
-        y+=CELL
-    ){
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            0,
-            y
-        );
-
-        ctx.lineTo(
-            SIZE,
-            y
-        );
-
-        ctx.stroke();
-
-    }
-
-}
-
-
-/* =========================
-   SQUARE
-========================= */
-
-function square(
-    x,
-    y,
-    color
-){
-
-    ctx.fillStyle =
-    color;
-
-
-    ctx.fillRect(
-        x*CELL,
-        y*CELL,
-        CELL,
-        CELL
-    );
-
-}
-
-
-/* =========================
-   SNAKE
-========================= */
-
-function drawSnake(){
-
-    snake.forEach(
-        (part,index) => {
-
-            drawSnakePart(
-                part.x,
-                part.y,
-                index===0
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================
-   SNAKE PART
-========================= */
-
-function drawSnakePart(
-    x,
-    y,
-    head
-){
-
-    let color =
-    "#35c94a";
+    const key =
+      e.key.toLowerCase();
 
 
     if(
-        selectedSkin==="Fire Snake"
+      key === "arrowup" ||
+      key === "w"
     ){
 
-        color =
-        head
-        ? "#ff7a00"
-        : "#e53935";
+      if(direction.y !== 1){
+
+        nextDirection={
+          x:0,
+          y:-1
+        };
+
+      }
+
+      e.preventDefault();
 
     }
 
 
     if(
-        selectedSkin==="Big Eyes Snake"
+      key === "arrowdown" ||
+      key === "s"
     ){
 
-        color =
-        "#4caf50";
+      if(direction.y !== -1){
+
+        nextDirection={
+          x:0,
+          y:1
+        };
+
+      }
+
+      e.preventDefault();
 
     }
 
 
     if(
-        selectedSkin==="Ice Snake"
+      key === "arrowleft" ||
+      key === "a"
     ){
 
-        color =
-        "#6ee7ff";
+      if(direction.x !== 1){
+
+        nextDirection={
+          x:-1,
+          y:0
+        };
+
+      }
+
+      e.preventDefault();
 
     }
 
 
     if(
-        selectedSkin==="Golden King"
+      key === "arrowright" ||
+      key === "d"
     ){
 
-        color =
-        "#ffd700";
+      if(direction.x !== -1){
+
+        nextDirection={
+          x:1,
+          y:0
+        };
+
+      }
+
+      e.preventDefault();
 
     }
 
 
-    if(
-        selectedSkin==="Shadow Snake"
-    ){
+    if(key === " " && running){
 
-        color =
-        "#151515";
+      if(paused){
 
-    }
+        resumeGame();
 
+      }else{
 
-    if(
-        selectedSkin==="Rainbow Legend"
-    ){
+        togglePause();
 
-        const rainbow = [
+      }
 
-            "#ff3333",
-            "#ff9900",
-            "#ffee00",
-            "#33dd55",
-            "#3399ff",
-            "#bb55ff"
-
-        ];
-
-
-        color =
-        rainbow[
-            Math.abs(x+y) %
-            rainbow.length
-        ];
+      e.preventDefault();
 
     }
 
-
-    if(
-        selectedSkin==="Beast Snake"
-    ){
-
-        color =
-        "#75421e";
-
-    }
-
-
-    if(
-        selectedSkin==="Ultra Snake"
-    ){
-
-        color =
-        "#00d9ff";
-
-    }
-
-
-    if(
-        selectedSkin==="God Snake"
-    ){
-
-        color =
-        "#ffffff";
-
-    }
-
-
-    square(
-        x,
-        y,
-        color
-    );
-
-
-    ctx.strokeStyle =
-    "#111";
-
-
-    ctx.strokeRect(
-        x*CELL,
-        y*CELL,
-        CELL,
-        CELL
-    );
-
-
-    /* EYES */
-
-    if(head){
-
-        ctx.fillStyle =
-        "#111";
-
-
-        ctx.fillRect(
-            x*CELL+7,
-            y*CELL+7,
-            5,
-            5
-        );
-
-
-        ctx.fillRect(
-            x*CELL+18,
-            y*CELL+7,
-            5,
-            5
-        );
-
-    }
-
-}
-
-
-/* =========================
-   DRAW FRUIT
-========================= */
-
-function drawFruit(){
-
-    if(!fruit){
-
-        return;
-
-    }
-
-
-    /*
-    Fruit stays square,
-    but the actual fruit symbol
-    is displayed inside it.
-    */
-
-    ctx.fillStyle =
-    fruit.rare
-    ? "#3155aa"
-    : "#176b2b";
-
-
-    ctx.fillRect(
-        fruit.x*CELL,
-        fruit.y*CELL,
-        CELL,
-        CELL
-    );
-
-
-    ctx.strokeStyle =
-    "#fff";
-
-
-    ctx.strokeRect(
-        fruit.x*CELL,
-        fruit.y*CELL,
-        CELL,
-        CELL
-    );
-
-
-    /*
-    FRUIT SYMBOL
-    */
-
-    ctx.font =
-    "22px Arial";
-
-
-    ctx.textAlign =
-    "center";
-
-
-    ctx.textBaseline =
-    "middle";
-
-
-    ctx.fillText(
-        fruit.symbol,
-        fruit.x*CELL+15,
-        fruit.y*CELL+15
-    );
-
-}
-
-
-/* =========================
-   DRAW NAIRA COINS
-========================= */
-
-function drawCoins(){
-
-    coinsList.forEach(
-        coin => {
-
-            /*
-            Every coin is worth 10.
-            */
-
-            square(
-                coin.x,
-                coin.y,
-                "#ffd21f"
-            );
-
-
-            ctx.strokeStyle =
-            "#8a6500";
-
-
-            ctx.strokeRect(
-                coin.x*CELL,
-                coin.y*CELL,
-                CELL,
-                CELL
-            );
-
-
-            ctx.fillStyle =
-            "#111";
-
-
-            ctx.font =
-            "bold 18px Arial";
-
-
-            ctx.textAlign =
-            "center";
-
-
-            ctx.textBaseline =
-            "middle";
-
-
-            ctx.fillText(
-                "₦",
-                coin.x*CELL+15,
-                coin.y*CELL+15
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================
-   DRAW BLACK MONSTERS
-========================= */
-
-function drawMonsters(){
-
-    monsters.forEach(
-        monster => {
-
-            /*
-            BLACK SQUARE MONSTER
-            */
-
-            square(
-                monster.x,
-                monster.y,
-                "#050505"
-            );
-
-
-            ctx.strokeStyle =
-            "#555";
-
-
-            ctx.strokeRect(
-                monster.x*CELL,
-                monster.y*CELL,
-                CELL,
-                CELL
-            );
-
-
-            /*
-            MONSTER FACE
-            */
-
-            /*
-            White eyes
-            */
-
-            ctx.fillStyle =
-            "white";
-
-
-            ctx.fillRect(
-                monster.x*CELL+5,
-                monster.y*CELL+6,
-                8,
-                8
-            );
-
-
-            ctx.fillRect(
-                monster.x*CELL+17,
-                monster.y*CELL+6,
-                8,
-                8
-            );
-
-
-            /*
-            Black pupils
-            */
-
-            ctx.fillStyle =
-            "red";
-
-
-            ctx.fillRect(
-                monster.x*CELL+8,
-                monster.y*CELL+9,
-                4,
-                4
-            );
-
-
-            ctx.fillRect(
-                monster.x*CELL+20,
-                monster.y*CELL+9,
-                4,
-                4
-            );
-
-
-            /*
-            Angry mouth
-            */
-
-            ctx.fillStyle =
-            "white";
-
-
-            ctx.fillRect(
-                monster.x*CELL+7,
-                monster.y*CELL+21,
-                16,
-                4
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================
-   DRAW OBSTACLES
-========================= */
-
-function drawObstacles(){
-
-    obstacles.forEach(
-        obstacle => {
-
-            square(
-                obstacle.x,
-                obstacle.y,
-                "#777"
-            );
-
-
-            ctx.strokeStyle =
-            "#aaa";
-
-
-            ctx.strokeRect(
-                obstacle.x*CELL,
-                obstacle.y*CELL,
-                CELL,
-                CELL
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================
-   DRAW EVERYTHING
-========================= */
-
-function draw(){
-
-    drawBackground();
-
-    drawObstacles();
-
-    drawFruit();
-
-    drawCoins();
-
-    drawMonsters();
-
-    drawSnake();
-
-}
-
-
-/* =========================
-   SHOP
-========================= */
-
-function showShop(){
-
-    show("shop");
-
-
-    document
-    .getElementById(
-        "shopCoins"
-    )
-    .textContent =
-    coins;
-
-
-    const grid =
-    document.getElementById(
-        "shopGrid"
-    );
-
-
-    grid.innerHTML = "";
-
-
-    skins.forEach(
-        ([name,price]) => {
-
-            const card =
-            document.createElement(
-                "div"
-            );
-
-
-            card.className =
-            "card";
-
-
-            const preview =
-            document.createElement(
-                "canvas"
-            );
-
-
-            preview.width = 180;
-
-            preview.height = 90;
-
-
-            card.appendChild(
-                preview
-            );
-
-
-            drawPreview(
-                preview.getContext("2d"),
-                name
-            );
-
-
-            const text =
-            document.createElement(
-                "p"
-            );
-
-
-            text.innerHTML =
-            "<b>"+name+
-            "</b><br>"+
-            price+
-            " coins";
-
-
-            card.appendChild(
-                text
-            );
-
-
-            const button =
-            document.createElement(
-                "button"
-            );
-
-
-            if(
-                ownedSkins.includes(name)
-            ){
-
-                button.textContent =
-                selectedSkin===name
-                ? "SELECTED"
-                : "SELECT";
-
-
-                button.onclick =
-                function(){
-
-                    selectedSkin =
-                    name;
-
-                    saveData();
-
-                    showShop();
-
-                };
-
-            }
-            else{
-
-                button.textContent =
-                "BUY";
-
-
-                button.disabled =
-                coins<price;
-
-
-                button.onclick =
-                function(){
-
-                    if(
-                        coins>=price
-                    ){
-
-                        coins -= price;
-
-                        ownedSkins.push(
-                            name
-                        );
-
-                        selectedSkin =
-                        name;
-
-                        saveData();
-
-                        showShop();
-
-                    }
-
-                };
-
-            }
-
-
-            card.appendChild(
-                button
-            );
-
-
-            grid.appendChild(
-                card
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================
-   SHOP PREVIEW
-========================= */
-
-function drawPreview(
-    ctx2,
-    name
-){
-
-    ctx2.fillStyle =
-    "#1f7a2e";
-
-    ctx2.fillRect(
-        0,
-        0,
-        180,
-        90
-    );
-
-
-    let color =
-    "#35c94a";
-
-
-    if(name==="Fire Snake")
-        color="#ff5a00";
-
-    if(name==="Big Eyes Snake")
-        color="#4caf50";
-
-    if(name==="Ice Snake")
-        color="#6ee7ff";
-
-    if(name==="Golden King")
-        color="#ffd700";
-
-    if(name==="Shadow Snake")
-        color="#151515";
-
-    if(name==="Rainbow Legend")
-        color="#bb55ff";
-
-    if(name==="Beast Snake")
-        color="#75421e";
-
-    if(name==="Ultra Snake")
-        color="#00d9ff";
-
-    if(name==="God Snake")
-        color="#ffffff";
-
-
-    /*
-    Snake body
-    */
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        ctx2.fillStyle =
-        color;
-
-        ctx2.fillRect(
-            25+i*28,
-            42,
-            26,
-            20
-        );
-
-    }
-
-
-    /*
-    Head
-    */
-
-    ctx2.fillRect(
-        110,
-        28,
-        28,
-        34
-    );
-
-
-    /*
-    Outline
-    */
-
-    ctx2.strokeStyle =
-    "#111";
-
-
-    for(
-        let i=0;
-        i<4;
-        i++
-    ){
-
-        ctx2.strokeRect(
-            25+i*28,
-            42,
-            26,
-            20
-        );
-
-    }
-
-
-    ctx2.strokeRect(
-        110,
-        28,
-        28,
-        34
-    );
-
-
-    /*
-    Eyes
-    */
-
-    ctx2.fillStyle =
-    "#111";
-
-
-    ctx2.fillRect(
-        116,
-        34,
-        5,
-        5
-    );
-
-
-    ctx2.fillRect(
-        128,
-        34,
-        5,
-        5
-    );
-
-
-    /*
-    BIG EYES
-    */
-
-    if(
-        name==="Big Eyes Snake"
-    ){
-
-        ctx2.fillStyle =
-        "white";
-
-
-        ctx2.fillRect(
-            114,
-            31,
-            9,
-            9
-        );
-
-
-        ctx2.fillRect(
-            127,
-            31,
-            9,
-            9
-        );
-
-    }
-
-
-    /*
-    CROWN
-    */
-
-    if(
-        name==="Golden King" ||
-        name==="God Snake"
-    ){
-
-        ctx2.fillStyle =
-        "#ffd700";
-
-
-        ctx2.fillRect(
-            113,
-            22,
-            23,
-            6
-        );
-
-    }
-
-}
-
-
-/* =========================
-   RESET
-========================= */
-
-function resetEverything(){
-
-    if(
-        confirm(
-            "Reset all coins, skins and high score?"
-        )
-    ){
-
-        localStorage.clear();
-
-        location.reload();
-
-    }
-
-}
+  }
+);
 
 
 /* =========================
    GAME LOOP
 ========================= */
 
-function gameLoop(time){
+function loop(time){
 
-    /*
-    Snake movement is slower.
-    */
+  if(
+    running &&
+    !paused &&
+    time-lastMove >= MOVE_DELAY
+  ){
 
-    if(
-        running &&
-        !paused &&
-        time-lastMove>=MOVE_DELAY
-    ){
+    update();
 
-        update();
+    lastMove =
+      time;
 
-        lastMove =
-        time;
+  }
 
-    }
+  draw();
 
-
-    /*
-    Graphics remain smooth.
-    */
-
-    draw();
-
-
-    requestAnimationFrame(
-        gameLoop
-    );
+  requestAnimationFrame(
+    loop
+  );
 
 }
 
-
-/* =========================
-   START LOOP
-========================= */
-
-show("menu");
-
 requestAnimationFrame(
-    gameLoop
+  loop
 );
+
+
+/* INITIAL SHOP */
+
+drawShop();
 
 </script>
 
