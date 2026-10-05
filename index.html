@@ -2,143 +2,138 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>Presido Snake</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake Game</title>
 
 <style>
 *{
   box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,body{
-  margin:0;
-  min-height:100%;
-  background:#020713;
-  color:white;
-  font-family:Arial,sans-serif;
 }
 
 body{
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#02040a,#06152d,#02040a);
+  color:white;
+  text-align:center;
 }
 
 .screen{
   display:none;
-  width:100%;
   min-height:100vh;
-  padding:15px;
-  justify-content:center;
-  align-items:center;
+  padding:20px;
 }
 
-.screen.active{
-  display:flex;
-}
-
-.panel{
-  width:100%;
-  max-width:650px;
-  padding:25px;
-  text-align:center;
-  background:linear-gradient(145deg,#061a32,#020712);
-  border:2px solid #168cff;
-  border-radius:20px;
-  box-shadow:0 0 30px #0077ff55;
+.active{
+  display:block;
 }
 
 h1{
-  color:#40b8ff;
+  color:#00bfff;
   text-shadow:0 0 15px #008cff;
 }
 
 h2{
-  color:#40b8ff;
+  color:#39c8ff;
 }
 
 button{
-  display:block;
-  width:100%;
-  max-width:400px;
-  margin:10px auto;
-  padding:15px;
-  border:2px solid #168cff;
-  border-radius:12px;
-  background:#071a32;
+  border:2px solid #00aaff;
+  background:linear-gradient(135deg,#071a32,#00345c);
   color:white;
-  font-size:18px;
-  font-weight:bold;
+  padding:12px 20px;
+  margin:7px;
+  border-radius:10px;
+  font-size:17px;
   cursor:pointer;
   touch-action:manipulation;
-  user-select:none;
-  -webkit-user-select:none;
+  box-shadow:0 0 10px rgba(0,170,255,.35);
 }
 
-button:active{
-  transform:scale(.94);
-  background:#0e4778;
+button:hover{
+  background:linear-gradient(135deg,#0b3155,#005f9e);
 }
 
-#gameScreen{
-  flex-direction:column;
-  padding:5px;
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
 }
 
-.gameTop{
-  width:100%;
-  max-width:700px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:4px;
-  margin-bottom:5px;
+.small{
+  font-size:14px;
+  color:#a8dfff;
 }
 
-.gameTop span{
-  font-size:13px;
-  font-weight:bold;
+/* LEVEL LIST */
+
+#levelsContainer{
+  max-width:650px;
+  height:65vh;
+  overflow-y:auto;
+  margin:15px auto;
+  padding:12px;
+  border:2px solid #008cff;
+  border-radius:15px;
+  background:#020914;
+  box-shadow:0 0 20px rgba(0,140,255,.25);
 }
 
-#pauseBtn{
-  width:auto;
+.levelGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.levelBtn{
   margin:0;
-  padding:8px 12px;
+  padding:10px 4px;
+  font-size:14px;
 }
+
+.levelUnlocked{
+  border-color:#00ffcc;
+}
+
+.levelLocked{
+  border-color:#444;
+  background:#101010;
+}
+
+/* GAME */
 
 #gameCanvas{
-  width:min(96vw,700px);
+  background:#020812;
+  border:3px solid #008cff;
+  box-shadow:0 0 25px rgba(0,150,255,.45);
+  max-width:95vw;
   height:auto;
-  display:block;
-  border:3px solid #168cff;
-  border-radius:12px;
-  background:#020712;
-  box-shadow:0 0 25px #0077ff66;
+}
+
+.stats{
+  margin:8px;
+  color:#7edcff;
+  font-size:18px;
 }
 
 .controls{
-  width:210px;
+  margin:10px auto;
+  width:220px;
   display:grid;
-  grid-template-columns:65px 65px 65px;
-  grid-template-rows:58px 58px;
-  gap:6px;
-  margin-top:8px;
+  grid-template-columns:repeat(3,70px);
+  gap:5px;
+  justify-content:center;
 }
 
 .controls button{
   width:65px;
-  height:58px;
-  margin:0;
+  height:55px;
   padding:0;
+  margin:0;
   font-size:25px;
 }
 
 .up{
   grid-column:2;
-  grid-row:1;
 }
 
 .left{
@@ -156,570 +151,929 @@ button:active{
   grid-row:2;
 }
 
+/* SHOP */
+
 .shopGrid{
+  max-width:800px;
+  margin:auto;
   display:grid;
-  grid-template-columns:repeat(
-    auto-fit,
-    minmax(130px,1fr)
-  );
-  gap:10px;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:12px;
 }
 
-.skin{
-  padding:10px;
-  border:1px solid #168cff;
+.skinCard{
+  background:#061426;
+  border:2px solid #087fca;
+  border-radius:15px;
+  padding:15px;
+}
+
+.skinPreview{
+  font-size:55px;
+  height:70px;
+}
+
+.skinCard h3{
+  color:#35caff;
+}
+
+.price{
+  color:#ffd84a;
+}
+
+.power{
+  color:#7dffcf;
+}
+
+.origin{
+  color:#aaa;
+  font-size:13px;
+}
+
+#shopInfo{
+  margin:15px auto;
+  max-width:650px;
+  padding:12px;
+  background:#041020;
+  border:1px solid #008cff;
   border-radius:12px;
-  background:#061326;
 }
 
-.skin button{
-  font-size:14px;
-  padding:9px;
-}
+@media(max-width:500px){
+  .levelGrid{
+    grid-template-columns:repeat(3,1fr);
+  }
 
-.small{
-  color:#9bd4ff;
+  button{
+    font-size:15px;
+    padding:10px 14px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-
-<!-- ================= MENU ================= -->
-
+<!-- MENU -->
 <div id="menuScreen" class="screen active">
+  <h1>🐍 SNAKE CHAOS</h1>
+  <p>Blue • Black • Monsters • Powers • 200 Levels</p>
 
-  <div class="panel">
+  <button onclick="startSelectedLevel()">▶ PLAY</button>
+  <button onclick="openLevels()">📋 LEVELS</button>
+  <button onclick="showScreen('rulesScreen')">📜 RULES</button>
+  <button onclick="openShop()">🛒 SHOP</button>
+  <button onclick="showScreen('helpScreen')">❓ HELP</button>
 
-    <h1>🐍 PRESIDO SNAKE</h1>
-
-    <p>The Ultimate Snake Challenge</p>
-
-    <button onclick="startGame()">
-      ▶ PLAY
-    </button>
-
-    <button onclick="showScreen('rulesScreen')">
-      📜 RULES
-    </button>
-
-    <button onclick="openShop()">
-      🛒 SHOP
-    </button>
-
-    <button onclick="showScreen('helpScreen')">
-      ❓ HELP
-    </button>
-
-    <p>
-      🪙 Coins:
-      <b id="menuCoins">0</b>
-    </p>
-
-  </div>
-
+  <p class="small">
+    Unlocked Level: <span id="menuUnlocked">1</span>/200
+  </p>
 </div>
 
 
-<!-- ================= RULES ================= -->
+<!-- LEVELS -->
+<div id="levelsScreen" class="screen">
+  <h1>📋 LEVEL LIST</h1>
 
+  <p>
+    🔓 Unlocked: <span id="unlockedText">1</span>/200
+  </p>
+
+  <p class="small">
+    Complete a level to unlock the next one.
+  </p>
+
+  <div id="levelsContainer">
+    <div id="levelGrid" class="levelGrid"></div>
+  </div>
+
+  <button onclick="showScreen('menuScreen')">⬅ MENU</button>
+</div>
+
+
+<!-- RULES -->
 <div id="rulesScreen" class="screen">
+  <h1>📜 RULES</h1>
 
-  <div class="panel">
+  <p>🍎 Normal fruit = 1 point</p>
+  <p>❓ Rare fruit = 5 points</p>
+  <p>🪙 ₦1 coin = 2 game coins</p>
+  <p>🐲 Avoid the black monsters!</p>
+  <p>❤️ You have 3 lives.</p>
+  <p>🎯 Reach the level goal to complete the level.</p>
+  <p>🔓 Completing a level unlocks the next level.</p>
 
-    <h2>📜 RULES</h2>
-
-    <p>🍎 Normal fruit = 1 point</p>
-    <p>❓ Rare fruit = 5 points</p>
-    <p>🪙 ₦1 coin = 2 game coins</p>
-    <p>👾 Monsters move randomly and sometimes chase you.</p>
-    <p>❤️ You have 3 lives.</p>
-    <p>🎯 Reach the level goal to continue.</p>
-
-    <button onclick="showScreen('menuScreen')">
-      ⬅ BACK
-    </button>
-
-  </div>
-
+  <button onclick="showScreen('menuScreen')">⬅ BACK</button>
 </div>
 
 
-<!-- ================= HELP ================= -->
-
+<!-- HELP -->
 <div id="helpScreen" class="screen">
+  <h1>❓ HELP</h1>
 
-  <div class="panel">
+  <p>💻 Laptop: Arrow keys or WASD</p>
+  <p>📱 Phone: Use the D-pad buttons.</p>
+  <p>⏸ SPACE = Pause</p>
+  <p>🍎 Eat fruit to score.</p>
+  <p>🪙 Collect ₦ coins.</p>
+  <p>🐲 Watch out for monsters.</p>
 
-    <h2>❓ HELP</h2>
-
-    <p>📱 Phone: tap the arrow buttons.</p>
-    <p>💻 Laptop: use Arrow Keys or WASD.</p>
-    <p>⏸ Space = pause.</p>
-    <p>🪙 Collect ₦ coins to buy skins.</p>
-
-    <button onclick="showScreen('menuScreen')">
-      ⬅ BACK
-    </button>
-
-  </div>
-
+  <button onclick="showScreen('menuScreen')">⬅ BACK</button>
 </div>
 
 
-<!-- ================= SHOP ================= -->
-
+<!-- SHOP -->
 <div id="shopScreen" class="screen">
+  <h1>🛒 SNAKE SHOP</h1>
 
-  <div class="panel">
+  <h2>🪙 Coins: <span id="shopCoins">0</span></h2>
 
-    <h2>🛒 SNAKE SHOP</h2>
-
-    <p>
-      🪙 Coins:
-      <b id="shopCoins">0</b>
-    </p>
-
-    <div id="shopGrid"
-         class="shopGrid">
-    </div>
-
-    <button onclick="showScreen('menuScreen')">
-      ⬅ BACK
-    </button>
-
+  <div id="shopInfo">
+    Choose a snake to see its origin and power.
   </div>
 
+  <div id="shopGrid" class="shopGrid"></div>
+
+  <button onclick="showScreen('menuScreen')">⬅ MENU</button>
 </div>
 
 
-<!-- ================= GAME ================= -->
-
+<!-- GAME -->
 <div id="gameScreen" class="screen">
 
-  <div class="gameTop">
-
-    <span>
-      ⭐ <b id="scoreText">0</b>
-    </span>
-
-    <span>
-      🎯 <b id="goalText">5</b>
-    </span>
-
-    <span>
-      ❤️ <b id="livesText">3</b>
-    </span>
-
-    <span>
-      🪙 <b id="coinsText">0</b>
-    </span>
-
-    <button id="pauseBtn"
-            onclick="pauseGame()">
-      ⏸
-    </button>
-
+  <div class="stats">
+    Level: <span id="levelDisplay">1</span>
+    |
+    Goal: <span id="goalDisplay">5</span>
+    |
+    Score: <span id="scoreDisplay">0</span>
+    |
+    ❤️ <span id="livesDisplay">3</span>
+    |
+    🪙 <span id="coinsDisplay">0</span>
   </div>
 
-
-  <canvas id="gameCanvas"
-          width="700"
-          height="500">
-  </canvas>
-
+  <canvas id="gameCanvas" width="700" height="500"></canvas>
 
   <div class="controls">
-
-    <button class="up"
-            onclick="changeDirection('up')">
-      ⬆️
-    </button>
-
-    <button class="left"
-            onclick="changeDirection('left')">
-      ⬅️
-    </button>
-
-    <button class="down"
-            onclick="changeDirection('down')">
-      ⬇️
-    </button>
-
-    <button class="right"
-            onclick="changeDirection('right')">
-      ➡️
-    </button>
-
+    <button class="up" onclick="changeDirection('up')">⬆️</button>
+    <button class="left" onclick="changeDirection('left')">⬅️</button>
+    <button class="down" onclick="changeDirection('down')">⬇️</button>
+    <button class="right" onclick="changeDirection('right')">➡️</button>
   </div>
 
+  <button onclick="pauseGame()">⏸ PAUSE</button>
+  <button onclick="leaveGame()">🚪 LEAVE</button>
 </div>
 
 
-<!-- ================= PAUSE ================= -->
-
+<!-- PAUSE -->
 <div id="pauseScreen" class="screen">
+  <h1>⏸ PAUSED</h1>
 
-  <div class="panel">
-
-    <h2>⏸ GAME PAUSED</h2>
-
-    <button onclick="resumeGame()">
-      ▶ RESUME
-    </button>
-
-    <button onclick="leaveGame()">
-      🏠 MENU
-    </button>
-
-  </div>
-
+  <button onclick="resumeGame()">▶ RESUME</button>
+  <button onclick="retryLevel()">🔄 RETRY</button>
+  <button onclick="leaveGame()">🚪 LEVELS</button>
 </div>
 
 
-<!-- ================= GAME OVER ================= -->
-
+<!-- GAME OVER -->
 <div id="gameOverScreen" class="screen">
+  <h1>💀 GAME OVER</h1>
 
-  <div class="panel">
+  <p>Level: <span id="gameOverLevel">1</span></p>
+  <p>Score: <span id="gameOverScore">0</span></p>
 
-    <h1>💀 GAME OVER</h1>
-
-    <p>
-      Score:
-      <b id="finalScore">0</b>
-    </p>
-
-    <button onclick="startGame()">
-      🔄 RETRY
-    </button>
-
-    <button onclick="showScreen('menuScreen')">
-      🏠 MENU
-    </button>
-
-  </div>
-
+  <button onclick="retryLevel()">🔄 RETRY</button>
+  <button onclick="openLevels()">📋 LEVELS</button>
+  <button onclick="showScreen('menuScreen')">🏠 MENU</button>
 </div>
 
 
-<!-- ================= LEVEL COMPLETE ================= -->
+<!-- LEVEL COMPLETE -->
+<div id="levelCompleteScreen" class="screen">
+  <h1>🏆 LEVEL COMPLETE!</h1>
 
-<div id="levelScreen" class="screen">
+  <p>You completed Level <span id="completedLevel">1</span>!</p>
+  <p>🎯 Score: <span id="completedScore">0</span></p>
 
-  <div class="panel">
+  <p id="unlockMessage"></p>
 
-    <h1>🎉 LEVEL COMPLETE!</h1>
+  <button onclick="openLevels()">📋 LEVEL LIST</button>
+  <button onclick="showScreen('menuScreen')">🏠 MENU</button>
+</div>
 
-    <p>You reached the goal!</p>
 
-    <button onclick="nextLevel()">
-      ➡ NEXT LEVEL
-    </button>
+<!-- ALL COMPLETE -->
+<div id="allCompleteScreen" class="screen">
+  <h1>👑 LEGEND!</h1>
 
-    <button onclick="showScreen('menuScreen')">
-      🏠 MENU
-    </button>
+  <h2>YOU BEAT ALL 200 LEVELS!</h2>
 
-  </div>
+  <p>🐍 You are the ultimate Snake champion.</p>
 
+  <button onclick="openLevels()">📋 LEVEL LIST</button>
+  <button onclick="showScreen('menuScreen')">🏠 MENU</button>
 </div>
 
 
 <script>
 
-/* =====================================================
-   GAME SETUP
-===================================================== */
+/* =========================
+   BASIC SETTINGS
+========================= */
 
-const canvas =
-  document.getElementById("gameCanvas");
-
-const ctx =
-  canvas.getContext("2d");
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
 const GRID = 25;
-
-/* Snake movement speed */
-const MOVE_DELAY = 180;
+const MOVE_DELAY_NORMAL = 180;
+const MOVE_DELAY_FAST = 125;
 
 let snake = [];
-
-let fruit = null;
-
-let coin = null;
-
-let monsters = [];
-
 let direction = "right";
-
 let nextDirection = "right";
 
-let score = 0;
+let fruit = null;
+let coin = null;
+let monsters = [];
 
+let score = 0;
 let lives = 3;
 
 let level = 1;
+let selectedLevel = 1;
 
 let running = false;
-
 let paused = false;
 
 let lastMove = 0;
 
+let fireCooldown = 0;
+let shieldHits = 0;
 
-/* =====================================================
-   COINS
-===================================================== */
+let gameCoins = Number(localStorage.getItem("snakeCoins")) || 0;
 
-let gameCoins =
-  Number(
-    localStorage.getItem("snakeCoins") || 0
-  );
+let unlockedLevel =
+  Number(localStorage.getItem("snakeUnlockedLevel")) || 1;
+
+if(unlockedLevel < 1) unlockedLevel = 1;
+if(unlockedLevel > 200) unlockedLevel = 200;
+
+let selectedSkin =
+  localStorage.getItem("selectedSkin") || "green";
+
+let ownedSkins =
+  JSON.parse(localStorage.getItem("ownedSkins") || '["green"]');
 
 
-/* =====================================================
-   SKINS
-===================================================== */
+/* =========================
+   SNAKE SKINS
+========================= */
 
 const skins = [
 
-  ["Green Snake",0,"#21ff55"],
+  {
+    id:"green",
+    name:"Green Snake",
+    price:0,
+    emoji:"🟢",
+    color:"#00ff66",
+    origin:"The original snake from the ancient fruit lands.",
+    power:"Normal snake."
+  },
 
-  ["Fire Snake",50,"#ff4b1f"],
+  {
+    id:"fire",
+    name:"Fire Snake",
+    price:50,
+    emoji:"🔥",
+    color:"#ff3b00",
+    origin:"Born inside a legendary volcano.",
+    power:"🔥 Fire breath can destroy monsters."
+  },
 
-  ["Blue Snake",100,"#26aaff"],
+  {
+    id:"blue",
+    name:"Blue Beast",
+    price:100,
+    emoji:"🔵",
+    color:"#00aaff",
+    origin:"Created in the deep blue beast arena.",
+    power:"🧲 Attracts nearby fruit and coins."
+  },
 
-  ["Ice Snake",150,"#a9f6ff"],
+  {
+    id:"ice",
+    name:"Ice Snake",
+    price:150,
+    emoji:"❄️",
+    color:"#9eeeff",
+    origin:"Frozen for 1,000 years in the Ice Kingdom.",
+    power:"❄️ Slows monsters."
+  },
 
-  ["Golden King",250,"#ffd700"],
+  {
+    id:"gold",
+    name:"Golden King",
+    price:250,
+    emoji:"👑",
+    color:"#ffd700",
+    origin:"The royal snake of the golden kingdom.",
+    power:"🪙 Coins give 4 game coins."
+  },
 
-  ["Shadow Snake",400,"#777777"],
+  {
+    id:"shadow",
+    name:"Shadow Snake",
+    price:400,
+    emoji:"🌑",
+    color:"#777777",
+    origin:"A mysterious snake from the Shadow Realm.",
+    power:"🌑 Monsters have trouble tracking you."
+  },
 
-  ["Rainbow Legend",600,"#ff55ff"],
+  {
+    id:"rainbow",
+    name:"Rainbow Legend",
+    price:600,
+    emoji:"🌈",
+    color:"#ff55ff",
+    origin:"Born when seven magical worlds collided.",
+    power:"🌈 Attracts fruit and finds rare fruit more often."
+  },
 
-  ["Beast Snake",800,"#ff2277"],
+  {
+    id:"beast",
+    name:"Beast Snake",
+    price:800,
+    emoji:"🐲",
+    color:"#8aff00",
+    origin:"Raised by the monster kings.",
+    power:"🐲 Touching a monster destroys it."
+  },
 
-  ["Ultra Snake",1000,"#00ffff"],
+  {
+    id:"ultra",
+    name:"Ultra Snake",
+    price:1000,
+    emoji:"⚡",
+    color:"#00ffff",
+    origin:"Powered by an ancient energy crystal.",
+    power:"⚡ Moves faster and has protection."
+  },
 
-  ["God Snake",2000,"#ffffff"]
+  {
+    id:"god",
+    name:"God Snake",
+    price:2000,
+    emoji:"👑",
+    color:"#ffffff",
+    origin:"The legendary ruler of all snake realms.",
+    power:"👑 Combines the powers of every legendary snake."
+  }
 
 ];
 
 
-let selectedSkin =
-  Number(
-    localStorage.getItem("selectedSkin") || 0
-  );
-
-
-let ownedSkins =
-  JSON.parse(
-    localStorage.getItem(
-      "ownedSkins"
-    ) || "[0]"
-  );
-
-
-/* =====================================================
-   SCREEN SYSTEM
-===================================================== */
+/* =========================
+   SCREENS
+========================= */
 
 function showScreen(id){
 
-  document
-    .querySelectorAll(".screen")
-    .forEach(function(screen){
+  document.querySelectorAll(".screen").forEach(function(screen){
+    screen.classList.remove("active");
+  });
 
-      screen.classList.remove(
-        "active"
-      );
-
-    });
-
-
-  document
-    .getElementById(id)
-    .classList.add("active");
-
-
-  updateUI();
-
+  document.getElementById(id).classList.add("active");
 }
 
 
-/* =====================================================
+function updateMenu(){
+
+  document.getElementById("menuUnlocked").textContent =
+    unlockedLevel;
+}
+
+
+function openLevels(){
+
+  running = false;
+  paused = false;
+
+  updateMenu();
+
+  renderLevels();
+
+  showScreen("levelsScreen");
+}
+
+
+/* =========================
+   LEVEL LIST
+========================= */
+
+function renderLevels(){
+
+  const grid = document.getElementById("levelGrid");
+
+  grid.innerHTML = "";
+
+  document.getElementById("unlockedText").textContent =
+    unlockedLevel;
+
+  for(let i = 1; i <= 200; i++){
+
+    const button = document.createElement("button");
+
+    button.className = "levelBtn";
+
+    if(i <= unlockedLevel){
+
+      button.classList.add("levelUnlocked");
+
+      if(i === selectedLevel){
+        button.textContent = "▶ Level " + i;
+      }else{
+        button.textContent = "🔓 Level " + i;
+      }
+
+      button.onclick = function(){
+        startLevel(i);
+      };
+
+    }else{
+
+      button.classList.add("levelLocked");
+
+      button.textContent = "🔒 Level " + i;
+
+      button.disabled = true;
+    }
+
+    grid.appendChild(button);
+  }
+}
+
+
+/* =========================
+   LEVEL START
+========================= */
+
+function startLevel(number){
+
+  if(number < 1 || number > 200){
+    return;
+  }
+
+  if(number > unlockedLevel){
+    return;
+  }
+
+  selectedLevel = number;
+  level = number;
+
+  startGame();
+}
+
+
+function startSelectedLevel(){
+
+  if(selectedLevel > unlockedLevel){
+    selectedLevel = unlockedLevel;
+  }
+
+  level = selectedLevel;
+
+  startGame();
+}
+
+
+/* =========================
+   GOAL
+========================= */
+
+function getGoal(){
+
+  return Math.min(
+    5 + (level - 1) * 5,
+    25
+  );
+}
+
+
+/* =========================
    START GAME
-===================================================== */
+========================= */
 
 function startGame(){
 
-  score = 0;
-
-  lives = 3;
-
-
-  snake = [
-
-    {x:8,y:10},
-
-    {x:7,y:10},
-
-    {x:6,y:10}
-
-  ];
-
-
-  direction = "right";
-
-  nextDirection = "right";
-
-
-  makeFruit();
-
-  makeCoin();
-
-  makeMonsters();
-
-
   running = true;
-
   paused = false;
 
+  score = 0;
+  lives = 3;
 
-  lastMove =
-    performance.now();
+  fireCooldown = 0;
 
+  shieldHits = 0;
 
-  showScreen(
-    "gameScreen"
-  );
+  if(selectedSkin === "ultra"){
+    shieldHits = 1;
+  }
 
+  if(selectedSkin === "god"){
+    shieldHits = 2;
+  }
+
+  snake = [
+    {x:8,y:10},
+    {x:7,y:10},
+    {x:6,y:10}
+  ];
+
+  direction = "right";
+  nextDirection = "right";
+
+  monsters = [];
+
+  makeFruit();
+  makeCoin();
+  makeMonsters();
+
+  updateStats();
+
+  showScreen("gameScreen");
 
   startMusic();
 
+  lastMove = performance.now();
+
+  requestAnimationFrame(gameLoop);
 }
 
 
-/* =====================================================
+/* =========================
+   GAME LOOP
+========================= */
+
+function gameLoop(time){
+
+  if(!running){
+    return;
+  }
+
+  if(!paused){
+
+    const delay =
+      (selectedSkin === "ultra" ||
+       selectedSkin === "god")
+      ? MOVE_DELAY_FAST
+      : MOVE_DELAY_NORMAL;
+
+    if(time - lastMove >= delay){
+
+      updateGame();
+
+      lastMove = time;
+    }
+
+    draw();
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+
+/* =========================
+   UPDATE GAME
+========================= */
+
+function updateGame(){
+
+  direction = nextDirection;
+
+  const head = {
+    x:snake[0].x,
+    y:snake[0].y
+  };
+
+  if(direction === "up"){
+    head.y--;
+  }
+
+  if(direction === "down"){
+    head.y++;
+  }
+
+  if(direction === "left"){
+    head.x--;
+  }
+
+  if(direction === "right"){
+    head.x++;
+  }
+
+  const cols = canvas.width / GRID;
+  const rows = canvas.height / GRID;
+
+  /* WRAP AROUND */
+
+  if(head.x < 0){
+    head.x = cols - 1;
+  }
+
+  if(head.x >= cols){
+    head.x = 0;
+  }
+
+  if(head.y < 0){
+    head.y = rows - 1;
+  }
+
+  if(head.y >= rows){
+    head.y = 0;
+  }
+
+  /* SELF COLLISION */
+
+  for(let i = 0; i < snake.length; i++){
+
+    if(
+      head.x === snake[i].x &&
+      head.y === snake[i].y
+    ){
+
+      loseLife();
+      return;
+    }
+  }
+
+  snake.unshift(head);
+
+  /* FRUIT */
+
+  if(
+    fruit &&
+    head.x === fruit.x &&
+    head.y === fruit.y
+  ){
+
+    score += fruit.rare ? 5 : 1;
+
+    makeFruit();
+
+  }else{
+
+    snake.pop();
+  }
+
+  /* COIN */
+
+  if(
+    coin &&
+    head.x === coin.x &&
+    head.y === coin.y
+  ){
+
+    if(selectedSkin === "gold" ||
+       selectedSkin === "god"){
+
+      gameCoins += 4;
+
+    }else{
+
+      gameCoins += 2;
+    }
+
+    localStorage.setItem(
+      "snakeCoins",
+      gameCoins
+    );
+
+    makeCoin();
+  }
+
+  /* ATTRACT */
+
+  attractObjects();
+
+  /* MONSTERS */
+
+  updateMonsters();
+
+  /* FIRE */
+
+  useFirePower();
+
+  /* MONSTER COLLISION */
+
+  for(let i = monsters.length - 1; i >= 0; i--){
+
+    if(
+      head.x === monsters[i].x &&
+      head.y === monsters[i].y
+    ){
+
+      if(
+        selectedSkin === "beast" ||
+        selectedSkin === "fire" ||
+        selectedSkin === "god"
+      ){
+
+        monsters.splice(i,1);
+        continue;
+      }
+
+      if(
+        selectedSkin === "ultra" ||
+        selectedSkin === "god"
+      ){
+
+        if(shieldHits > 0){
+
+          shieldHits--;
+
+          monsters.splice(i,1);
+
+          continue;
+        }
+      }
+
+      loseLife();
+      return;
+    }
+  }
+
+  /* LEVEL COMPLETE */
+
+  if(score >= getGoal()){
+
+    completeLevel();
+    return;
+  }
+
+  updateStats();
+}
+
+
+/* =========================
+   CHANGE DIRECTION
+========================= */
+
+function changeDirection(newDirection){
+
+  if(newDirection === "up" &&
+     direction !== "down"){
+    nextDirection = "up";
+  }
+
+  if(newDirection === "down" &&
+     direction !== "up"){
+    nextDirection = "down";
+  }
+
+  if(newDirection === "left" &&
+     direction !== "right"){
+    nextDirection = "left";
+  }
+
+  if(newDirection === "right" &&
+     direction !== "left"){
+    nextDirection = "right";
+  }
+}
+
+
+/* =========================
+   KEYBOARD
+========================= */
+
+document.addEventListener("keydown",function(e){
+
+  if(e.key === "ArrowUp" || e.key.toLowerCase() === "w"){
+    changeDirection("up");
+  }
+
+  if(e.key === "ArrowDown" || e.key.toLowerCase() === "s"){
+    changeDirection("down");
+  }
+
+  if(e.key === "ArrowLeft" || e.key.toLowerCase() === "a"){
+    changeDirection("left");
+  }
+
+  if(e.key === "ArrowRight" || e.key.toLowerCase() === "d"){
+    changeDirection("right");
+  }
+
+  if(e.code === "Space"){
+
+    e.preventDefault();
+
+    if(running){
+
+      if(paused){
+        resumeGame();
+      }else{
+        pauseGame();
+      }
+
+    }
+  }
+
+});
+
+
+/* =========================
    FRUIT
-===================================================== */
+========================= */
 
 function makeFruit(){
 
   const fruitList = [
-
     "🍎",
     "🍌",
     "🍊",
     "🍇"
-
   ];
 
+  const cols = canvas.width / GRID;
+  const rows = canvas.height / GRID;
+
+  let rareChance = 0.08;
+
+  if(
+    selectedSkin === "rainbow" ||
+    selectedSkin === "god"
+  ){
+
+    rareChance = 0.20;
+  }
 
   fruit = {
 
-    x:Math.floor(
-      Math.random() *
-      (canvas.width / GRID)
-    ),
+    x:Math.floor(Math.random() * cols),
 
-    y:Math.floor(
-      Math.random() *
-      (canvas.height / GRID)
-    ),
+    y:Math.floor(Math.random() * rows),
 
-    rare:
-      Math.random() < 0.08
-
+    rare:Math.random() < rareChance
   };
 
-
-  /*
-    IMPORTANT:
-    Choose the fruit ONLY ONCE.
-    It will NOT change every frame.
-  */
-
-  fruit.emoji =
-    fruit.rare
-      ? "❓"
-      : fruitList[
-          Math.floor(
-            Math.random() *
-            fruitList.length
-          )
-        ];
-
-
-  /* Don't spawn inside snake */
+  fruit.emoji = fruit.rare
+    ? "❓"
+    : fruitList[
+        Math.floor(
+          Math.random() * fruitList.length
+        )
+      ];
 
   if(
     snake.some(function(p){
-
-      return(
-        p.x === fruit.x &&
-        p.y === fruit.y
-      );
-
+      return p.x === fruit.x &&
+             p.y === fruit.y;
     })
   ){
 
     makeFruit();
-
   }
-
 }
 
 
-/* =====================================================
+/* =========================
    COIN
-===================================================== */
+========================= */
 
 function makeCoin(){
 
+  const cols = canvas.width / GRID;
+  const rows = canvas.height / GRID;
+
   coin = {
 
-    x:Math.floor(
-      Math.random() *
-      (canvas.width / GRID)
-    ),
+    x:Math.floor(Math.random() * cols),
 
-    y:Math.floor(
-      Math.random() *
-      (canvas.height / GRID)
-    )
-
+    y:Math.floor(Math.random() * rows)
   };
-
 
   if(
     snake.some(function(p){
-
-      return(
-        p.x === coin.x &&
-        p.y === coin.y
-      );
-
+      return p.x === coin.x &&
+             p.y === coin.y;
     })
   ){
 
     makeCoin();
-
   }
-
 }
 
 
-/* =====================================================
+/* =========================
    MONSTERS
-===================================================== */
+========================= */
 
 function makeMonsters(){
-
-  monsters = [];
-
 
   const count =
     Math.min(
@@ -727,623 +1081,374 @@ function makeMonsters(){
       8
     );
 
+  const cols = canvas.width / GRID;
+  const rows = canvas.height / GRID;
 
-  for(
-    let i = 0;
-    i < count;
-    i++
-  ){
+  for(let i = 0; i < count; i++){
 
-    let monster;
+    let monster = {
 
+      x:Math.floor(Math.random() * cols),
 
-    do{
-
-      monster = {
-
-        x:Math.floor(
-          Math.random() *
-          (canvas.width / GRID)
-        ),
-
-        y:Math.floor(
-          Math.random() *
-          (canvas.height / GRID)
-        )
-
-      };
-
-    }
-    while(
-      snake.some(function(p){
-
-        return(
-          p.x === monster.x &&
-          p.y === monster.y
-        );
-
-      })
-    );
-
+      y:Math.floor(Math.random() * rows)
+    };
 
     monsters.push(monster);
-
   }
-
 }
 
 
-/* =====================================================
-   DIRECTION
-===================================================== */
+function updateMonsters(){
 
-function changeDirection(dir){
+  const cols = canvas.width / GRID;
+  const rows = canvas.height / GRID;
 
-  if(
-    dir === "up" &&
-    direction !== "down"
-  ){
-
-    nextDirection = "up";
-
-  }
-
-
-  if(
-    dir === "down" &&
-    direction !== "up"
-  ){
-
-    nextDirection = "down";
-
-  }
-
-
-  if(
-    dir === "left" &&
-    direction !== "right"
-  ){
-
-    nextDirection = "left";
-
-  }
-
-
-  if(
-    dir === "right" &&
-    direction !== "left"
-  ){
-
-    nextDirection = "right";
-
-  }
-
-}
-
-
-/* =====================================================
-   KEYBOARD
-===================================================== */
-
-document.addEventListener(
-  "keydown",
-  function(e){
-
-    const key =
-      e.key.toLowerCase();
-
-
-    if(
-      key === "arrowup" ||
-      key === "w"
-    ){
-
-      changeDirection("up");
-
-    }
-
-
-    if(
-      key === "arrowdown" ||
-      key === "s"
-    ){
-
-      changeDirection("down");
-
-    }
-
-
-    if(
-      key === "arrowleft" ||
-      key === "a"
-    ){
-
-      changeDirection("left");
-
-    }
-
-
-    if(
-      key === "arrowright" ||
-      key === "d"
-    ){
-
-      changeDirection("right");
-
-    }
-
-
-    if(key === " "){
-
-      e.preventDefault();
-
-
-      if(
-        running &&
-        !paused
-      ){
-
-        pauseGame();
-
-      }
-
-      else if(
-        running &&
-        paused
-      ){
-
-        resumeGame();
-
-      }
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   UPDATE GAME
-===================================================== */
-
-function update(){
-
-  direction =
-    nextDirection;
-
-
-  let head = {
-
-    x:snake[0].x,
-
-    y:snake[0].y
-
-  };
-
-
-  if(
-    direction === "up"
-  ){
-
-    head.y--;
-
-  }
-
-
-  if(
-    direction === "down"
-  ){
-
-    head.y++;
-
-  }
-
-
-  if(
-    direction === "left"
-  ){
-
-    head.x--;
-
-  }
-
-
-  if(
-    direction === "right"
-  ){
-
-    head.x++;
-
-  }
-
-
-  const cols =
-    canvas.width / GRID;
-
-  const rows =
-    canvas.height / GRID;
-
-
-  /* Wrap around */
-
-  if(head.x < 0){
-
-    head.x =
-      cols - 1;
-
-  }
-
-
-  if(head.x >= cols){
-
-    head.x = 0;
-
-  }
-
-
-  if(head.y < 0){
-
-    head.y =
-      rows - 1;
-
-  }
-
-
-  if(head.y >= rows){
-
-    head.y = 0;
-
-  }
-
-
-  /* Self collision */
-
-  if(
-    snake.some(function(p){
-
-      return(
-        p.x === head.x &&
-        p.y === head.y
-      );
-
-    })
-  ){
-
-    loseLife();
-
-    return;
-
-  }
-
-
-  /* Monster collision */
-
-  if(
-    monsters.some(function(m){
-
-      return(
-        m.x === head.x &&
-        m.y === head.y
-      );
-
-    })
-  ){
-
-    loseLife();
-
-    return;
-
-  }
-
-
-  snake.unshift(head);
-
-
-  /* =================================================
-     FRUIT
-  ================================================= */
-
-  if(
-    head.x === fruit.x &&
-    head.y === fruit.y
-  ){
-
-    if(fruit.rare){
-
-      score += 5;
-
-    }
-    else{
-
-      score += 1;
-
-    }
-
-
-    /*
-      Immediately create ONE new fruit.
-    */
-
-    makeFruit();
-
-  }
-  else{
-
-    snake.pop();
-
-  }
-
-
-  /* =================================================
-     COIN
-  ================================================= */
-
-  if(
-    head.x === coin.x &&
-    head.y === coin.y
-  ){
-
-    /*
-      One ₦ coin = 2 game coins.
-    */
-
-    gameCoins += 2;
-
-
-    localStorage.setItem(
-      "snakeCoins",
-      gameCoins
-    );
-
-
-    /*
-      Immediately create ONE new coin.
-    */
-
-    makeCoin();
-
-  }
-
-
-  /* =================================================
-     MONSTER MOVEMENT
-
-     70% RANDOM
-     30% CHASE
-  ================================================= */
+  const head = snake[0];
 
   monsters.forEach(function(monster){
 
+    /* ICE POWER */
+
     if(
-      Math.random() < 0.70
+      selectedSkin === "ice" ||
+      selectedSkin === "god"
     ){
 
-      /*
-        RANDOM MOVEMENT
-      */
-
-      const randomDirection =
-        Math.floor(
-          Math.random() * 4
-        );
-
-
-      if(
-        randomDirection === 0
-      ){
-
-        monster.x++;
-
+      if(Math.random() < 0.45){
+        return;
       }
-
-
-      if(
-        randomDirection === 1
-      ){
-
-        monster.x--;
-
-      }
-
-
-      if(
-        randomDirection === 2
-      ){
-
-        monster.y++;
-
-      }
-
-
-      if(
-        randomDirection === 3
-      ){
-
-        monster.y--;
-
-      }
-
-    }
-    else{
-
-      /*
-        SOMETIMES CHASE
-      */
-
-      if(
-        monster.x < head.x
-      ){
-
-        monster.x++;
-
-      }
-      else if(
-        monster.x > head.x
-      ){
-
-        monster.x--;
-
-      }
-
-
-      if(
-        monster.y < head.y
-      ){
-
-        monster.y++;
-
-      }
-      else if(
-        monster.y > head.y
-      ){
-
-        monster.y--;
-
-      }
-
     }
 
+    /* SHADOW */
 
-    /* Keep monster inside arena */
+    if(
+      selectedSkin === "shadow" ||
+      selectedSkin === "god"
+    ){
+
+      if(Math.random() < 0.85){
+
+        randomMove(monster);
+
+      }else{
+
+        chasePlayer(monster,head);
+      }
+
+    }else{
+
+      if(Math.random() < 0.70){
+
+        randomMove(monster);
+
+      }else{
+
+        chasePlayer(monster,head);
+      }
+    }
 
     monster.x =
       Math.max(
         0,
-        Math.min(
-          cols - 1,
-          monster.x
-        )
+        Math.min(cols - 1,monster.x)
       );
-
 
     monster.y =
       Math.max(
         0,
-        Math.min(
-          rows - 1,
-          monster.y
-        )
+        Math.min(rows - 1,monster.y)
       );
-
   });
-
-
-  /* =================================================
-     LEVEL COMPLETE
-  ================================================= */
-
-  if(
-    score >= level * 5
-  ){
-
-    running = false;
-
-    showScreen(
-      "levelScreen"
-    );
-
-  }
-
 }
 
 
-/* =====================================================
+function randomMove(monster){
+
+  const randomDirection =
+    Math.floor(Math.random() * 4);
+
+  if(randomDirection === 0){
+    monster.x++;
+  }
+
+  if(randomDirection === 1){
+    monster.x--;
+  }
+
+  if(randomDirection === 2){
+    monster.y++;
+  }
+
+  if(randomDirection === 3){
+    monster.y--;
+  }
+}
+
+
+function chasePlayer(monster,head){
+
+  if(monster.x < head.x){
+    monster.x++;
+  }else if(monster.x > head.x){
+    monster.x--;
+  }
+
+  if(monster.y < head.y){
+    monster.y++;
+  }else if(monster.y > head.y){
+    monster.y--;
+  }
+}
+
+
+/* =========================
+   ATTRACTION POWERS
+========================= */
+
+function attractObjects(){
+
+  if(
+    selectedSkin !== "blue" &&
+    selectedSkin !== "rainbow" &&
+    selectedSkin !== "god"
+  ){
+    return;
+  }
+
+  const head = snake[0];
+
+  if(fruit){
+
+    const distance =
+      Math.abs(head.x - fruit.x) +
+      Math.abs(head.y - fruit.y);
+
+    if(distance <= 7){
+
+      if(fruit.x < head.x){
+        fruit.x++;
+      }
+
+      if(fruit.x > head.x){
+        fruit.x--;
+      }
+
+      if(fruit.y < head.y){
+        fruit.y++;
+      }
+
+      if(fruit.y > head.y){
+        fruit.y--;
+      }
+    }
+  }
+
+  if(coin){
+
+    const distance =
+      Math.abs(head.x - coin.x) +
+      Math.abs(head.y - coin.y);
+
+    if(distance <= 7){
+
+      if(coin.x < head.x){
+        coin.x++;
+      }
+
+      if(coin.x > head.x){
+        coin.x--;
+      }
+
+      if(coin.y < head.y){
+        coin.y++;
+      }
+
+      if(coin.y > head.y){
+        coin.y--;
+      }
+    }
+  }
+}
+
+
+/* =========================
+   FIRE POWER
+========================= */
+
+function useFirePower(){
+
+  if(
+    selectedSkin !== "fire" &&
+    selectedSkin !== "god"
+  ){
+    return;
+  }
+
+  if(fireCooldown > 0){
+
+    fireCooldown--;
+    return;
+  }
+
+  if(monsters.length === 0){
+    return;
+  }
+
+  const head = snake[0];
+
+  let nearest = -1;
+  let nearestDistance = 999;
+
+  monsters.forEach(function(monster,index){
+
+    const distance =
+      Math.abs(head.x - monster.x) +
+      Math.abs(head.y - monster.y);
+
+    if(distance < nearestDistance){
+
+      nearestDistance = distance;
+      nearest = index;
+    }
+  });
+
+  if(
+    nearest !== -1 &&
+    nearestDistance <= 6
+  ){
+
+    monsters.splice(nearest,1);
+
+    fireCooldown = 8;
+  }
+}
+
+
+/* =========================
    LOSE LIFE
-===================================================== */
+========================= */
 
 function loseLife(){
 
   lives--;
 
-
   if(lives <= 0){
 
-    gameOver();
+    running = false;
+
+    document.getElementById(
+      "gameOverLevel"
+    ).textContent = level;
+
+    document.getElementById(
+      "gameOverScore"
+    ).textContent = score;
+
+    showScreen("gameOverScreen");
 
     return;
-
   }
 
-
   snake = [
-
     {x:8,y:10},
-
     {x:7,y:10},
-
     {x:6,y:10}
-
   ];
 
-
   direction = "right";
-
   nextDirection = "right";
 
-
-  makeFruit();
-
-  makeCoin();
-
+  updateStats();
 }
 
 
-/* =====================================================
-   NEXT LEVEL
-===================================================== */
+/* =========================
+   LEVEL COMPLETE
+========================= */
 
-function nextLevel(){
-
-  level++;
-
-  startGame();
-
-}
-
-
-/* =====================================================
-   GAME OVER
-===================================================== */
-
-function gameOver(){
+function completeLevel(){
 
   running = false;
 
+  const completed = level;
 
-  document
-    .getElementById(
-      "finalScore"
-    )
-    .textContent = score;
+  if(completed < 200){
 
+    if(
+      completed + 1 >
+      unlockedLevel
+    ){
 
-  showScreen(
-    "gameOverScreen"
-  );
+      unlockedLevel =
+        completed + 1;
 
+      localStorage.setItem(
+        "snakeUnlockedLevel",
+        unlockedLevel
+      );
+    }
+
+    document.getElementById(
+      "completedLevel"
+    ).textContent = completed;
+
+    document.getElementById(
+      "completedScore"
+    ).textContent = score;
+
+    document.getElementById(
+      "unlockMessage"
+    ).textContent =
+      "🔓 Level " +
+      (completed + 1) +
+      " is now unlocked!";
+
+    showScreen("levelCompleteScreen");
+
+  }else{
+
+    localStorage.setItem(
+      "snakeUnlockedLevel",
+      "200"
+    );
+
+    unlockedLevel = 200;
+
+    showScreen("allCompleteScreen");
+  }
 }
 
 
-/* =====================================================
+/* =========================
+   RETRY
+========================= */
+
+function retryLevel(){
+
+  level = selectedLevel;
+
+  if(level > unlockedLevel){
+    level = unlockedLevel;
+    selectedLevel = unlockedLevel;
+  }
+
+  startGame();
+}
+
+
+/* =========================
    PAUSE
-===================================================== */
+========================= */
 
 function pauseGame(){
 
   if(!running){
-
     return;
-
   }
-
 
   paused = true;
 
-
-  showScreen(
-    "pauseScreen"
-  );
-
+  showScreen("pauseScreen");
 }
 
 
@@ -1351,820 +1456,514 @@ function resumeGame(){
 
   paused = false;
 
+  showScreen("gameScreen");
 
-  showScreen(
-    "gameScreen"
-  );
-
-
-  lastMove =
-    performance.now();
-
+  lastMove = performance.now();
 }
 
 
 function leaveGame(){
 
   running = false;
-
   paused = false;
 
-
-  showScreen(
-    "menuScreen"
-  );
-
+  openLevels();
 }
 
 
-/* =====================================================
+/* =========================
+   STATS
+========================= */
+
+function updateStats(){
+
+  document.getElementById(
+    "levelDisplay"
+  ).textContent = level;
+
+  document.getElementById(
+    "goalDisplay"
+  ).textContent = getGoal();
+
+  document.getElementById(
+    "scoreDisplay"
+  ).textContent = score;
+
+  document.getElementById(
+    "livesDisplay"
+  ).textContent = lives;
+
+  document.getElementById(
+    "coinsDisplay"
+  ).textContent = gameCoins;
+}
+
+
+/* =========================
    DRAW GAME
-===================================================== */
+========================= */
 
 function draw(){
 
-  /*
-    Background
-  */
-
-  const gradient =
-    ctx.createLinearGradient(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
-
-
-  gradient.addColorStop(
-    0,
-    "#03152c"
-  );
-
-
-  gradient.addColorStop(
-    1,
-    "#00030a"
-  );
-
-
-  ctx.fillStyle =
-    gradient;
-
-
-  ctx.fillRect(
+  ctx.clearRect(
     0,
     0,
     canvas.width,
     canvas.height
   );
 
-
-  /*
-    Grid
-  */
+  /* BACKGROUND GRID */
 
   ctx.strokeStyle =
-    "#0b2a4a";
+    "rgba(0,140,255,.08)";
 
-
-  for(
-    let x = 0;
-    x < canvas.width;
-    x += GRID
-  ){
+  for(let x = 0; x < canvas.width; x += GRID){
 
     ctx.beginPath();
 
-    ctx.moveTo(
-      x,
-      0
-    );
-
-    ctx.lineTo(
-      x,
-      canvas.height
-    );
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,canvas.height);
 
     ctx.stroke();
-
   }
 
-
-  for(
-    let y = 0;
-    y < canvas.height;
-    y += GRID
-  ){
+  for(let y = 0; y < canvas.height; y += GRID){
 
     ctx.beginPath();
 
-    ctx.moveTo(
-      0,
-      y
-    );
-
-    ctx.lineTo(
-      canvas.width,
-      y
-    );
+    ctx.moveTo(0,y);
+    ctx.lineTo(canvas.width,y);
 
     ctx.stroke();
-
   }
 
 
-  /* =================================================
-     FRUIT
-  ================================================= */
+  /* FRUIT */
 
-  ctx.font =
-    "21px Arial";
+  if(fruit){
 
-  ctx.textAlign =
-    "center";
+    ctx.font = "22px Arial";
 
-  ctx.textBaseline =
-    "middle";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-
-  /*
-    IMPORTANT:
-    Draw the stored fruit emoji.
-    It does NOT randomize here.
-  */
-
-  ctx.fillText(
-
-    fruit.emoji,
-
-    fruit.x * GRID +
-      GRID / 2,
-
-    fruit.y * GRID +
-      GRID / 2
-
-  );
+    ctx.fillText(
+      fruit.emoji,
+      fruit.x * GRID + GRID / 2,
+      fruit.y * GRID + GRID / 2
+    );
+  }
 
 
-  /* =================================================
-     NAIRA COIN
-  ================================================= */
+  /* COIN */
 
-  ctx.fillStyle =
-    "#ffd700";
+  if(coin){
 
+    ctx.fillStyle = "#ffd700";
 
-  ctx.fillRect(
+    ctx.fillRect(
+      coin.x * GRID + 3,
+      coin.y * GRID + 3,
+      GRID - 6,
+      GRID - 6
+    );
 
-    coin.x * GRID + 3,
+    ctx.fillStyle = "#111";
 
-    coin.y * GRID + 3,
+    ctx.font = "13px Arial";
 
-    GRID - 6,
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
 
-    GRID - 6
-
-  );
-
-
-  ctx.fillStyle =
-    "#000";
-
-
-  ctx.font =
-    "bold 14px Arial";
-
-
-  ctx.fillText(
-
-    "₦",
-
-    coin.x * GRID +
-      GRID / 2,
-
-    coin.y * GRID +
-      GRID / 2
-
-  );
+    ctx.fillText(
+      "₦",
+      coin.x * GRID + GRID / 2,
+      coin.y * GRID + GRID / 2
+    );
+  }
 
 
-  /* =================================================
-     MONSTERS
-  ================================================= */
+  /* MONSTERS */
 
   monsters.forEach(function(monster){
 
-    const x =
-      monster.x * GRID;
-
-    const y =
-      monster.y * GRID;
-
-
-    /*
-      Black monster
-    */
-
-    ctx.fillStyle =
-      "#050505";
-
+    ctx.fillStyle = "#050505";
 
     ctx.fillRect(
-
-      x + 2,
-
-      y + 2,
-
+      monster.x * GRID + 2,
+      monster.y * GRID + 2,
       GRID - 4,
-
       GRID - 4
-
     );
 
+    /* EYES */
 
-    /*
-      Red eyes
-    */
-
-    ctx.fillStyle =
-      "#ff3030";
-
+    ctx.fillStyle = "white";
 
     ctx.fillRect(
-
-      x + 6,
-
-      y + 7,
-
+      monster.x * GRID + 6,
+      monster.y * GRID + 6,
       5,
-
       5
-
     );
 
-
     ctx.fillRect(
-
-      x + 14,
-
-      y + 7,
-
+      monster.x * GRID + 14,
+      monster.y * GRID + 6,
       5,
-
       5
-
     );
 
-
-    /*
-      White eye highlights
-    */
-
-    ctx.fillStyle =
-      "white";
-
+    ctx.fillStyle = "red";
 
     ctx.fillRect(
-
-      x + 7,
-
-      y + 8,
-
+      monster.x * GRID + 8,
+      monster.y * GRID + 8,
       2,
-
       2
-
     );
-
 
     ctx.fillRect(
-
-      x + 15,
-
-      y + 8,
-
+      monster.x * GRID + 16,
+      monster.y * GRID + 8,
       2,
-
       2
-
     );
-
   });
 
 
-  /* =================================================
-     SNAKE
-  ================================================= */
+  /* SNAKE */
 
-  const skinColor =
-    skins[selectedSkin][2];
+  const skin =
+    skins.find(function(s){
+      return s.id === selectedSkin;
+    }) || skins[0];
 
+  snake.forEach(function(part,index){
 
-  snake.forEach(
-    function(part,index){
+    ctx.fillStyle = skin.color;
 
-      ctx.fillStyle =
-        skinColor;
+    ctx.fillRect(
+      part.x * GRID + 2,
+      part.y * GRID + 2,
+      GRID - 4,
+      GRID - 4
+    );
 
+    /* HEAD */
+
+    if(index === 0){
+
+      ctx.fillStyle = "white";
 
       ctx.fillRect(
-
-        part.x * GRID + 2,
-
-        part.y * GRID + 2,
-
-        GRID - 4,
-
-        GRID - 4
-
+        part.x * GRID + 6,
+        part.y * GRID + 6,
+        5,
+        5
       );
 
+      ctx.fillRect(
+        part.x * GRID + 14,
+        part.y * GRID + 6,
+        5,
+        5
+      );
 
-      /*
-        Snake eyes
-      */
+      /* FIRE */
 
-      if(index === 0){
+      if(
+        selectedSkin === "fire" ||
+        selectedSkin === "god"
+      ){
 
-        ctx.fillStyle =
-          "white";
+        ctx.font = "18px Arial";
 
-
-        ctx.fillRect(
-
-          part.x * GRID + 7,
-
-          part.y * GRID + 6,
-
-          4,
-
-          4
-
+        ctx.fillText(
+          "🔥",
+          part.x * GRID + GRID / 2,
+          part.y * GRID + GRID / 2
         );
-
-
-        ctx.fillRect(
-
-          part.x * GRID + 14,
-
-          part.y * GRID + 6,
-
-          4,
-
-          4
-
-        );
-
       }
-
     }
-  );
-
+  });
 }
 
 
-/* =====================================================
-   GAME LOOP
-===================================================== */
-
-function gameLoop(time){
-
-  if(
-    running &&
-    !paused &&
-    time - lastMove >= MOVE_DELAY
-  ){
-
-    update();
-
-    lastMove = time;
-
-  }
-
-
-  if(
-    running &&
-    !paused
-  ){
-
-    draw();
-
-  }
-
-
-  updateUI();
-
-
-  requestAnimationFrame(
-    gameLoop
-  );
-
-}
-
-
-requestAnimationFrame(
-  gameLoop
-);
-
-
-/* =====================================================
-   UI
-===================================================== */
-
-function updateUI(){
-
-  document
-    .getElementById(
-      "menuCoins"
-    )
-    .textContent =
-    gameCoins;
-
-
-  document
-    .getElementById(
-      "shopCoins"
-    )
-    .textContent =
-    gameCoins;
-
-
-  document
-    .getElementById(
-      "scoreText"
-    )
-    .textContent =
-    score;
-
-
-  document
-    .getElementById(
-      "goalText"
-    )
-    .textContent =
-    level * 5;
-
-
-  document
-    .getElementById(
-      "livesText"
-    )
-    .textContent =
-    lives;
-
-
-  document
-    .getElementById(
-      "coinsText"
-    )
-    .textContent =
-    gameCoins;
-
-}
-
-
-/* =====================================================
+/* =========================
    SHOP
-===================================================== */
+========================= */
 
 function openShop(){
 
-  showScreen(
-    "shopScreen"
-  );
+  renderShop();
 
-
-  drawShop();
-
+  showScreen("shopScreen");
 }
 
 
-function drawShop(){
+function renderShop(){
+
+  document.getElementById(
+    "shopCoins"
+  ).textContent = gameCoins;
 
   const grid =
-    document.getElementById(
-      "shopGrid"
-    );
-
+    document.getElementById("shopGrid");
 
   grid.innerHTML = "";
 
+  skins.forEach(function(skin){
 
-  skins.forEach(
-    function(skin,index){
+    const card =
+      document.createElement("div");
 
-      const name =
-        skin[0];
+    card.className = "skinCard";
 
-      const price =
-        skin[1];
+    const owned =
+      ownedSkins.includes(skin.id);
 
-      const color =
-        skin[2];
+    const equipped =
+      selectedSkin === skin.id;
 
+    card.innerHTML =
 
-      const box =
-        document.createElement(
-          "div"
+      '<div class="skinPreview">' +
+      skin.emoji +
+      '</div>' +
+
+      '<h3>' +
+      skin.name +
+      '</h3>' +
+
+      '<div class="price">🪙 ' +
+      skin.price +
+      '</div>' +
+
+      '<p class="origin">' +
+      skin.origin +
+      '</p>' +
+
+      '<p class="power">' +
+      skin.power +
+      '</p>';
+
+    const button =
+      document.createElement("button");
+
+    if(equipped){
+
+      button.textContent = "✅ EQUIPPED";
+
+    }else if(owned){
+
+      button.textContent = "EQUIP";
+
+      button.onclick = function(){
+
+        selectedSkin = skin.id;
+
+        localStorage.setItem(
+          "selectedSkin",
+          selectedSkin
         );
 
+        renderShop();
+      };
 
-      box.className =
-        "skin";
+    }else{
 
+      button.textContent =
+        "BUY 🪙 " + skin.price;
 
-      let status;
+      button.onclick = function(){
 
-
-      if(
-        selectedSkin === index
-      ){
-
-        status =
-          "SELECTED";
-
-      }
-      else if(
-        ownedSkins.includes(index)
-      ){
-
-        status =
-          "USE";
-
-      }
-      else{
-
-        status =
-          "BUY";
-
-      }
-
-
-      box.innerHTML = `
-
-        <div style="
-          width:45px;
-          height:45px;
-          margin:auto;
-          background:${color};
-          border-radius:8px;
-        "></div>
-
-        <p>
-          <b>${name}</b>
-        </p>
-
-        <p class="small">
-          ${
-            price === 0
-              ? "FREE"
-              : "🪙 " + price
-          }
-        </p>
-
-        <button
-          onclick="buyOrUseSkin(${index})">
-
-          ${status}
-
-        </button>
-
-      `;
-
-
-      grid.appendChild(
-        box
-      );
-
+        buySkin(skin.id);
+      };
     }
-  );
 
+    card.appendChild(button);
+
+    card.onclick = function(){
+
+      document.getElementById(
+        "shopInfo"
+      ).innerHTML =
+        "<b>" + skin.name + "</b><br>" +
+        skin.origin + "<br><br>" +
+        "<span class='power'>" +
+        skin.power +
+        "</span>";
+    };
+
+    grid.appendChild(card);
+  });
 }
 
 
-function buyOrUseSkin(index){
+function buySkin(id){
 
-  const price =
-    skins[index][1];
+  const skin =
+    skins.find(function(s){
+      return s.id === id;
+    });
 
+  if(!skin){
+    return;
+  }
 
-  /*
-    Already owned
-  */
+  if(ownedSkins.includes(id)){
 
-  if(
-    ownedSkins.includes(index)
-  ){
-
-    selectedSkin =
-      index;
-
+    selectedSkin = id;
 
     localStorage.setItem(
       "selectedSkin",
       selectedSkin
     );
 
-
-    drawShop();
-
+    renderShop();
 
     return;
-
   }
 
-
-  /*
-    Not enough money
-  */
-
-  if(
-    gameCoins < price
-  ){
+  if(gameCoins < skin.price){
 
     alert(
-      "Not enough coins!"
+      "You need " +
+      (skin.price - gameCoins) +
+      " more coins!"
     );
 
-
     return;
-
   }
 
+  gameCoins -= skin.price;
 
-  /*
-    Buy
-  */
+  ownedSkins.push(id);
 
-  gameCoins -= price;
-
-
-  ownedSkins.push(
-    index
-  );
-
-
-  selectedSkin =
-    index;
-
+  selectedSkin = id;
 
   localStorage.setItem(
     "snakeCoins",
     gameCoins
   );
 
-
   localStorage.setItem(
     "ownedSkins",
-    JSON.stringify(
-      ownedSkins
-    )
+    JSON.stringify(ownedSkins)
   );
-
 
   localStorage.setItem(
     "selectedSkin",
     selectedSkin
   );
 
-
-  drawShop();
-
+  renderShop();
 }
 
 
-/* =====================================================
-   BUILT-IN MUSIC
-===================================================== */
+/* =========================
+   MUSIC
+========================= */
 
 let audioContext = null;
-
-let musicTimer = null;
-
+let musicStarted = false;
 
 function startMusic(){
 
+  if(musicStarted){
+    return;
+  }
+
   try{
 
-    if(!audioContext){
+    audioContext =
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
 
-      audioContext =
-        new (
-          window.AudioContext ||
-          window.webkitAudioContext
-        )();
+    musicStarted = true;
 
-    }
+    playMusicLoop();
 
+  }catch(e){
 
-    if(
-      audioContext.state ===
-      "suspended"
-    ){
-
-      audioContext.resume();
-
-    }
-
-
-    /*
-      Don't create multiple music timers.
-    */
-
-    if(musicTimer){
-
-      return;
-
-    }
-
-
-    musicTimer =
-      setInterval(
-        playBeat,
-        500
-      );
-
+    console.log("Music unavailable");
   }
-  catch(error){
-
-    console.log(
-      "Music unavailable"
-    );
-
-  }
-
 }
 
 
-function playBeat(){
+function playMusicLoop(){
 
   if(!audioContext){
-
     return;
-
   }
 
+  const notes = [
+    261.63,
+    329.63,
+    392.00,
+    329.63,
+    293.66,
+    349.23,
+    440.00,
+    349.23
+  ];
 
-  if(
-    !running ||
-    paused
-  ){
+  let time =
+    audioContext.currentTime;
 
-    return;
+  notes.forEach(function(freq){
 
-  }
+    const oscillator =
+      audioContext.createOscillator();
 
+    const gain =
+      audioContext.createGain();
 
-  const oscillator =
-    audioContext.createOscillator();
+    oscillator.type = "square";
 
+    oscillator.frequency.value =
+      freq;
 
-  const gain =
-    audioContext.createGain();
+    gain.gain.setValueAtTime(
+      0.035,
+      time
+    );
 
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      time + 0.18
+    );
 
-  oscillator.type =
-    "square";
+    oscillator.connect(gain);
 
+    gain.connect(
+      audioContext.destination
+    );
 
-  oscillator.frequency.value =
-    180 +
-    Math.random() * 180;
+    oscillator.start(time);
 
+    oscillator.stop(
+      time + 0.18
+    );
 
-  gain.gain.setValueAtTime(
-    0.025,
-    audioContext.currentTime
+    time += 0.2;
+  });
+
+  setTimeout(
+    playMusicLoop,
+    1700
   );
-
-
-  gain.gain.exponentialRampToValueAtTime(
-    0.001,
-    audioContext.currentTime +
-    0.15
-  );
-
-
-  oscillator.connect(
-    gain
-  );
-
-
-  gain.connect(
-    audioContext.destination
-  );
-
-
-  oscillator.start();
-
-
-  oscillator.stop(
-    audioContext.currentTime +
-    0.15
-  );
-
 }
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+updateMenu();
 
 </script>
 
